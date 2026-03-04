@@ -278,7 +278,7 @@ export async function POST(request: NextRequest) {
 
     const pptxBuffer = await pptx.write({ outputType: 'nodebuffer' }) as Buffer;
 
-    return new NextResponse(pptxBuffer, {
+    return new NextResponse(new Uint8Array(pptxBuffer), {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         'Content-Disposition': `attachment; filename="${proposal.name.replace(/[^a-z0-9]/gi, '_')}.pptx"`,

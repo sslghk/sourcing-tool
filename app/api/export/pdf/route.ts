@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
 
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${proposal.name.replace(/[^a-z0-9]/gi, '_')}.pdf"`,
