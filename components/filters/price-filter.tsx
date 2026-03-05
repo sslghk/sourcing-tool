@@ -28,6 +28,10 @@ export function PriceFilter({ minPrice, maxPrice, onFilterChange, currency = "CN
     setPriceRange([min, max]);
     setMinInput(min.toString());
     setMaxInput(max.toString());
+  };
+
+  const handleSliderCommit = (values: number[]) => {
+    const [min, max] = values;
     onFilterChange(min, max);
   };
 
@@ -61,6 +65,7 @@ export function PriceFilter({ minPrice, maxPrice, onFilterChange, currency = "CN
         step={1}
         value={priceRange}
         onValueChange={handleSliderChange}
+        onValueCommit={handleSliderCommit}
         className="w-full"
       />
       

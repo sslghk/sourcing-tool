@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { ProductDTO } from "@/types/product";
 import { formatCurrency } from "@/lib/utils";
-import { ExternalLink, ShoppingCart, ChevronDown, ChevronUp, Loader2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ExternalLink, ShoppingCart, ChevronDown, ChevronUp, Loader2, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +12,8 @@ import { ImageCarouselModal } from "@/components/ui/image-carousel-modal";
 interface ProductTableProps {
   products: ProductDTO[];
   onAddToProposal?: (product: ProductDTO) => void;
+  onFindSimilar?: (product: ProductDTO) => void;
+  findingSimilarFor?: string | null;
 }
 
 interface ProductDetails {
@@ -40,7 +42,7 @@ interface ProductDetails {
 
 type SortOrder = 'asc' | 'desc' | null;
 
-export function ProductTable({ products, onAddToProposal, selectedProducts, setSelectedProducts }: ProductTableProps & {
+export function ProductTable({ products, onAddToProposal, selectedProducts, setSelectedProducts, onFindSimilar, findingSimilarFor }: ProductTableProps & {
   selectedProducts?: Set<string>;
   setSelectedProducts?: (products: Set<string>) => void;
 }) {
@@ -249,15 +251,15 @@ export function ProductTable({ products, onAddToProposal, selectedProducts, setS
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="px-4 py-3 text-left w-12">
+              <th className="px-4 py-3 text-left w-12 text-xs font-semibold text-gray-700 uppercase tracking-wider">
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left w-24 text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Image
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[300px]">
+              <th className="px-4 py-3 text-left min-w-[300px]">
                 <button
                   onClick={toggleNameSort}
-                  className="flex items-center gap-1 hover:text-sky-600 transition-colors"
+                  className="flex items-center gap-1 text-xs font-semibold text-gray-700 uppercase tracking-wider hover:text-sky-600 transition-colors"
                 >
                   Product
                   {nameSortOrder === null && <ArrowUpDown className="h-3 w-3" />}
@@ -265,10 +267,10 @@ export function ProductTable({ products, onAddToProposal, selectedProducts, setS
                   {nameSortOrder === 'desc' && <ArrowDown className="h-3 w-3 text-sky-600" />}
                 </button>
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left w-32">
                 <button
                   onClick={togglePriceSort}
-                  className="flex items-center gap-1 hover:text-sky-600 transition-colors"
+                  className="flex items-center gap-1 text-xs font-semibold text-gray-700 uppercase tracking-wider hover:text-sky-600 transition-colors"
                 >
                   Price
                   {priceSortOrder === null && <ArrowUpDown className="h-3 w-3" />}
@@ -276,10 +278,10 @@ export function ProductTable({ products, onAddToProposal, selectedProducts, setS
                   {priceSortOrder === 'desc' && <ArrowDown className="h-3 w-3 text-sky-600" />}
                 </button>
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Platform
+              <th className="px-4 py-3 text-center w-40 text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Actions
               </th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <th className="px-4 py-3 text-center w-20 text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 Select
               </th>
             </tr>
@@ -361,20 +363,42 @@ export function ProductTable({ products, onAddToProposal, selectedProducts, setS
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <a
-                        href={product.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block"
-                      >
-                        <Badge 
-                          variant="secondary"
-                          className="capitalize cursor-pointer hover:bg-sky-100 hover:text-sky-700 transition-colors"
+                      <div className="flex flex-col items-center gap-1.5">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          asChild
+                          className="h-7 text-xs capitalize w-full hover:bg-sky-50 hover:text-sky-700"
                         >
-                          {product.source}
-                          <ExternalLink className="h-3 w-3 ml-1 inline" />
-                        </Badge>
-                      </a>
+                          <a
+                            href={product.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1.5" />
+                            {product.source}
+                          </a>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => onFindSimilar?.(product)}
+                          disabled={findingSimilarFor === product.id}
+                          className="h-7 text-xs w-full hover:bg-sky-50 hover:text-sky-700 disabled:opacity-50"
+                        >
+                          {findingSimilarFor === product.id ? (
+                            <>
+                              <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+                              Finding...
+                            </>
+                          ) : (
+                            <>
+                              <Search className="h-3 w-3 mr-1.5" />
+                              Similar
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center justify-center">
@@ -388,7 +412,7 @@ export function ProductTable({ products, onAddToProposal, selectedProducts, setS
                   </tr>
                   {isExpanded && (
                     <tr key={`${product.id}-details`} className="bg-gray-50">
-                      <td colSpan={6} className="px-4 py-6">
+                      <td colSpan={7} className="px-4 py-6">
                         {isLoadingDetails ? (
                           <div className="flex items-center justify-center py-8">
                             <Loader2 className="h-6 w-6 animate-spin text-sky-500 mr-2" />

@@ -676,13 +676,27 @@ async def search_by_image(image: UploadFile = File(...)):
             
             # Check for API errors
             if data.get("error"):
-                print(f"OneBound API error: {data.get('error')}")
-                raise HTTPException(status_code=503, detail=f"OneBound API error: {data.get('error')}")
+                error_msg = data.get('error')
+                print(f"OneBound API error: {error_msg}")
+                
+                # Provide more helpful error messages
+                if error_msg == "data error":
+                    raise HTTPException(
+                        status_code=400, 
+                        detail="No similar products found for this image. Try a different image with clearer product details."
+                    )
+                else:
+                    raise HTTPException(status_code=503, detail=f"OneBound API error: {error_msg}")
             
             # Parse results
             items = data.get("items", {}).get("item", [])
             if not isinstance(items, list):
                 items = [items] if items else []
+            
+            # Handle empty results
+            if not items:
+                print("No items found in OneBound image search response")
+                return SearchResponse(products=[], total=0, page=1, limit=0)
             
             products = [normalize_onebound_product(item) for item in items]
             
@@ -701,6 +715,9 @@ async def search_by_image(image: UploadFile = File(...)):
             
             return result
             
+    except HTTPException:
+        # Re-raise HTTPException without modification
+        raise
     except httpx.HTTPStatusError as e:
         print(f"HTTP error during image search: {e}")
         raise HTTPException(status_code=e.response.status_code, detail="Failed to search by image")

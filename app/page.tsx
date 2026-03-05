@@ -38,6 +38,7 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<ProductDTO[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddingToProposal, setIsAddingToProposal] = useState(false);
+  const [findingSimilarFor, setFindingSimilarFor] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [debugInfo, setDebugInfo] = useState<{
     query: string;
@@ -238,6 +239,35 @@ export default function Home() {
 
   const handlePriceFilterChange = (min: number, max: number) => {
     setPriceFilter({ min, max });
+  };
+
+  const handleFindSimilar = async (product: ProductDTO) => {
+    setFindingSimilarFor(product.id);
+    
+    try {
+      // Get the product's main image URL
+      const imageUrl = product.image_urls[0];
+      if (!imageUrl) {
+        alert('No image available for this product');
+        return;
+      }
+      
+      // Fetch the image and convert to File
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const file = new File([blob], 'product-image.jpg', { type: blob.type });
+      
+      // Trigger image search with the product's image
+      await handleImageSearch(file);
+      
+      // Scroll to top to see results
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error('Error finding similar products:', error);
+      alert('Failed to find similar products. Please try again.');
+    } finally {
+      setFindingSimilarFor(null);
+    }
   };
 
   const handleImageSearch = async (image: File) => {
@@ -645,6 +675,8 @@ export default function Home() {
                   onAddToProposal={handleAddToProposal}
                   selectedProducts={selectedProducts}
                   setSelectedProducts={setSelectedProducts}
+                  onFindSimilar={handleFindSimilar}
+                  findingSimilarFor={findingSimilarFor}
                 />
               ) : (
                 <ProductCardView
