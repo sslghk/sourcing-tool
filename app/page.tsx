@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { SearchBar } from "@/components/search/search-bar";
 import { PlatformSelector } from "@/components/search/platform-selector";
@@ -30,11 +31,13 @@ import {
 } from "@/lib/export";
 
 export default function Home() {
+  const router = useRouter();
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([
     "taobao",
   ]);
   const [searchResults, setSearchResults] = useState<ProductDTO[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddingToProposal, setIsAddingToProposal] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [debugInfo, setDebugInfo] = useState<{
     query: string;
@@ -113,39 +116,50 @@ export default function Home() {
   };
 
   const handleAddSelectedToProposal = async () => {
-    const selected = searchResults.filter(p => selectedProducts.has(p.id));
-    const newProposalProducts = [...proposalProducts];
+    setIsAddingToProposal(true);
     
-    // Fetch details for selected products that aren't already in proposal
-    const productsToAdd = selected.filter(
-      product => !newProposalProducts.some(p => p.id === product.id)
-    );
-    
-    // Fetch details for each product in parallel
-    const productsWithDetails = await Promise.all(
-      productsToAdd.map(async (product) => {
-        try {
-          const response = await fetch(`/api/product-details?productId=${product.source_id}&platform=${product.source}`);
-          if (response.ok) {
-            const details = await response.json();
-            // Store details with the product
-            return {
-              ...product,
-              cachedDetails: details,
-              detailsFetchedAt: new Date().toISOString()
-            };
+    try {
+      const selected = searchResults.filter(p => selectedProducts.has(p.id));
+      const newProposalProducts = [...proposalProducts];
+      
+      // Fetch details for selected products that aren't already in proposal
+      const productsToAdd = selected.filter(
+        product => !newProposalProducts.some(p => p.id === product.id)
+      );
+      
+      // Fetch details for each product in parallel
+      const productsWithDetails = await Promise.all(
+        productsToAdd.map(async (product) => {
+          try {
+            const response = await fetch(`/api/product-details?productId=${product.source_id}&platform=${product.source}`);
+            if (response.ok) {
+              const details = await response.json();
+              // Store details with the product
+              return {
+                ...product,
+                cachedDetails: details,
+                detailsFetchedAt: new Date().toISOString()
+              };
+            }
+          } catch (error) {
+            console.error(`Failed to fetch details for ${product.source_id}:`, error);
           }
-        } catch (error) {
-          console.error(`Failed to fetch details for ${product.source_id}:`, error);
-        }
-        // Return product without details if fetch fails
-        return product;
-      })
-    );
-    
-    newProposalProducts.push(...productsWithDetails);
-    setProposalProducts(newProposalProducts);
-    setSelectedProducts(new Set());
+          // Return product without details if fetch fails
+          return product;
+        })
+      );
+      
+      newProposalProducts.push(...productsWithDetails);
+      setProposalProducts(newProposalProducts);
+      setSelectedProducts(new Set());
+      
+      // Navigate to proposals page with animation
+      setTimeout(() => {
+        router.push('/proposals');
+      }, 300);
+    } finally {
+      setIsAddingToProposal(false);
+    }
   };
 
   // Calculate price range from search results
@@ -516,11 +530,20 @@ export default function Home() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         size="sm"
-                        disabled={selectedProducts.size === 0}
+                        disabled={selectedProducts.size === 0 || isAddingToProposal}
                         className="bg-sky-600 hover:bg-sky-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        Add Selected
+                        {isAddingToProposal ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Adding...
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="h-4 w-4 mr-2" />
+                            Add Selected
+                          </>
+                        )}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
