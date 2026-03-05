@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: taobao-service
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: ONEBOUND_API_KEY
+        sync: false
+      - key: ONEBOUND_API_SECRET
+        sync: false
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: taobao-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: taobao-redis
+          property: port
+      - key: SCRAPINGBEE_API_KEY
+        sync: false
+
+  - type: redis
+    name: taobao-redis
+    region: oregon
+    plan: free
+    maxmemoryPolicy: allkeys-lru
