@@ -22,13 +22,13 @@ export function Navbar() {
           <div className="absolute -inset-0.5 bg-sky-100 rounded-full blur-sm"></div>
           <div className="relative flex items-center justify-between bg-white/95 backdrop-blur-xl border border-gray-200 shadow-lg rounded-full px-6 py-3">
             <Link href="/" className="flex items-center">
-              <div className="h-14 overflow-hidden rounded-lg relative">
+              <div className="h-14 relative">
                 <Image 
                   src="/logos/ssl-logo.png" 
                   alt="SSL Logo" 
                   width={240} 
-                  height={240}
-                  className="h-full w-auto object-cover object-center scale-150"
+                  height={56}
+                  className="h-full w-auto object-contain"
                 />
               </div>
             </Link>

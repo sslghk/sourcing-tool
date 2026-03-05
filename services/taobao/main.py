@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -6,6 +6,9 @@ import httpx
 import redis
 import json
 import os
+import base64
+import io
+from PIL import Image
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
@@ -54,6 +57,11 @@ class SearchRequest(BaseModel):
     price_min: Optional[float] = None
     price_max: Optional[float] = None
     category: Optional[str] = None
+
+class ImageSearchRequest(BaseModel):
+    image_url: str
+    page: int = 1
+    limit: int = 20
 
 class ProductDTO(BaseModel):
     id: str
@@ -547,6 +555,140 @@ def normalize_product(raw: dict) -> ProductDTO:
         },
         fetched_at=datetime.utcnow().isoformat()
     )
+
+@app.post("/search-image", response_model=SearchResponse)
+async def search_by_image(image: UploadFile = File(...)):
+    """
+    Search for products using an uploaded image.
+    Uses OneBound's item_search_img API.
+    """
+    if not USE_ONEBOUND:
+        raise HTTPException(status_code=503, detail="OneBound API not configured")
+    
+    try:
+        # Read image file
+        image_bytes = await image.read()
+        
+        # Create cache key from image hash
+        import hashlib
+        image_hash = hashlib.md5(image_bytes).hexdigest()
+        cache_key = f"taobao:image_search:{image_hash}"
+        
+        # Check cache
+        try:
+            cached = redis_client.get(cache_key)
+            if cached:
+                print(f"Returning cached results for image hash: {image_hash}")
+                return SearchResponse(**json.loads(cached))
+        except Exception as e:
+            print(f"Cache error: {e}")
+        
+        async with httpx.AsyncClient() as client:
+            print(f"Using OneBound image search for: {image.filename}")
+            
+            # Step 1: Upload to ImgBB to get a public URL
+            print("Step 1: Uploading to ImgBB...")
+            imgbb_api_key = os.getenv("IMGBB_API_KEY")
+            if not imgbb_api_key:
+                raise HTTPException(status_code=503, detail="ImgBB API key not configured")
+            
+            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+            
+            imgbb_response = await client.post(
+                "https://api.imgbb.com/1/upload",
+                data={"key": imgbb_api_key, "image": image_base64},
+                timeout=30.0
+            )
+            
+            imgbb_response.raise_for_status()
+            imgbb_data = imgbb_response.json()
+            
+            if not imgbb_data.get("success"):
+                raise HTTPException(status_code=503, detail="ImgBB upload failed")
+            
+            image_url = imgbb_data["data"]["url"]
+            print(f"Image uploaded to ImgBB: {image_url}")
+            
+            # Step 2: Upload image URL to OneBound to get image_id
+            print("Step 2: Uploading to OneBound...")
+            upload_params = {
+                "key": ONEBOUND_API_KEY,
+                "secret": ONEBOUND_API_SECRET,
+                "imgcode": image_url,
+                "img_type": "1"
+            }
+            
+            upload_response = await client.get(
+                f"{ONEBOUND_BASE_URL}/upload_img",
+                params=upload_params,
+                timeout=30.0
+            )
+            
+            upload_response.raise_for_status()
+            upload_data = upload_response.json()
+            
+            if upload_data.get("error"):
+                raise HTTPException(status_code=503, detail=f"OneBound upload error: {upload_data.get('error')}")
+            
+            # Get image_id from response
+            image_id = upload_data.get("items", {}).get("item", {}).get("image_id")
+            if not image_id:
+                raise HTTPException(status_code=500, detail="No image_id in OneBound response")
+            
+            print(f"Got image_id: {image_id}")
+            
+            # Step 3: Search with image_id
+            print("Step 3: Searching with image_id...")
+            search_params = {
+                "key": ONEBOUND_API_KEY,
+                "secret": ONEBOUND_API_SECRET,
+                "imgid": image_id,
+                "lang": "en"
+            }
+            
+            response = await client.get(
+                f"{ONEBOUND_BASE_URL}/item_search_img",
+                params=search_params,
+                timeout=30.0
+            )
+            
+            print(f"OneBound image search response status: {response.status_code}")
+            response.raise_for_status()
+            data = response.json()
+            
+            # Check for API errors
+            if data.get("error"):
+                print(f"OneBound API error: {data.get('error')}")
+                raise HTTPException(status_code=503, detail=f"OneBound API error: {data.get('error')}")
+            
+            # Parse results
+            items = data.get("items", {}).get("item", [])
+            if not isinstance(items, list):
+                items = [items] if items else []
+            
+            products = [normalize_onebound_product(item) for item in items]
+            
+            result = SearchResponse(
+                products=products,
+                total=len(products),
+                page=1,
+                limit=len(products)
+            )
+            
+            # Cache for 1 hour
+            try:
+                redis_client.setex(cache_key, 3600, json.dumps(result.dict()))
+            except Exception as e:
+                print(f"Cache set error: {e}")
+            
+            return result
+            
+    except httpx.HTTPStatusError as e:
+        print(f"HTTP error during image search: {e}")
+        raise HTTPException(status_code=e.response.status_code, detail="Failed to search by image")
+    except Exception as e:
+        print(f"Error during image search: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

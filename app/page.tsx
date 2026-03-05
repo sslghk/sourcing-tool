@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
 import { SearchBar } from "@/components/search/search-bar";
 import { PlatformSelector } from "@/components/search/platform-selector";
 import { ProductTable } from "@/components/products/product-table";
 import { PriceFilter } from "@/components/filters/price-filter";
 import { Platform, ProductDTO } from "@/types/product";
-import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet } from "lucide-react";
+import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -45,6 +46,7 @@ export default function Home() {
   const [exportMode, setExportMode] = useState<ExportMode>('basic');
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [priceFilter, setPriceFilter] = useState<{ min: number; max: number } | null>(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Load proposal products from localStorage on mount
   useEffect(() => {
@@ -170,9 +172,41 @@ export default function Home() {
 
   const handleImageSearch = async (image: File) => {
     console.log('Image search triggered with file:', image.name);
-    // TODO: Implement image search API call
-    // This will be connected to Google Lens or similar visual search API
-    console.log(`Image search functionality coming soon! Uploaded: ${image.name}`);
+    setIsLoading(true);
+    setHasSearched(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('image', image);
+      
+      const response = await fetch('/api/search-image', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Image search failed');
+      }
+      
+      const data = await response.json();
+      
+      setSearchResults(data.products || []);
+      setDebugInfo({
+        query: `Image: ${image.name}`,
+        platforms: ['taobao'],
+        response: data,
+        timestamp: new Date().toISOString(),
+      });
+      
+      console.log(`Found ${data.products?.length || 0} products from image search`);
+    } catch (error) {
+      console.error('Image search error:', error);
+      setSearchResults([]);
+      alert(error instanceof Error ? error.message : 'Failed to search by image. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleExport = async (format: ExportFormat) => {
@@ -285,11 +319,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 pt-32 pb-12">
+      <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-5xl mx-auto">
           <div className="mb-8 mt-12">
             <h1 className="text-3xl font-bold text-gray-900">
-              Simple Symbol Sourcing Assistant
+              Sourcing Assistant
             </h1>
           </div>
           
@@ -298,10 +332,6 @@ export default function Home() {
               onSearch={handleSearch} 
               onImageSearch={handleImageSearch}
               isLoading={isLoading} 
-            />
-            <PlatformSelector
-              selectedPlatforms={selectedPlatforms}
-              onPlatformsChange={setSelectedPlatforms}
             />
           </div>
         </div>
@@ -314,19 +344,6 @@ export default function Home() {
             </div>
           ) : searchResults.length > 0 ? (
             <>
-              {/* Filters Section */}
-              <div className="mb-6 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
-                <div className="max-w-sm">
-                  <PriceFilter
-                    minPrice={priceRange.min}
-                    maxPrice={priceRange.max}
-                    onFilterChange={handlePriceFilterChange}
-                    currency="CNY"
-                  />
-                </div>
-              </div>
-
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <p className="text-gray-700 font-medium">
@@ -352,6 +369,16 @@ export default function Home() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    className={isFilterOpen ? "bg-sky-50 border-sky-300" : ""}
+                  >
+                    <SlidersHorizontal className="h-4 w-4 mr-2" />
+                    Filters
+                  </Button>
+                  
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button 
@@ -449,6 +476,46 @@ export default function Home() {
                   </DropdownMenu>
                 </div>
               </div>
+
+              {/* Expandable Filter Menu */}
+              <motion.div
+                initial={false}
+                animate={{
+                  height: isFilterOpen ? "auto" : 0,
+                  opacity: isFilterOpen ? 1 : 0,
+                  marginBottom: isFilterOpen ? 24 : 0,
+                }}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeInOut"
+                }}
+                className="overflow-hidden"
+              >
+                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900 mb-4">Platform</h3>
+                      <PlatformSelector
+                        selectedPlatforms={selectedPlatforms}
+                        onPlatformsChange={setSelectedPlatforms}
+                      />
+                    </div>
+                    
+                    <div className="border-t pt-6">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-4">Price Range</h3>
+                      <div className="max-w-sm">
+                        <PriceFilter
+                          minPrice={priceRange.min}
+                          maxPrice={priceRange.max}
+                          onFilterChange={handlePriceFilterChange}
+                          currency="CNY"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
               <ProductTable 
                 products={filteredProducts} 
                 onAddToProposal={handleAddToProposal}

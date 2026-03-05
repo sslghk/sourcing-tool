@@ -386,11 +386,6 @@ export default function ProposalsPage() {
               value: proposals.filter((p) => p.status === "submitted").length,
               icon: FileText,
             },
-            {
-              label: "Approved",
-              value: proposals.filter((p) => p.status === "approved").length,
-              icon: FileText,
-            },
           ].map((stat, index) => (
             <motion.div
               key={index}
