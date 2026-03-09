@@ -55,10 +55,17 @@ export interface AIEnrichmentData {
   original_product: {
     title: string;
     description: string;
+    specifications?: {
+      dimensions: string;
+      weight: string;
+      materials: string;
+      other_specs: string;
+    };
   };
   design_alternatives: Array<{
     concept_title: string;
     generated_image_prompt: string;
+    generated_image_url?: string;
     short_description: string;
     design_rationale: string;
   }>;

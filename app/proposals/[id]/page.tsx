@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -463,6 +464,23 @@ export default function ProposalDetailPage() {
     }
   };
 
+  // Helper function to strip base64 images before saving to localStorage
+  const stripBase64Images = (proposal: Proposal): Proposal => {
+    return {
+      ...proposal,
+      products: proposal.products.map(product => ({
+        ...product,
+        aiEnrichment: product.aiEnrichment ? {
+          ...product.aiEnrichment,
+          design_alternatives: product.aiEnrichment.design_alternatives.map(alt => ({
+            ...alt,
+            generated_image_url: undefined // Remove base64 images to save space
+          }))
+        } : undefined
+      }))
+    };
+  };
+
   const handleAIEnrich = async (productId: string) => {
     if (!proposal) return;
 
@@ -511,14 +529,15 @@ export default function ProposalDetailPage() {
         updated_at: new Date().toISOString(),
       };
 
-      // Save to localStorage
+      // Save to localStorage (without base64 images to prevent quota errors)
       const stored = localStorage.getItem('proposals');
       if (stored) {
         const proposals = JSON.parse(stored);
         const index = proposals.findIndex((p: Proposal) => p.id === params.id);
         if (index !== -1) {
-          proposals[index] = updatedProposal;
+          proposals[index] = stripBase64Images(updatedProposal);
           localStorage.setItem('proposals', JSON.stringify(proposals));
+          // Keep full data in state (with images)
           setProposal(updatedProposal);
         }
       }
@@ -1019,60 +1038,27 @@ export default function ProposalDetailPage() {
                             <span className="text-gray-600">Loading product details...</span>
                           </div>
                         ) : details ? (
-                          <div className="space-y-6">
-                            {/* AI Enrichment Results */}
-                            {product.aiEnrichment && (
-                              <div className="pt-6 border-b border-gray-200 pb-6">
-                                <div className="flex items-center gap-2 mb-4">
-                                  <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                  </svg>
-                                  <h4 className="font-semibold text-gray-900">AI Design Alternatives</h4>
-                                  <Badge variant="outline" className="text-purple-600 border-purple-600">
-                                    Generated {new Date(product.aiEnrichment.enriched_at).toLocaleDateString()}
+                          <Tabs defaultValue="details" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2">
+                              <TabsTrigger value="details">Product Details</TabsTrigger>
+                              <TabsTrigger value="ai-enrichment" disabled={!product.aiEnrichment}>
+                                <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                AI Enrichment
+                                {product.aiEnrichment && (
+                                  <Badge variant="outline" className="ml-2 text-purple-600 border-purple-600 text-xs">
+                                    ✓
                                   </Badge>
-                                </div>
+                                )}
+                              </TabsTrigger>
+                            </TabsList>
 
-                                {/* Original Product Analysis */}
-                                <div className="bg-white rounded-lg p-4 mb-4">
-                                  <h5 className="font-medium text-gray-900 mb-2">Original Product</h5>
-                                  <p className="text-sm font-semibold text-gray-800 mb-1">
-                                    {product.aiEnrichment.original_product.title}
-                                  </p>
-                                  <p className="text-sm text-gray-600">
-                                    {product.aiEnrichment.original_product.description}
-                                  </p>
-                                </div>
-
-                                {/* Design Alternatives */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                  {product.aiEnrichment.design_alternatives.map((alt, idx) => (
-                                    <div key={idx} className="bg-white rounded-lg p-4 border border-gray-200 hover:border-purple-300 transition-colors">
-                                      <div className="flex items-start gap-2 mb-2">
-                                        <Badge variant="secondary" className="text-xs">
-                                          Concept {idx + 1}
-                                        </Badge>
-                                      </div>
-                                      <h6 className="font-semibold text-gray-900 mb-2">{alt.concept_title}</h6>
-                                      <p className="text-sm text-gray-600 mb-3">{alt.short_description}</p>
-                                      <div className="bg-gray-50 rounded p-2 mb-2">
-                                        <p className="text-xs text-gray-500 mb-1">Image Prompt:</p>
-                                        <p className="text-xs text-gray-700 italic">{alt.generated_image_prompt}</p>
-                                      </div>
-                                      <div className="border-t border-gray-100 pt-2 mt-2">
-                                        <p className="text-xs text-gray-500 mb-1">Design Rationale:</p>
-                                        <p className="text-xs text-gray-700">{alt.design_rationale}</p>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Product Images */}
-                            {details.item_imgs && details.item_imgs.length > 0 && (
-                              <div className="pt-6">
-                                <h4 className="font-semibold text-gray-900 mb-3">Product Images</h4>
+                            <TabsContent value="details" className="space-y-6 mt-6">
+                              {/* Product Images */}
+                              {details.item_imgs && details.item_imgs.length > 0 && (
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-3">Product Images</h4>
                                 <div className="flex gap-2 overflow-x-auto">
                                   {details.item_imgs.slice(0, 5).map((img, idx) => (
                                     <button
@@ -1088,10 +1074,10 @@ export default function ProposalDetailPage() {
                                     </button>
                                   ))}
                                 </div>
-                              </div>
-                            )}
+                                </div>
+                              )}
 
-                            <div className="grid grid-cols-2 gap-6">
+                              <div className="grid grid-cols-2 gap-6">
                               <div>
                                 <h4 className="font-semibold text-gray-900 mb-3">Product Information</h4>
                                 <dl className="space-y-2 text-sm">
@@ -1143,31 +1129,135 @@ export default function ProposalDetailPage() {
                                   </div>
                                 </dl>
                               </div>
-                            </div>
-
-                            {/* Product Properties/Specs */}
-                            {details.props && details.props.length > 0 && (
-                              <div>
-                                <h4 className="font-semibold text-gray-900 mb-3">Product Specifications</h4>
-                                <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                                  {details.props.map((prop, idx) => (
-                                    <div key={idx} className="flex justify-between">
-                                      <dt className="text-gray-600">{prop.name}:</dt>
-                                      <dd className="font-medium text-gray-900">{prop.value}</dd>
-                                    </div>
-                                  ))}
-                                </dl>
                               </div>
-                            )}
 
-                            {/* Description */}
-                            {details.desc_short && (
-                              <div>
-                                <h4 className="font-semibold text-gray-900 mb-3">Description</h4>
-                                <p className="text-sm text-gray-700">{details.desc_short}</p>
-                              </div>
-                            )}
-                          </div>
+                              {/* Product Properties/Specs */}
+                              {details.props && details.props.length > 0 && (
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-3">Product Specifications</h4>
+                                  <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                                    {details.props.map((prop, idx) => (
+                                      <div key={idx} className="flex justify-between">
+                                        <dt className="text-gray-600">{prop.name}:</dt>
+                                        <dd className="font-medium text-gray-900">{prop.value}</dd>
+                                      </div>
+                                    ))}
+                                  </dl>
+                                </div>
+                              )}
+
+                              {/* Description */}
+                              {details.desc_short && (
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 mb-3">Description</h4>
+                                  <p className="text-sm text-gray-700">{details.desc_short}</p>
+                                </div>
+                              )}
+                            </TabsContent>
+
+                            <TabsContent value="ai-enrichment" className="space-y-6 mt-6">
+                              {product.aiEnrichment && (
+                                <>
+                                  <div className="flex items-center gap-2 mb-4">
+                                    <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    <h4 className="font-semibold text-gray-900">AI Design Alternatives</h4>
+                                    <Badge variant="outline" className="text-purple-600 border-purple-600">
+                                      Generated {new Date(product.aiEnrichment.enriched_at).toLocaleDateString()}
+                                    </Badge>
+                                  </div>
+
+                                  {/* Original Product Analysis */}
+                                  <div className="bg-white rounded-lg p-4 mb-4">
+                                    <h5 className="font-medium text-gray-900 mb-3">Original Product</h5>
+                                    <p className="text-sm font-semibold text-gray-800 mb-1">
+                                      {product.aiEnrichment.original_product.title}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-4">
+                                      {product.aiEnrichment.original_product.description}
+                                    </p>
+
+                                    {/* Product Specifications */}
+                                    {product.aiEnrichment.original_product.specifications && (
+                                      <div className="border-t border-gray-200 pt-3 mt-3">
+                                        <h6 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Product Specifications</h6>
+                                        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                          {product.aiEnrichment.original_product.specifications.dimensions !== 'N/A' && (
+                                            <>
+                                              <dt className="text-gray-600">Dimensions:</dt>
+                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.dimensions}</dd>
+                                            </>
+                                          )}
+                                          {product.aiEnrichment.original_product.specifications.weight !== 'N/A' && (
+                                            <>
+                                              <dt className="text-gray-600">Weight:</dt>
+                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.weight}</dd>
+                                            </>
+                                          )}
+                                          {product.aiEnrichment.original_product.specifications.materials !== 'N/A' && (
+                                            <>
+                                              <dt className="text-gray-600">Materials:</dt>
+                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.materials}</dd>
+                                            </>
+                                          )}
+                                          {product.aiEnrichment.original_product.specifications.other_specs !== 'N/A' && (
+                                            <>
+                                              <dt className="text-gray-600">Other:</dt>
+                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.other_specs}</dd>
+                                            </>
+                                          )}
+                                        </dl>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Design Alternatives */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {product.aiEnrichment.design_alternatives.map((alt, idx) => (
+                                      <div key={idx} className="bg-white rounded-lg border border-gray-200 hover:border-purple-300 transition-colors overflow-hidden">
+                                        <div className="flex items-start gap-2 p-3 bg-gray-50 border-b border-gray-200">
+                                          <Badge variant="secondary" className="text-xs">
+                                            Concept {idx + 1}
+                                          </Badge>
+                                          <h6 className="font-semibold text-gray-900 flex-1">{alt.concept_title}</h6>
+                                        </div>
+                                        
+                                        {/* Concept Image Visualization */}
+                                        <div className="relative bg-gradient-to-br from-purple-50 to-sky-50 aspect-square">
+                                          {alt.generated_image_url ? (
+                                            <img 
+                                              src={alt.generated_image_url} 
+                                              alt={alt.concept_title}
+                                              className="w-full h-full object-cover"
+                                            />
+                                          ) : (
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                                              <svg className="h-12 w-12 text-purple-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                              </svg>
+                                              <p className="text-xs text-gray-600 italic leading-relaxed">
+                                                {alt.generated_image_prompt}
+                                              </p>
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        <div className="p-4 space-y-3">
+                                          <p className="text-sm text-gray-700">{alt.short_description}</p>
+                                          
+                                          <div className="border-t border-gray-100 pt-3">
+                                            <p className="text-xs font-medium text-gray-500 mb-1">Design Rationale:</p>
+                                            <p className="text-xs text-gray-700 leading-relaxed">{alt.design_rationale}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+                            </TabsContent>
+                          </Tabs>
                         ) : (
                           <div className="text-center py-8 text-gray-500">
                             Failed to load product details
