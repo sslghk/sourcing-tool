@@ -636,22 +636,50 @@ async def search_by_image(image: UploadFile = File(...)):
                 "img_type": "1"
             }
             
+            print(f"OneBound upload_img URL: {ONEBOUND_BASE_URL}/upload_img")
+            print(f"Upload params (secret hidden): {dict(upload_params, secret='***')}")
+            
             upload_response = await client.get(
                 f"{ONEBOUND_BASE_URL}/upload_img",
                 params=upload_params,
                 timeout=30.0
             )
             
+            print(f"OneBound upload response status: {upload_response.status_code}")
+            print(f"OneBound upload response body: {upload_response.text[:500]}")
+            
             upload_response.raise_for_status()
             upload_data = upload_response.json()
             
-            if upload_data.get("error"):
-                raise HTTPException(status_code=503, detail=f"OneBound upload error: {upload_data.get('error')}")
+            print(f"OneBound upload_data: {upload_data}")
             
-            # Get image_id from response
-            image_id = upload_data.get("items", {}).get("item", {}).get("image_id")
+            if upload_data.get("error"):
+                error_detail = upload_data.get('error')
+                print(f"OneBound upload error: {error_detail}")
+                raise HTTPException(status_code=503, detail=f"OneBound upload error: {error_detail}")
+            
+            # Get image_id from response - try multiple possible paths
+            image_id = None
+            if "items" in upload_data:
+                items = upload_data.get("items", {})
+                if isinstance(items, dict):
+                    item = items.get("item", {})
+                    if isinstance(item, dict):
+                        image_id = item.get("image_id")
+            
+            # Try alternative response structure
+            if not image_id and "item" in upload_data:
+                image_id = upload_data.get("item", {}).get("image_id")
+            
+            # Try direct image_id field
             if not image_id:
-                raise HTTPException(status_code=500, detail="No image_id in OneBound response")
+                image_id = upload_data.get("image_id")
+            
+            print(f"Extracted image_id: {image_id}")
+            
+            if not image_id:
+                print(f"Full upload_data structure: {upload_data}")
+                raise HTTPException(status_code=500, detail=f"No image_id in OneBound response. Response: {upload_data}")
             
             print(f"Got image_id: {image_id}")
             

@@ -9,7 +9,7 @@ import { ProductTable } from "@/components/products/product-table";
 import { ProductCardView } from "@/components/products/product-card-view";
 import { PriceFilter } from "@/components/filters/price-filter";
 import { Platform, ProductDTO } from "@/types/product";
-import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal, LayoutGrid, List } from "lucide-react";
+import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal, LayoutGrid, List, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -30,22 +30,26 @@ import {
   type ExportMode 
 } from "@/lib/export";
 
+interface SearchTab {
+  id: string;
+  label: string;
+  query: string;
+  type: 'text' | 'image' | 'similar';
+  products: ProductDTO[];
+  timestamp: Date;
+  platforms: Platform[];
+}
+
 export default function Home() {
   const router = useRouter();
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([
     "taobao",
   ]);
-  const [searchResults, setSearchResults] = useState<ProductDTO[]>([]);
+  const [searchTabs, setSearchTabs] = useState<SearchTab[]>([]);
+  const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddingToProposal, setIsAddingToProposal] = useState(false);
   const [findingSimilarFor, setFindingSimilarFor] = useState<string | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<{
-    query: string;
-    platforms: Platform[];
-    response: any;
-    timestamp: string;
-  } | null>(null);
   const [proposalProducts, setProposalProducts] = useState<ProductDTO[]>([]);
   const [isExporting, setIsExporting] = useState(false);
   const [exportMode, setExportMode] = useState<ExportMode>('basic');
@@ -55,21 +59,30 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
   const [isDedupe, setIsDedupe] = useState(true);
 
-  // Load proposal products from localStorage on mount
+  // Get current active tab
+  const activeTab = searchTabs.find(tab => tab.id === activeTabId);
+  const searchResults = activeTab?.products || [];
+  const hasSearched = searchTabs.length > 0;
+
+  // Load proposal products and tabs from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem('proposalProducts');
     if (stored) {
       setProposalProducts(JSON.parse(stored));
     }
     
-    // Load search results from sessionStorage
-    const storedResults = sessionStorage.getItem('searchResults');
-    const storedHasSearched = sessionStorage.getItem('hasSearched');
-    if (storedResults) {
-      setSearchResults(JSON.parse(storedResults));
+    // Load search tabs from sessionStorage
+    const storedTabs = sessionStorage.getItem('searchTabs');
+    const storedActiveTabId = sessionStorage.getItem('activeTabId');
+    if (storedTabs) {
+      const tabs = JSON.parse(storedTabs);
+      setSearchTabs(tabs.map((tab: any) => ({
+        ...tab,
+        timestamp: new Date(tab.timestamp)
+      })));
     }
-    if (storedHasSearched === 'true') {
-      setHasSearched(true);
+    if (storedActiveTabId) {
+      setActiveTabId(storedActiveTabId);
     }
   }, []);
 
@@ -80,13 +93,55 @@ export default function Home() {
     }
   }, [proposalProducts]);
 
-  // Save search results to sessionStorage whenever they change
+  // Save search tabs to sessionStorage whenever they change
   useEffect(() => {
-    if (searchResults.length > 0) {
-      sessionStorage.setItem('searchResults', JSON.stringify(searchResults));
-      sessionStorage.setItem('hasSearched', 'true');
+    if (searchTabs.length > 0) {
+      sessionStorage.setItem('searchTabs', JSON.stringify(searchTabs));
     }
-  }, [searchResults]);
+  }, [searchTabs]);
+
+  // Save active tab ID to sessionStorage
+  useEffect(() => {
+    if (activeTabId) {
+      sessionStorage.setItem('activeTabId', activeTabId);
+    }
+  }, [activeTabId]);
+
+  // Helper function to create a new tab
+  const createNewTab = (query: string, type: 'text' | 'image' | 'similar', products: ProductDTO[], platforms: Platform[]) => {
+    const newTab: SearchTab = {
+      id: `tab-${Date.now()}`,
+      label: query.length > 30 ? query.substring(0, 30) + '...' : query,
+      query,
+      type,
+      products,
+      timestamp: new Date(),
+      platforms
+    };
+    
+    setSearchTabs(prev => [...prev, newTab]);
+    setActiveTabId(newTab.id);
+  };
+
+  // Helper function to close a tab
+  const closeTab = (tabId: string) => {
+    setSearchTabs(prev => {
+      const filtered = prev.filter(tab => tab.id !== tabId);
+      
+      // If closing active tab, switch to another tab
+      if (tabId === activeTabId) {
+        if (filtered.length > 0) {
+          const index = prev.findIndex(tab => tab.id === tabId);
+          const newActiveIndex = index > 0 ? index - 1 : 0;
+          setActiveTabId(filtered[newActiveIndex]?.id || null);
+        } else {
+          setActiveTabId(null);
+        }
+      }
+      
+      return filtered;
+    });
+  };
 
   const handleAddToProposal = async (product: ProductDTO) => {
     // Check if product already in proposal
@@ -252,13 +307,32 @@ export default function Home() {
         return;
       }
       
+      setIsLoading(true);
+      
       // Fetch the image and convert to File
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const file = new File([blob], 'product-image.jpg', { type: blob.type });
       
-      // Trigger image search with the product's image
-      await handleImageSearch(file);
+      // Perform image search
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const searchResponse = await fetch('/api/search-image', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!searchResponse.ok) {
+        const errorData = await searchResponse.json();
+        throw new Error(errorData.error || 'Image search failed');
+      }
+      
+      const data = await searchResponse.json();
+      
+      // Create new tab for similar products
+      const tabLabel = product.title.length > 25 ? product.title.substring(0, 25) + '...' : product.title;
+      createNewTab(`Similar: ${tabLabel}`, 'similar', data.products || [], ['taobao']);
       
       // Scroll to top to see results
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -267,13 +341,13 @@ export default function Home() {
       alert('Failed to find similar products. Please try again.');
     } finally {
       setFindingSimilarFor(null);
+      setIsLoading(false);
     }
   };
 
   const handleImageSearch = async (image: File) => {
     console.log('Image search triggered with file:', image.name);
     setIsLoading(true);
-    setHasSearched(true);
     
     try {
       const formData = new FormData();
@@ -291,18 +365,12 @@ export default function Home() {
       
       const data = await response.json();
       
-      setSearchResults(data.products || []);
-      setDebugInfo({
-        query: `Image: ${image.name}`,
-        platforms: ['taobao'],
-        response: data,
-        timestamp: new Date().toISOString(),
-      });
+      // Create new tab for image search results
+      createNewTab(`Image: ${image.name}`, 'image', data.products || [], ['taobao']);
       
       console.log(`Found ${data.products?.length || 0} products from image search`);
     } catch (error) {
       console.error('Image search error:', error);
-      setSearchResults([]);
       alert(error instanceof Error ? error.message : 'Failed to search by image. Please try again.');
     } finally {
       setIsLoading(false);
@@ -365,7 +433,6 @@ export default function Home() {
     if (!query.trim()) return;
 
     setIsLoading(true);
-    setHasSearched(true);
 
     const requestData = {
       query,
@@ -383,35 +450,17 @@ export default function Home() {
 
       if (!response.ok) {
         console.log("Search API not available yet, showing empty results");
-        setSearchResults([]);
-        setDebugInfo({
-          query,
-          platforms: selectedPlatforms,
-          response: { error: "API not available" },
-          timestamp: new Date().toISOString(),
-        });
+        createNewTab(query, 'text', [], selectedPlatforms);
         return;
       }
 
       const data = await response.json();
-      setSearchResults(data.products || []);
       
-      // Store debug info
-      setDebugInfo({
-        query,
-        platforms: selectedPlatforms,
-        response: data,
-        timestamp: new Date().toISOString(),
-      });
+      // Create new tab for text search results
+      createNewTab(query, 'text', data.products || [], selectedPlatforms);
     } catch (error) {
       console.log("Search error:", error);
-      setSearchResults([]);
-      setDebugInfo({
-        query,
-        platforms: selectedPlatforms,
-        response: { error: String(error) },
-        timestamp: new Date().toISOString(),
-      });
+      createNewTab(query, 'text', [], selectedPlatforms);
     } finally {
       setIsLoading(false);
     }
@@ -433,6 +482,54 @@ export default function Home() {
             isLoading={isLoading} 
           />
         </div>
+
+        {/* Search Tabs */}
+        {searchTabs.length > 0 && (
+          <div className="max-w-5xl mx-auto mb-6">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+              {searchTabs.map((tab) => (
+                <motion.div
+                  key={tab.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all cursor-pointer flex-shrink-0 ${
+                    tab.id === activeTabId
+                      ? 'bg-sky-50 border-sky-400 shadow-sm'
+                      : 'bg-white border-gray-200 hover:border-sky-300'
+                  }`}
+                  onClick={() => setActiveTabId(tab.id)}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm font-medium ${
+                      tab.id === activeTabId ? 'text-sky-700' : 'text-gray-700'
+                    }`}>
+                      {tab.label}
+                    </span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      tab.id === activeTabId 
+                        ? 'bg-sky-100 text-sky-600' 
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {tab.products.length}
+                    </span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeTab(tab.id);
+                    }}
+                    className={`hover:bg-gray-200 rounded p-1 transition-colors ${
+                      tab.id === activeTabId ? 'text-sky-600' : 'text-gray-400'
+                    }`}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="max-w-5xl mx-auto">
           {isLoading ? (
