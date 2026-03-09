@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -85,6 +85,9 @@ export default function ProposalDetailPage() {
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<PPTXTemplate | null>(null);
   const [isExportingPPTX, setIsExportingPPTX] = useState(false);
+  const [metadataPopupOpen, setMetadataPopupOpen] = useState<string | null>(null);
+  const [aiEnrichRemarksOpen, setAiEnrichRemarksOpen] = useState<string | null>(null);
+  const [aiEnrichRemarks, setAiEnrichRemarks] = useState<Record<string, string>>({});
 
   // Fetch product details with retry logic
   const fetchProductDetailsWithRetry = async (productId: string, platform: string, maxRetries = 3): Promise<ProductDetails | null> => {
@@ -493,6 +496,8 @@ export default function ProposalDetailPage() {
     setLoadingAIEnrich(productId);
 
     try {
+      const userRemarks = aiEnrichRemarks[productId] || '';
+      
       const response = await fetch('/api/ai-enrich', {
         method: 'POST',
         headers: {
@@ -500,7 +505,7 @@ export default function ProposalDetailPage() {
         },
         body: JSON.stringify({
           imageUrl: product.image_urls[0],
-          userNotes: '',
+          userNotes: userRemarks,
         }),
       });
 
@@ -541,6 +546,14 @@ export default function ProposalDetailPage() {
           setProposal(updatedProposal);
         }
       }
+      
+      // Clear remarks after successful enrichment
+      setAiEnrichRemarksOpen(null);
+      setAiEnrichRemarks(prev => {
+        const updated = { ...prev };
+        delete updated[productId];
+        return updated;
+      });
     } catch (error) {
       console.error('Error enriching product:', error);
       alert('Failed to enrich product with AI. Please try again.');
@@ -888,135 +901,206 @@ export default function ProposalDetailPage() {
                           </button>
                         </div>
                         <div className="flex-shrink-0">
-                      <button
-                        onClick={() => openImageCarousel(
-                          product.image_urls.map(url => ({ url })),
-                          0
-                        )}
-                        className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer"
-                      >
-                        {product.image_urls[0] ? (
-                          <img
-                            src={product.image_urls[0]}
-                            alt={product.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
-                            No image
+                          <button
+                            onClick={() => openImageCarousel(
+                              product.image_urls.map(url => ({ url })),
+                              0
+                            )}
+                            className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer"
+                          >
+                            {product.image_urls[0] ? (
+                              <img
+                                src={product.image_urls[0]}
+                                alt={product.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                No image
+                              </div>
+                            )}
+                          </button>
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="flex items-start gap-2 mb-2">
+                            <h3 className="font-semibold text-gray-900 flex-1">{product.title}</h3>
+                            {details && (
+                              <button
+                                onClick={() => setMetadataPopupOpen(metadataPopupOpen === product.id ? null : product.id)}
+                                className="flex-shrink-0 p-1 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded transition-colors"
+                                title="View metadata"
+                              >
+                                <Info className="h-4 w-4" />
+                              </button>
+                            )}
                           </div>
-                        )}
-                      </button>
-                      {product.image_urls.length > 1 && (
-                        <div className="mt-2 flex gap-2">
-                          {product.image_urls.slice(1, 4).map((url, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => openImageCarousel(
-                                product.image_urls.map(u => ({ url: u })),
-                                idx + 1
+                          
+                          {/* Metadata Popup */}
+                          {metadataPopupOpen === product.id && details && (
+                            <div className="mb-4 p-4 bg-white border border-gray-300 rounded-lg shadow-lg relative">
+                              <button
+                                onClick={() => setMetadataPopupOpen(null)}
+                                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                              >
+                                ✕
+                              </button>
+                              <h4 className="font-semibold text-gray-900 mb-3 text-sm">Original Product Metadata</h4>
+                              <div className="grid grid-cols-2 gap-4 text-xs">
+                                <div>
+                                  <h5 className="font-medium text-gray-700 mb-2">Product Information</h5>
+                                  <dl className="space-y-1">
+                                    <div className="flex justify-between">
+                                      <dt className="text-gray-600">Brand:</dt>
+                                      <dd className="font-medium text-gray-900">{details.brand || 'N/A'}</dd>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <dt className="text-gray-600">MOQ:</dt>
+                                      <dd className="font-medium text-gray-900">{details.moq || 'N/A'}</dd>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <dt className="text-gray-600">Category ID:</dt>
+                                      <dd className="font-medium text-gray-900">{details.category_id || 'N/A'}</dd>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <dt className="text-gray-600">Created:</dt>
+                                      <dd className="font-medium text-gray-900">{details.created_time || 'N/A'}</dd>
+                                    </div>
+                                  </dl>
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-gray-700 mb-2">Engagement Metrics</h5>
+                                  <dl className="space-y-1">
+                                    <div className="flex justify-between">
+                                      <dt className="text-gray-600">Favorites:</dt>
+                                      <dd className="font-medium text-gray-900">
+                                        {details.fav_count !== undefined && details.fav_count !== null ? details.fav_count : 'N/A'}
+                                      </dd>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <dt className="text-gray-600">Fans:</dt>
+                                      <dd className="font-medium text-gray-900">
+                                        {details.fans_count !== undefined && details.fans_count !== null ? details.fans_count : 'N/A'}
+                                      </dd>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <dt className="text-gray-600">Rating:</dt>
+                                      <dd className="font-medium text-gray-900">{details.rating_grade || 'N/A'}</dd>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <dt className="text-gray-600">Sales:</dt>
+                                      <dd className="font-medium text-gray-900">
+                                        {details.sales_volume ? `${details.sales_volume.toLocaleString()}` : 'N/A'}
+                                      </dd>
+                                    </div>
+                                  </dl>
+                                </div>
+                              </div>
+                              {details.props && details.props.length > 0 && (
+                                <div className="mt-3 pt-3 border-t border-gray-200">
+                                  <h5 className="font-medium text-gray-700 mb-2 text-xs">Specifications</h5>
+                                  <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                                    {details.props.slice(0, 6).map((prop, idx) => (
+                                      <div key={idx} className="flex justify-between">
+                                        <dt className="text-gray-600 truncate">{prop.name}:</dt>
+                                        <dd className="font-medium text-gray-900 truncate">{prop.value}</dd>
+                                      </div>
+                                    ))}
+                                  </dl>
+                                </div>
                               )}
-                              className="w-10 h-10 bg-gray-100 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer"
-                            >
-                              <img src={url} alt="" className="w-full h-full object-cover" />
-                            </button>
-                          ))}
-                          {product.image_urls.length > 4 && (
-                            <button
-                              onClick={() => openImageCarousel(
-                                product.image_urls.map(u => ({ url: u })),
-                                4
-                              )}
-                              className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-600 hover:bg-gray-300 transition-colors cursor-pointer"
-                            >
-                              +{product.image_urls.length - 4}
-                            </button>
+                            </div>
                           )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-2">{product.title}</h3>
                       
-                      <div className="grid grid-cols-2 gap-4 text-sm mb-3">
-                        <div>
-                          <span className="text-gray-600">Price:</span>
-                          <span className="ml-2 font-semibold text-sky-600">
-                            {formatCurrency(product.price.current, product.price.currency)}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Platform:</span>
-                          <span className="ml-2 capitalize">{product.source}</span>
-                        </div>
-                        {product.moq && (
-                          <div>
-                            <span className="text-gray-600">MOQ:</span>
-                            <span className="ml-2">{product.moq} units</span>
+                      <div className="space-y-2">
+                        {/* Secondary Images on left, Product info on right */}
+                        <div className="flex gap-4">
+                          {/* OneBound Product Images - Left side */}
+                          {details?.item_imgs && details.item_imgs.length > 0 && (
+                            <div className="flex gap-2 overflow-x-auto">
+                              {details.item_imgs.slice(0, 6).map((img, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => openImageCarousel(details.item_imgs || [], idx)}
+                                  className="w-16 h-16 bg-gray-100 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer flex-shrink-0"
+                                >
+                                  <img 
+                                    src={img.url.startsWith('//') ? `https:${img.url}` : img.url}
+                                    alt={`Product ${idx + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* Product Info - Right side */}
+                          <div className="space-y-2 text-sm flex-1">
+                            <div>
+                              <span className="text-gray-600">Price:</span>
+                              <span className="ml-2 font-semibold text-sky-600">
+                                {formatCurrency(product.price.current, product.price.currency)}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Platform:</span>
+                              <span className="ml-2 capitalize">{product.source}</span>
+                            </div>
+                            {product.moq && (
+                              <div>
+                                <span className="text-gray-600">MOQ:</span>
+                                <span className="ml-2">{product.moq} units</span>
+                              </div>
+                            )}
+                            {product.seller?.location && (
+                              <div>
+                                <span className="text-gray-600">Location:</span>
+                                <span className="ml-2">{product.seller.location}</span>
+                              </div>
+                            )}
+                            <a
+                              href={product.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-sky-600 hover:text-sky-700 inline-block"
+                            >
+                              View on {product.source}
+                            </a>
                           </div>
-                        )}
-                        {product.seller?.location && (
-                          <div>
-                            <span className="text-gray-600">Location:</span>
-                            <span className="ml-2">{product.seller.location}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* FOB and ELC Input Fields */}
-                      <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div>
-                          <label className="block text-xs text-gray-600 mb-1">FOB</label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="Enter FOB"
-                            value={product.fob || ''}
-                            onChange={(e) => updateProductField(product.id, 'fob', e.target.value)}
-                            className="h-8 text-sm"
-                          />
                         </div>
-                        <div>
-                          <label className="block text-xs text-gray-600 mb-1">ELC</label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            placeholder="Enter ELC"
-                            value={product.elc || ''}
-                            onChange={(e) => updateProductField(product.id, 'elc', e.target.value)}
-                            className="h-8 text-sm"
+                        
+                        {/* AI Enrichment Context - Pill-shaped textbox below */}
+                        <div className="flex items-center gap-2">
+                          <Textarea
+                            value={aiEnrichRemarks[product.id] || ''}
+                            onChange={(e) => setAiEnrichRemarks(prev => ({
+                              ...prev,
+                              [product.id]: e.target.value
+                            }))}
+                            placeholder="Guide AI designs (e.g., eco-friendly, modern)"
+                            rows={1}
+                            className="flex-1 text-xs bg-white border border-purple-200 rounded-full px-4 py-1 h-7 focus:ring-2 focus:ring-purple-300 focus:border-transparent transition-all placeholder:text-gray-400 resize-none leading-tight"
                           />
-                        </div>
-                      </div>
-
-                      <a
-                        href={product.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-sky-600 hover:text-sky-700"
-                      >
-                        View on {product.source}
-                      </a>
-                    </div>
-
-                        <div className="flex-shrink-0 flex gap-2">
                           <Button
-                            variant="outline"
                             size="sm"
                             onClick={() => handleAIEnrich(product.id)}
                             disabled={loadingAIEnrich === product.id}
-                            className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-sm hover:shadow transition-all h-9 w-9 p-0 rounded-full flex-shrink-0"
+                            title="Generate AI Designs"
                           >
                             {loadingAIEnrich === product.id ? (
-                              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                              <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
-                              <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                               </svg>
                             )}
-                            AI Enrich
                           </Button>
+                        </div>
+                      </div>
+                        </div>
+
+                        <div className="flex-shrink-0">
                           <Button
                             variant="outline"
                             size="sm"
@@ -1029,7 +1113,7 @@ export default function ProposalDetailPage() {
                       </div>
                     </div>
 
-                    {/* Expanded Details */}
+                    {/* Expanded Details - Combined View */}
                     {isExpanded && (
                       <div className="px-6 pb-6 bg-gray-50">
                         {isLoadingDetails ? (
@@ -1037,125 +1121,9 @@ export default function ProposalDetailPage() {
                             <Loader2 className="h-6 w-6 animate-spin text-sky-500 mr-2" />
                             <span className="text-gray-600">Loading product details...</span>
                           </div>
-                        ) : details ? (
-                          <Tabs defaultValue="details" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2">
-                              <TabsTrigger value="details">Product Details</TabsTrigger>
-                              <TabsTrigger value="ai-enrichment" disabled={!product.aiEnrichment}>
-                                <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                                AI Enrichment
-                                {product.aiEnrichment && (
-                                  <Badge variant="outline" className="ml-2 text-purple-600 border-purple-600 text-xs">
-                                    ✓
-                                  </Badge>
-                                )}
-                              </TabsTrigger>
-                            </TabsList>
-
-                            <TabsContent value="details" className="space-y-6 mt-6">
-                              {/* Product Images */}
-                              {details.item_imgs && details.item_imgs.length > 0 && (
-                                <div>
-                                  <h4 className="font-semibold text-gray-900 mb-3">Product Images</h4>
-                                <div className="flex gap-2 overflow-x-auto">
-                                  {details.item_imgs.slice(0, 5).map((img, idx) => (
-                                    <button
-                                      key={idx}
-                                      onClick={() => openImageCarousel(details.item_imgs || [], idx)}
-                                      className="h-20 w-20 flex-shrink-0 rounded border border-gray-200 overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer"
-                                    >
-                                      <img 
-                                        src={img.url.startsWith('//') ? `https:${img.url}` : img.url}
-                                        alt={`Product ${idx + 1}`}
-                                        className="w-full h-full object-cover"
-                                      />
-                                    </button>
-                                  ))}
-                                </div>
-                                </div>
-                              )}
-
-                              <div className="grid grid-cols-2 gap-6">
-                              <div>
-                                <h4 className="font-semibold text-gray-900 mb-3">Product Information</h4>
-                                <dl className="space-y-2 text-sm">
-                                  <div className="flex justify-between">
-                                    <dt className="text-gray-600">Brand:</dt>
-                                    <dd className="font-medium text-gray-900">{details.brand || 'N/A'}</dd>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <dt className="text-gray-600">MOQ:</dt>
-                                    <dd className="font-medium text-gray-900">{details.moq || 'N/A'}</dd>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <dt className="text-gray-600">Category ID:</dt>
-                                    <dd className="font-medium text-gray-900">{details.category_id || 'N/A'}</dd>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <dt className="text-gray-600">Created:</dt>
-                                    <dd className="font-medium text-gray-900">{details.created_time || 'N/A'}</dd>
-                                  </div>
-                                </dl>
-                              </div>
-                              
-                              <div>
-                                <h4 className="font-semibold text-gray-900 mb-3">Engagement Metrics</h4>
-                                <dl className="space-y-2 text-sm">
-                                  <div className="flex justify-between">
-                                    <dt className="text-gray-600">Favorites:</dt>
-                                    <dd className="font-medium text-gray-900">
-                                      {details.fav_count !== undefined && details.fav_count !== null ? details.fav_count : 'N/A'}
-                                    </dd>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <dt className="text-gray-600">Fans:</dt>
-                                    <dd className="font-medium text-gray-900">
-                                      {details.fans_count !== undefined && details.fans_count !== null ? details.fans_count : 'N/A'}
-                                    </dd>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <dt className="text-gray-600">Rating Grade:</dt>
-                                    <dd className="font-medium text-gray-900">
-                                      {details.rating_grade || 'N/A'}
-                                    </dd>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <dt className="text-gray-600">Sales Volume:</dt>
-                                    <dd className="font-medium text-gray-900">
-                                      {details.sales_volume ? `${details.sales_volume.toLocaleString()} sold` : 'N/A'}
-                                    </dd>
-                                  </div>
-                                </dl>
-                              </div>
-                              </div>
-
-                              {/* Product Properties/Specs */}
-                              {details.props && details.props.length > 0 && (
-                                <div>
-                                  <h4 className="font-semibold text-gray-900 mb-3">Product Specifications</h4>
-                                  <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                                    {details.props.map((prop, idx) => (
-                                      <div key={idx} className="flex justify-between">
-                                        <dt className="text-gray-600">{prop.name}:</dt>
-                                        <dd className="font-medium text-gray-900">{prop.value}</dd>
-                                      </div>
-                                    ))}
-                                  </dl>
-                                </div>
-                              )}
-
-                              {/* Description */}
-                              {details.desc_short && (
-                                <div>
-                                  <h4 className="font-semibold text-gray-900 mb-3">Description</h4>
-                                  <p className="text-sm text-gray-700">{details.desc_short}</p>
-                                </div>
-                              )}
-                            </TabsContent>
-
-                            <TabsContent value="ai-enrichment" className="space-y-6 mt-6">
+                        ) : (
+                          <div className="space-y-6 mt-6">
+                            {/* AI Enrichment Section */}
                               {product.aiEnrichment && (
                                 <>
                                   <div className="flex items-center gap-2 mb-4">
@@ -1256,11 +1224,6 @@ export default function ProposalDetailPage() {
                                   </div>
                                 </>
                               )}
-                            </TabsContent>
-                          </Tabs>
-                        ) : (
-                          <div className="text-center py-8 text-gray-500">
-                            Failed to load product details
                           </div>
                         )}
                       </div>
