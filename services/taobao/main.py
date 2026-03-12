@@ -34,11 +34,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-redis_client = redis.Redis(
-    host=os.getenv("REDIS_HOST", "localhost"),
-    port=int(os.getenv("REDIS_PORT", "6379")),
-    decode_responses=True
-)
+# Make Redis optional
+try:
+    redis_client = redis.Redis(
+        host=os.getenv("REDIS_HOST", "localhost"),
+        port=int(os.getenv("REDIS_PORT", "6379")),
+        decode_responses=True
+    )
+    # Test connection
+    redis_client.ping()
+    print("Redis connected successfully")
+    REDIS_AVAILABLE = True
+except Exception as e:
+    print(f"Redis not available, caching disabled: {e}")
+    redis_client = None
+    REDIS_AVAILABLE = False
 
 ONEBOUND_API_KEY = os.getenv("ONEBOUND_API_KEY", "")
 ONEBOUND_API_SECRET = os.getenv("ONEBOUND_API_SECRET", "")
@@ -204,12 +214,14 @@ async def get_product_details(product_id: str):
 async def search(request: SearchRequest):
     cache_key = f"taobao:search:{request.query}:{request.page}"
     
-    try:
-        cached = redis_client.get(cache_key)
-        if cached:
-            return SearchResponse(**json.loads(cached))
-    except Exception as e:
-        print(f"Cache error: {e}")
+    # Try to get from cache if Redis is available
+    if REDIS_AVAILABLE and redis_client:
+        try:
+            cached = redis_client.get(cache_key)
+            if cached:
+                return SearchResponse(**json.loads(cached))
+        except Exception as e:
+            print(f"Cache error: {e}")
     
     try:
         async with httpx.AsyncClient() as client:
@@ -288,14 +300,16 @@ async def search(request: SearchRequest):
                 limit=request.limit
             )
             
-            try:
-                redis_client.setex(
-                    cache_key,
-                    3600,
-                    result.json()
-                )
-            except Exception as e:
-                print(f"Cache set error: {e}")
+            # Cache result if Redis is available
+            if REDIS_AVAILABLE and redis_client:
+                try:
+                    redis_client.setex(
+                        cache_key,
+                        3600,
+                        result.json()
+                    )
+                except Exception as e:
+                    print(f"Cache set error: {e}")
             
             return result
             
@@ -308,12 +322,14 @@ async def search(request: SearchRequest):
 async def get_detail(product_id: str):
     cache_key = f"taobao:product:{product_id}"
     
-    try:
-        cached = redis_client.get(cache_key)
-        if cached:
-            return ProductDTO(**json.loads(cached))
-    except Exception as e:
-        print(f"Cache error: {e}")
+    # Try to get from cache if Redis is available
+    if REDIS_AVAILABLE and redis_client:
+        try:
+            cached = redis_client.get(cache_key)
+            if cached:
+                return ProductDTO(**json.loads(cached))
+        except Exception as e:
+            print(f"Cache error: {e}")
     
     try:
         async with httpx.AsyncClient() as client:
@@ -331,14 +347,16 @@ async def get_detail(product_id: str):
             item = data.get("item", {})
             product = normalize_product(item)
             
-            try:
-                redis_client.setex(
-                    cache_key,
-                    21600,
-                    product.json()
-                )
-            except Exception as e:
-                print(f"Cache set error: {e}")
+            # Cache result if Redis is available
+            if REDIS_AVAILABLE and redis_client:
+                try:
+                    redis_client.setex(
+                        cache_key,
+                        21600,
+                        product.json()
+                    )
+                except Exception as e:
+                    print(f"Cache set error: {e}")
             
             return product
             

@@ -44,15 +44,54 @@ async function fetchImageAsBase64(imageUrl: string): Promise<string | null> {
   }
 }
 
-// Helper function to add image to PDF
+// Helper function to calculate dimensions maintaining aspect ratio
+function calculateAspectRatioDimensions(originalWidth: number, originalHeight: number, maxWidth: number, maxHeight: number): { width: number; height: number } {
+  const aspectRatio = originalWidth / originalHeight;
+  
+  let width = maxWidth;
+  let height = maxWidth / aspectRatio;
+  
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = maxHeight * aspectRatio;
+  }
+  
+  return { width, height };
+}
+
+// Helper function to get image dimensions from base64
+async function getImageDimensions(base64Image: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.onerror = reject;
+    img.src = base64Image;
+  });
+}
+
+// Helper function to add image to PDF with aspect ratio preservation
 async function addImageToPDF(doc: jsPDF, imageUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) {
   try {
     const base64Image = await fetchImageAsBase64(imageUrl);
     
     if (base64Image) {
-      // Add the image directly - jsPDF will handle it
       try {
-        doc.addImage(base64Image, 'JPEG', x, y, maxWidth, maxHeight);
+        // Get image dimensions to calculate aspect ratio
+        const dimensions = await getImageDimensions(base64Image);
+        const { width, height } = calculateAspectRatioDimensions(
+          dimensions.width,
+          dimensions.height,
+          maxWidth,
+          maxHeight
+        );
+        
+        // Center the image within the available space
+        const xOffset = x + (maxWidth - width) / 2;
+        const yOffset = y + (maxHeight - height) / 2;
+        
+        doc.addImage(base64Image, 'JPEG', xOffset, yOffset, width, height);
       } catch (imgError) {
         console.error('Error adding image to PDF:', imgError);
         // Fallback to placeholder

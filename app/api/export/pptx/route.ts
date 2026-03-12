@@ -27,6 +27,94 @@ async function fetchImageAsBase64(imageUrl: string): Promise<string | null> {
   }
 }
 
+// Helper function to calculate dimensions maintaining aspect ratio
+function calculateAspectRatioDimensions(originalWidth: number, originalHeight: number, maxWidth: number, maxHeight: number): { width: number; height: number } {
+  const aspectRatio = originalWidth / originalHeight;
+  
+  let width = maxWidth;
+  let height = maxWidth / aspectRatio;
+  
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = maxHeight * aspectRatio;
+  }
+  
+  return { width, height };
+}
+
+// Helper function to get image dimensions from base64
+async function getImageDimensions(base64Image: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.onerror = reject;
+    img.src = base64Image;
+  });
+}
+
+// Helper function to add image to PPTX with aspect ratio preservation
+async function addImageToPptx(slide: any, imageUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) {
+  try {
+    const base64Image = await fetchImageAsBase64(imageUrl);
+    
+    if (base64Image) {
+      try {
+        // Get image dimensions to calculate aspect ratio
+        const dimensions = await getImageDimensions(base64Image);
+        const { width, height } = calculateAspectRatioDimensions(
+          dimensions.width,
+          dimensions.height,
+          maxWidth,
+          maxHeight
+        );
+        
+        // Center the image within the available space
+        const xOffset = x + (maxWidth - width) / 2;
+        const yOffset = y + (maxHeight - height) / 2;
+        
+        slide.addImage({
+          data: base64Image,
+          x: xOffset,
+          y: yOffset,
+          w: width,
+          h: height
+        });
+      } catch (imgError) {
+        console.error('Error adding image to PPTX:', imgError);
+        // Fallback to placeholder
+        slide.addShape(PptxGenJS.ShapeType.rect, {
+          x,
+          y,
+          w: maxWidth,
+          h: maxHeight,
+          fill: { color: 'F0F0F0' }
+        });
+      }
+    } else {
+      // Fallback to placeholder if image fetch fails
+      slide.addShape(PptxGenJS.ShapeType.rect, {
+        x,
+        y,
+        w: maxWidth,
+        h: maxHeight,
+        fill: { color: 'F0F0F0' }
+      });
+    }
+  } catch (error) {
+    console.error('Error in addImageToPptx:', error);
+    // Fallback to placeholder
+    slide.addShape(PptxGenJS.ShapeType.rect, {
+      x,
+      y,
+      w: maxWidth,
+      h: maxHeight,
+      fill: { color: 'F0F0F0' }
+    });
+  }
+}
+
 // Helper function to fetch fresh product details with retry logic
 async function fetchProductDetails(productId: string, source: string, maxRetries = 3): Promise<any> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -208,26 +296,7 @@ export async function POST(request: NextRequest) {
       
       // Main image (square container)
       if (product.image_urls && product.image_urls.length > 0) {
-        const mainImageBase64 = await fetchImageAsBase64(product.image_urls[0]);
-        
-        if (mainImageBase64) {
-          slide.addImage({
-            data: mainImageBase64,
-            x: imageStartX,
-            y: imageStartY,
-            w: mainImageSize,
-            h: mainImageSize
-          });
-        } else {
-          // Fallback placeholder
-          slide.addShape(pptx.ShapeType.rect, {
-            x: imageStartX,
-            y: imageStartY,
-            w: mainImageSize,
-            h: mainImageSize,
-            fill: { color: 'F0F0F0' }
-          });
-        }
+        await addImageToPptx(slide, product.image_urls[0], imageStartX, imageStartY, mainImageSize, mainImageSize);
         
         // 3 supporting images vertically aligned to the right of main image
         // Collect all available images from multiple sources
@@ -274,25 +343,7 @@ export async function POST(request: NextRequest) {
             
             console.log(`Fetching additional image ${i + 1} for ${product.source_id}: ${imageUrl}`);
             
-            const smallImageBase64 = await fetchImageAsBase64(imageUrl);
-            
-            if (smallImageBase64) {
-              slide.addImage({
-                data: smallImageBase64,
-                x: smallImageX,
-                y: yPos,
-                w: smallImageSize,
-                h: smallImageSize
-              });
-            } else {
-              slide.addShape(pptx.ShapeType.rect, {
-                x: smallImageX,
-                y: yPos,
-                w: smallImageSize,
-                h: smallImageSize,
-                fill: { color: 'E0E0E0' }
-              });
-            }
+            await addImageToPptx(slide, imageUrl, smallImageX, yPos, smallImageSize, smallImageSize);
           }
         }
       }
