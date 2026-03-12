@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jsPDF from 'jspdf';
+import probe from 'probe-image-size';
 
 // Helper function to generate item number
 function generateItemNumber(createdDate: string, source: string, index: number): string {
@@ -61,14 +62,17 @@ function calculateAspectRatioDimensions(originalWidth: number, originalHeight: n
 
 // Helper function to get image dimensions from base64
 async function getImageDimensions(base64Image: string): Promise<{ width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      resolve({ width: img.naturalWidth, height: img.naturalHeight });
-    };
-    img.onerror = reject;
-    img.src = base64Image;
-  });
+  try {
+    // Extract the base64 data (remove data:image/...;base64, prefix)
+    const base64Data = base64Image.replace(/^data:image\/[a-z]+;base64,/, '');
+    
+    const result = await probe('data:image/jpeg;base64,' + base64Data);
+    return { width: result.width, height: result.height };
+  } catch (error) {
+    console.error('Error getting image dimensions:', error);
+    // Fallback to 1:1 aspect ratio
+    return { width: 300, height: 300 };
+  }
 }
 
 // Helper function to add image to PDF with aspect ratio preservation
