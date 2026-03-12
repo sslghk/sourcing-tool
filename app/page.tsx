@@ -64,6 +64,20 @@ export default function Home() {
   const searchResults = activeTab?.products || [];
   const hasSearched = searchTabs.length > 0;
 
+  const selectedCountByTabId = useMemo(() => {
+    const result = new Map<string, number>();
+    for (const tab of searchTabs) {
+      let count = 0;
+      for (const product of tab.products) {
+        if (selectedProducts.has(product.id)) {
+          count += 1;
+        }
+      }
+      result.set(tab.id, count);
+    }
+    return result;
+  }, [searchTabs, selectedProducts]);
+
   // Load proposal products and tabs from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem('proposalProducts');
@@ -517,7 +531,7 @@ export default function Home() {
                         ? 'bg-sky-100 text-sky-600' 
                         : 'bg-gray-100 text-gray-600'
                     }`}>
-                      {tab.products.length}
+                      {(selectedCountByTabId.get(tab.id) ?? 0)}/{tab.products.length}
                     </span>
                   </div>
                   <button
