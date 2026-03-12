@@ -40,19 +40,18 @@ redis_client = redis.Redis(
     decode_responses=True
 )
 
-SCRAPINGBEE_API_KEY = os.getenv("SCRAPINGBEE_API_KEY", "")
-SCRAPINGBEE_BASE_URL = "https://app.scrapingbee.com/api/v1/"
 ONEBOUND_API_KEY = os.getenv("ONEBOUND_API_KEY", "")
 ONEBOUND_API_SECRET = os.getenv("ONEBOUND_API_SECRET", "")
 ONEBOUND_BASE_URL = "https://api-gw.onebound.cn/taobao"
 
-# Use OneBound if available, otherwise try ScrapingBee
+# Require OneBound API - no fallback
 USE_ONEBOUND = bool(ONEBOUND_API_KEY and ONEBOUND_API_SECRET)
+if not USE_ONEBOUND:
+    raise RuntimeError("OneBound API keys not configured. Please set ONEBOUND_API_KEY and ONEBOUND_API_SECRET in your .env file.")
 
 print(f"OneBound API configured: {USE_ONEBOUND}")
-if USE_ONEBOUND:
-    print(f"OneBound API Key: {ONEBOUND_API_KEY[:10]}...")
-    print(f"OneBound API Secret: {'*' * len(ONEBOUND_API_SECRET)}")
+print(f"OneBound API Key: {ONEBOUND_API_KEY[:10]}...")
+print(f"OneBound API Secret: {'*' * len(ONEBOUND_API_SECRET)}")
 
 class SearchRequest(BaseModel):
     query: str
@@ -214,85 +213,53 @@ async def search(request: SearchRequest):
     
     try:
         async with httpx.AsyncClient() as client:
-            if USE_ONEBOUND:
-                # Use OneBound API (designed for Taobao)
-                print(f"Using OneBound API for query: {request.query}")
-                params = {
-                    "key": ONEBOUND_API_KEY,
-                    "secret": ONEBOUND_API_SECRET,
-                    "q": request.query,
-                    "page": request.page,
-                    "pageSize": request.limit,
-                    "lang": "en",
-                }
-                
-                if request.price_min:
-                    params["start_price"] = request.price_min
-                if request.price_max:
-                    params["end_price"] = request.price_max
-                
-                print(f"OneBound request params (secret hidden): {dict(params, secret='***')}")
-                
-                response = await client.get(
-                    f"{ONEBOUND_BASE_URL}/item_search",
-                    params=params,
-                    timeout=30.0
-                )
-                
-                print(f"OneBound response status: {response.status_code}")
-                print(f"OneBound response preview: {response.text[:500]}")
-                
-                response.raise_for_status()
-                data = response.json()
-                
-                # OneBound API response structure
-                if data.get("error"):
-                    print(f"OneBound API error: {data.get('error')}")
-                    raise HTTPException(status_code=503, detail=f"OneBound API error: {data.get('error')}")
-                
-                # OneBound nests items under items.item
-                items_data = data.get("items", {})
-                items = items_data.get("item", []) if isinstance(items_data, dict) else []
-                
-                print(f"OneBound response: {len(items)} items found")
-                
-                if items:
-                    print(f"Sample item keys: {list(items[0].keys()) if items else 'No items'}")
-                    print(f"Sample item data: {items[0] if items else 'No items'}")
-                
-                products = [normalize_onebound_product(item) for item in items]
-                print(f"Successfully normalized {len(products)} products")
-                
-            else:
-                # Fall back to ScrapingBee (Taobao blocks this)
-                print(f"Using ScrapingBee for query: {request.query}")
-                taobao_url = f"https://s.taobao.com/search?q={request.query}&s={(request.page - 1) * request.limit}"
-                
-                params = {
-                    "api_key": SCRAPINGBEE_API_KEY,
-                    "url": taobao_url,
-                    "render_js": "true",
-                    "premium_proxy": "true",
-                    "country_code": "cn",
-                    "wait": "5000",
-                    "wait_for": "div",
-                }
-                
-                response = await client.get(
-                    SCRAPINGBEE_BASE_URL,
-                    params=params,
-                    timeout=30.0
-                )
-                response.raise_for_status()
-                
-                from bs4 import BeautifulSoup
-                soup = BeautifulSoup(response.text, 'html.parser')
-                
-                print(f"Received HTML length: {len(response.text)} characters")
-                print(f"HTML preview: {response.text[:500]}")
-                
-                products = parse_taobao_html(soup, request.limit)
-                print(f"Parsed {len(products)} products")
+            # Use OneBound API (required)
+            print(f"Using OneBound API for query: {request.query}")
+            params = {
+                "key": ONEBOUND_API_KEY,
+                "secret": ONEBOUND_API_SECRET,
+                "q": request.query,
+                "page": request.page,
+                "pageSize": request.limit,
+                "lang": "en",
+            }
+            
+            if request.price_min:
+                params["start_price"] = request.price_min
+            if request.price_max:
+                params["end_price"] = request.price_max
+            
+            print(f"OneBound request params (secret hidden): {dict(params, secret='***')}")
+            
+            response = await client.get(
+                f"{ONEBOUND_BASE_URL}/item_search",
+                params=params,
+                timeout=30.0
+            )
+            
+            print(f"OneBound response status: {response.status_code}")
+            print(f"OneBound response preview: {response.text[:500]}")
+            
+            response.raise_for_status()
+            data = response.json()
+            
+            # OneBound API response structure
+            if data.get("error"):
+                print(f"OneBound API error: {data.get('error')}")
+                raise HTTPException(status_code=503, detail=f"OneBound API error: {data.get('error')}")
+            
+            # OneBound nests items under items.item
+            items_data = data.get("items", {})
+            items = items_data.get("item", []) if isinstance(items_data, dict) else []
+            
+            print(f"OneBound response: {len(items)} items found")
+            
+            if items:
+                print(f"Sample item keys: {list(items[0].keys()) if items else 'No items'}")
+                print(f"Sample item data: {items[0] if items else 'No items'}")
+            
+            products = [normalize_onebound_product(item) for item in items]
+            print(f"Successfully normalized {len(products)} products")
             
             # If no products found, return mock data for testing
             if len(products) == 0:
@@ -380,120 +347,6 @@ async def get_detail(product_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
-def parse_taobao_html(soup, limit: int) -> List[ProductDTO]:
-    """Parse Taobao search results HTML and extract product information"""
-    products = []
-    
-    # Try multiple selector patterns for Taobao's dynamic structure
-    # Look for product cards - Taobao uses various class names
-    selectors = [
-        '.item',
-        '[class*="Card"]',
-        '[class*="item"]',
-        '[class*="product"]',
-        'div[data-category="auctions"]',
-    ]
-    
-    items = []
-    for selector in selectors:
-        items = soup.select(selector)
-        if items:
-            print(f"Found {len(items)} items with selector: {selector}")
-            break
-    
-    if not items:
-        print("No items found with any selector. Trying to find all divs with links...")
-        # Fallback: find divs containing Taobao item links
-        items = soup.find_all('div', recursive=True)
-        items = [item for item in items if item.find('a', href=lambda x: x and ('item.taobao.com' in x or 'detail.tmall.com' in x))][:limit * 3]
-    
-    items = items[:limit * 2]  # Get more than needed to filter
-    
-    for idx, item in enumerate(items):
-        try:
-            # Extract title - try multiple patterns
-            title_elem = (item.select_one('.title') or 
-                         item.select_one('[class*="title"]') or
-                         item.select_one('a[href*="item.taobao.com"]') or
-                         item.find('a', href=lambda x: x and 'item.taobao.com' in x))
-            
-            if not title_elem:
-                continue
-                
-            title = title_elem.get_text(strip=True) if hasattr(title_elem, 'get_text') else str(title_elem)
-            if not title or len(title) < 3:
-                continue
-            
-            # Extract price - try multiple patterns
-            price_elem = (item.select_one('.price') or 
-                         item.select_one('[class*="price"]') or
-                         item.select_one('[class*="Price"]'))
-            price_text = price_elem.get_text(strip=True) if price_elem else "0"
-            
-            # Clean price text and convert
-            import re
-            price_match = re.search(r'[\d.]+', price_text)
-            price = float(price_match.group()) if price_match else 0.0
-            
-            # Extract image
-            img_elem = item.select_one('img')
-            image_url = img_elem.get('src', '') or img_elem.get('data-src', '') if img_elem else ''
-            if image_url and not image_url.startswith('http'):
-                image_url = 'https:' + image_url
-            
-            # Extract product URL
-            link_elem = item.select_one('a[href*="item.taobao.com"], a[href*="detail.tmall.com"]')
-            product_url = link_elem.get('href', '') if link_elem else ''
-            if product_url and not product_url.startswith('http'):
-                product_url = 'https:' + product_url
-            
-            # Extract product ID from URL
-            import re
-            product_id = ''
-            if product_url:
-                id_match = re.search(r'id=(\d+)', product_url)
-                product_id = id_match.group(1) if id_match else str(idx)
-            else:
-                product_id = str(idx)
-            
-            # Extract sales volume
-            sales_elem = item.select_one('[class*="sale"], [class*="sold"]')
-            sales_text = sales_elem.get_text(strip=True) if sales_elem else '0'
-            sales = int(''.join(filter(str.isdigit, sales_text))) if sales_text else 0
-            
-            # Extract location
-            location_elem = item.select_one('[class*="location"], [class*="shop"]')
-            location = location_elem.get_text(strip=True) if location_elem else 'China'
-            
-            product = ProductDTO(
-                id=f"taobao_{product_id}",
-                source="taobao",
-                source_id=product_id,
-                title=title,
-                description_short=None,
-                price={
-                    "current": price,
-                    "currency": "CNY",
-                },
-                image_urls=[image_url] if image_url else [],
-                url=product_url,
-                seller={
-                    "name": "Taobao Seller",
-                    "location": location
-                },
-                attributes={
-                    "sales": str(sales),
-                },
-                sales_volume=sales,
-                fetched_at=datetime.utcnow().isoformat()
-            )
-            products.append(product)
-            
-        except Exception as e:
-            print(f"Error parsing product {idx}: {e}")
-            continue
-    
-    return products
 
 def normalize_onebound_product(raw: dict) -> ProductDTO:
     """Normalize OneBound API response to ProductDTO"""
