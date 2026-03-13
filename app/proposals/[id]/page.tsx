@@ -85,9 +85,12 @@ export default function ProposalDetailPage() {
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<PPTXTemplate | null>(null);
   const [isExportingPPTX, setIsExportingPPTX] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [exportProgress, setExportProgress] = useState<{ type: 'pdf' | 'pptx' | null; message: string }>({ type: null, message: '' });
   const [metadataPopupOpen, setMetadataPopupOpen] = useState<string | null>(null);
   const [aiEnrichRemarksOpen, setAiEnrichRemarksOpen] = useState<string | null>(null);
   const [aiEnrichRemarks, setAiEnrichRemarks] = useState<Record<string, string>>({});
+  const [selectedSecondaryImages, setSelectedSecondaryImages] = useState<Record<string, string[]>>({});
 
   // Fetch product details with retry logic
   const fetchProductDetailsWithRetry = async (productId: string, platform: string, maxRetries = 3): Promise<ProductDetails | null> => {
@@ -283,14 +286,26 @@ export default function ProposalDetailPage() {
   const handleExportPDF = async () => {
     if (!proposal) return;
 
+    setIsExportingPDF(true);
+    setExportProgress({ type: 'pdf', message: 'Generating PDF...' });
+
     try {
+      // Add selected secondary images to each product
+      const proposalWithSelectedImages = {
+        ...proposal,
+        products: proposal.products.map(product => ({
+          ...product,
+          selectedSecondaryImages: selectedSecondaryImages[product.id] || []
+        }))
+      };
+
       const response = await fetch('/api/export/pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          proposal,
+          proposal: proposalWithSelectedImages,
           orientation: 'landscape',
         }),
       });
@@ -311,6 +326,9 @@ export default function ProposalDetailPage() {
     } catch (error) {
       console.error('Error exporting PDF:', error);
       alert('Failed to export PDF. This feature is coming soon!');
+    } finally {
+      setIsExportingPDF(false);
+      setExportProgress({ type: null, message: '' });
     }
   };
 
@@ -318,14 +336,24 @@ export default function ProposalDetailPage() {
     if (!proposal) return;
 
     setIsExportingPPTX(true);
+    setExportProgress({ type: 'pptx', message: 'Generating PowerPoint...' });
     try {
+      // Add selected secondary images to each product
+      const proposalWithSelectedImages = {
+        ...proposal,
+        products: proposal.products.map(product => ({
+          ...product,
+          selectedSecondaryImages: selectedSecondaryImages[product.id] || []
+        }))
+      };
+
       const response = await fetch('/api/export/pptx', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          proposal,
+          proposal: proposalWithSelectedImages,
           orientation: 'landscape',
           templateId: templateId || 'default',
         }),
@@ -349,6 +377,7 @@ export default function ProposalDetailPage() {
       alert('Failed to export PPTX');
     } finally {
       setIsExportingPPTX(false);
+      setExportProgress({ type: null, message: '' });
     }
   };
 
@@ -381,53 +410,87 @@ export default function ProposalDetailPage() {
     }
   };
 
-  const toggleRowExpansion = async (productId: string, product: ProductDTO) => {
-    const newExpanded = new Set(expandedRows);
+  const toggleSecondaryImageSelection = (productId: string, imageUrl: string) => {
+    const currentSelection = selectedSecondaryImages[productId] || [];
+    const newSelection = currentSelection.includes(imageUrl)
+      ? currentSelection.filter(url => url !== imageUrl)
+      : [...currentSelection, imageUrl].slice(0, 3); // Max 3 images
     
-    if (newExpanded.has(productId)) {
-      newExpanded.delete(productId);
-      setExpandedRows(newExpanded);
-      return;
-    }
+    setSelectedSecondaryImages(prev => ({
+      ...prev,
+      [productId]: newSelection
+    }));
+  };
 
-    newExpanded.add(productId);
-    setExpandedRows(newExpanded);
+  // Load product details automatically
+  useEffect(() => {
+    if (proposal) {
+      console.log('Loading product details for', proposal.products.length, 'products');
+      
+      const loadAllDetails = async () => {
+        const detailsPromises = proposal.products.map(async (product) => {
+          if (productDetails.has(product.id)) {
+            console.log(`Details already loaded for product ${product.id}`);
+            return null;
+          }
+          
+          console.log(`Loading details for product ${product.id}`);
+          
+          // Check if product has cached details with secondary images
+          const hasCachedDetails = product.cachedDetails && 
+            product.cachedDetails.item_imgs && 
+            product.cachedDetails.item_imgs.length > 0;
+          
+          if (hasCachedDetails) {
+            console.log(`Using cached details for ${product.id} (${product.cachedDetails?.item_imgs?.length} images)`);
+            return { id: product.id, details: product.cachedDetails };
+          }
 
-    // Check if details are already in memory or cached with product
-    if (!productDetails.has(productId)) {
-      // Check if product has cached details
-      if (product.cachedDetails) {
-        console.log(`Using cached details for ${productId}`);
-        const newDetails = new Map(productDetails);
-        newDetails.set(productId, product.cachedDetails);
-        setProductDetails(newDetails);
-        return;
-      }
+          // Fetch from web if no cached details or no secondary images
+          console.log(`Fetching from web for ${product.id} (no cached details or no images)`);
+          try {
+            const response = await fetch(`/api/product-details?productId=${product.id}&platform=${product.source}`);
+            
+            if (!response.ok) {
+              console.error(`Failed to fetch details for ${product.id}:`, response.status);
+              return null;
+            }
 
-      // Fetch details if not cached
-      const newLoading = new Set(loadingDetails);
-      newLoading.add(productId);
-      setLoadingDetails(newLoading);
-
-      try {
-        const response = await fetch(`/api/product-details?productId=${productId}&platform=${product.source}`);
+            const details = await response.json();
+            console.log(`Successfully loaded details from web for ${product.id}:`, details);
+            return { id: product.id, details };
+          } catch (error) {
+            console.error(`Error fetching product details for ${product.id}:`, error);
+            return null;
+          }
+        });
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch details');
-        }
-
-        const details = await response.json();
+        // Wait for all promises to complete
+        const results = await Promise.all(detailsPromises);
+        
+        // Batch update state with all loaded details
         const newDetails = new Map(productDetails);
-        newDetails.set(productId, details);
-        setProductDetails(newDetails);
-      } catch (error) {
-        console.error('Error fetching product details:', error);
-      } finally {
-        const newLoading = new Set(loadingDetails);
-        newLoading.delete(productId);
-        setLoadingDetails(newLoading);
-      }
+        let hasNewDetails = false;
+        
+        results.forEach(result => {
+          if (result) {
+            newDetails.set(result.id, result.details);
+            hasNewDetails = true;
+          }
+        });
+        
+        if (hasNewDetails) {
+          setProductDetails(newDetails);
+        }
+      };
+      
+      loadAllDetails();
     }
+  }, [proposal?.products]);
+
+  const toggleRowExpansion = async (productId: string, product: ProductDTO) => {
+    // Disabled - details are now shown directly
+    console.log(`Expand functionality disabled for ${productId}`);
   };
 
   const openImageCarousel = (images: Array<{ url: string }>, initialIndex: number = 0) => {
@@ -876,26 +939,12 @@ export default function ProposalDetailPage() {
           ) : (
             <div className="divide-y divide-gray-200">
               {proposal.products.map((product) => {
-                const isExpanded = expandedRows.has(product.id);
-                const isLoadingDetails = loadingDetails.has(product.id);
                 const details = productDetails.get(product.id);
 
                 return (
                   <div key={product.id}>
                     <div className="p-6 hover:bg-gray-50 transition-colors">
                       <div className="flex gap-6">
-                        <div className="flex-shrink-0">
-                          <button
-                            onClick={() => toggleRowExpansion(product.id, product)}
-                            className="text-gray-400 hover:text-gray-600 transition-colors mb-2"
-                          >
-                            {isExpanded ? (
-                              <ChevronUp className="h-5 w-5" />
-                            ) : (
-                              <ChevronDown className="h-5 w-5" />
-                            )}
-                          </button>
-                        </div>
                         <div className="flex-shrink-0">
                           <button
                             onClick={() => openImageCarousel(
@@ -932,103 +981,42 @@ export default function ProposalDetailPage() {
                             )}
                           </div>
                           
-                          {/* Metadata Popup */}
-                          {metadataPopupOpen === product.id && details && (
-                            <div className="mb-4 p-4 bg-white border border-gray-300 rounded-lg shadow-lg relative">
-                              <button
-                                onClick={() => setMetadataPopupOpen(null)}
-                                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-                              >
-                                ✕
-                              </button>
-                              <h4 className="font-semibold text-gray-900 mb-3 text-sm">Original Product Metadata</h4>
-                              <div className="grid grid-cols-2 gap-4 text-xs">
-                                <div>
-                                  <h5 className="font-medium text-gray-700 mb-2">Product Information</h5>
-                                  <dl className="space-y-1">
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Brand:</dt>
-                                      <dd className="font-medium text-gray-900">{details.brand || 'N/A'}</dd>
+                          {/* Secondary Images with Checkboxes */}
+                          <div className="space-y-2">
+                            <h5 className="text-sm font-medium text-gray-700 mb-2">Select up to 3 secondary photos for export:</h5>
+                            {details?.item_imgs && details.item_imgs.length > 0 && (
+                              <div className="flex gap-2 overflow-x-auto">
+                                {details.item_imgs.slice(0, 6).map((img, idx) => {
+                                  const imageUrl = img.url.startsWith('//') ? `https:${img.url}` : img.url;
+                                  const isSelected = selectedSecondaryImages[product.id]?.includes(imageUrl) || false;
+                                  
+                                  return (
+                                    <div key={idx} className="relative">
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => toggleSecondaryImageSelection(product.id, imageUrl)}
+                                        className="absolute top-1 left-1 w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                                        id={`secondary-img-${product.id}-${idx}`}
+                                      />
+                                      <button
+                                        onClick={() => openImageCarousel(details.item_imgs || [], idx)}
+                                        className={`w-16 h-16 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer flex-shrink-0 ${
+                                          isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300'
+                                        }`}
+                                      >
+                                        <img 
+                                          src={imageUrl}
+                                          alt={`Product ${idx + 1}`}
+                                          className="w-full h-full object-cover"
+                                        />
+                                      </button>
                                     </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">MOQ:</dt>
-                                      <dd className="font-medium text-gray-900">{details.moq || 'N/A'}</dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Category ID:</dt>
-                                      <dd className="font-medium text-gray-900">{details.category_id || 'N/A'}</dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Created:</dt>
-                                      <dd className="font-medium text-gray-900">{details.created_time || 'N/A'}</dd>
-                                    </div>
-                                  </dl>
-                                </div>
-                                <div>
-                                  <h5 className="font-medium text-gray-700 mb-2">Engagement Metrics</h5>
-                                  <dl className="space-y-1">
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Favorites:</dt>
-                                      <dd className="font-medium text-gray-900">
-                                        {details.fav_count !== undefined && details.fav_count !== null ? details.fav_count : 'N/A'}
-                                      </dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Fans:</dt>
-                                      <dd className="font-medium text-gray-900">
-                                        {details.fans_count !== undefined && details.fans_count !== null ? details.fans_count : 'N/A'}
-                                      </dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Rating:</dt>
-                                      <dd className="font-medium text-gray-900">{details.rating_grade || 'N/A'}</dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Sales:</dt>
-                                      <dd className="font-medium text-gray-900">
-                                        {details.sales_volume ? `${details.sales_volume.toLocaleString()}` : 'N/A'}
-                                      </dd>
-                                    </div>
-                                  </dl>
-                                </div>
+                                  );
+                                })}
                               </div>
-                              {details.props && details.props.length > 0 && (
-                                <div className="mt-3 pt-3 border-t border-gray-200">
-                                  <h5 className="font-medium text-gray-700 mb-2 text-xs">Specifications</h5>
-                                  <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                                    {details.props.slice(0, 6).map((prop, idx) => (
-                                      <div key={idx} className="flex justify-between">
-                                        <dt className="text-gray-600 truncate">{prop.name}:</dt>
-                                        <dd className="font-medium text-gray-900 truncate">{prop.value}</dd>
-                                      </div>
-                                    ))}
-                                  </dl>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                      
-                      <div className="space-y-2">
-                        {/* Secondary Images on left, Product info on right */}
-                        <div className="flex gap-4">
-                          {/* OneBound Product Images - Left side */}
-                          {details?.item_imgs && details.item_imgs.length > 0 && (
-                            <div className="flex gap-2 overflow-x-auto">
-                              {details.item_imgs.slice(0, 6).map((img, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => openImageCarousel(details.item_imgs || [], idx)}
-                                  className="w-16 h-16 bg-gray-100 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer flex-shrink-0"
-                                >
-                                  <img 
-                                    src={img.url.startsWith('//') ? `https:${img.url}` : img.url}
-                                    alt={`Product ${idx + 1}`}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </button>
-                              ))}
-                            </div>
-                          )}
+                            )}
+                          </div>
                           
                           {/* Product Info - Right side */}
                           <div className="space-y-2 text-sm flex-1">
@@ -1106,126 +1094,8 @@ export default function ProposalDetailPage() {
                           </Button>
                         </div>
                       </div>
-                    </div>
-
-                    {/* Expanded Details - Combined View */}
-                    {isExpanded && (
-                      <div className="px-6 pb-6 bg-gray-50">
-                        {isLoadingDetails ? (
-                          <div className="flex items-center justify-center py-8">
-                            <Loader2 className="h-6 w-6 animate-spin text-sky-500 mr-2" />
-                            <span className="text-gray-600">Loading product details...</span>
-                          </div>
-                        ) : (
-                          <div className="space-y-6 mt-6">
-                            {/* AI Enrichment Section */}
-                              {product.aiEnrichment && (
-                                <>
-                                  <div className="flex items-center gap-2 mb-4">
-                                    <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                    <h4 className="font-semibold text-gray-900">AI Design Alternatives</h4>
-                                    <Badge variant="outline" className="text-purple-600 border-purple-600">
-                                      Generated {new Date(product.aiEnrichment.enriched_at).toLocaleDateString()}
-                                    </Badge>
-                                  </div>
-
-                                  {/* Original Product Analysis */}
-                                  <div className="bg-white rounded-lg p-4 mb-4">
-                                    <h5 className="font-medium text-gray-900 mb-3">Original Product</h5>
-                                    <p className="text-sm font-semibold text-gray-800 mb-1">
-                                      {product.aiEnrichment.original_product.title}
-                                    </p>
-                                    <p className="text-sm text-gray-600 mb-4">
-                                      {product.aiEnrichment.original_product.description}
-                                    </p>
-
-                                    {/* Product Specifications */}
-                                    {product.aiEnrichment.original_product.specifications && (
-                                      <div className="border-t border-gray-200 pt-3 mt-3">
-                                        <h6 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Product Specifications</h6>
-                                        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                          {product.aiEnrichment.original_product.specifications.dimensions !== 'N/A' && (
-                                            <>
-                                              <dt className="text-gray-600">Dimensions:</dt>
-                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.dimensions}</dd>
-                                            </>
-                                          )}
-                                          {product.aiEnrichment.original_product.specifications.weight !== 'N/A' && (
-                                            <>
-                                              <dt className="text-gray-600">Weight:</dt>
-                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.weight}</dd>
-                                            </>
-                                          )}
-                                          {product.aiEnrichment.original_product.specifications.materials !== 'N/A' && (
-                                            <>
-                                              <dt className="text-gray-600">Materials:</dt>
-                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.materials}</dd>
-                                            </>
-                                          )}
-                                          {product.aiEnrichment.original_product.specifications.other_specs !== 'N/A' && (
-                                            <>
-                                              <dt className="text-gray-600">Other:</dt>
-                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.other_specs}</dd>
-                                            </>
-                                          )}
-                                        </dl>
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Design Alternatives */}
-                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {product.aiEnrichment.design_alternatives.map((alt, idx) => (
-                                      <div key={idx} className="bg-white rounded-lg border border-gray-200 hover:border-purple-300 transition-colors overflow-hidden">
-                                        <div className="flex items-start gap-2 p-3 bg-gray-50 border-b border-gray-200">
-                                          <Badge variant="secondary" className="text-xs">
-                                            Concept {idx + 1}
-                                          </Badge>
-                                          <h6 className="font-semibold text-gray-900 flex-1">{alt.concept_title}</h6>
-                                        </div>
-                                        
-                                        {/* Concept Image Visualization */}
-                                        <div className="relative bg-gradient-to-br from-purple-50 to-sky-50 aspect-square">
-                                          {alt.generated_image_url ? (
-                                            <img 
-                                              src={alt.generated_image_url} 
-                                              alt={alt.concept_title}
-                                              className="w-full h-full object-cover"
-                                            />
-                                          ) : (
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                                              <svg className="h-12 w-12 text-purple-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                              </svg>
-                                              <p className="text-xs text-gray-600 italic leading-relaxed">
-                                                {alt.generated_image_prompt}
-                                              </p>
-                                            </div>
-                                          )}
-                                        </div>
-
-                                        <div className="p-4 space-y-3">
-                                          <p className="text-sm text-gray-700">{alt.short_description}</p>
-                                          
-                                          <div className="border-t border-gray-100 pt-3">
-                                            <p className="text-xs font-medium text-gray-500 mb-1">Design Rationale:</p>
-                                            <p className="text-xs text-gray-700 leading-relaxed">{alt.design_rationale}</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
                 );
-              })}
+              })};
             </div>
           )}
         </div>
@@ -1242,6 +1112,35 @@ export default function ProposalDetailPage() {
         open={isTemplateDialogOpen}
         onOpenChange={setIsTemplateDialogOpen}
       />
+
+      {/* Export Progress Overlay */}
+      {(isExportingPDF || isExportingPPTX) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl p-8 shadow-2xl flex flex-col items-center gap-4 max-w-sm mx-4">
+            <div className="relative">
+              <div className="h-16 w-16 rounded-full border-4 border-sky-100 border-t-sky-500 animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                {exportProgress.type === 'pdf' ? (
+                  <FileText className="h-6 w-6 text-sky-500" />
+                ) : (
+                  <Download className="h-6 w-6 text-sky-500" />
+                )}
+              </div>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-semibold text-gray-900 mb-1">
+                {exportProgress.message}
+              </p>
+              <p className="text-sm text-gray-500">
+                Please wait, this may take a moment...
+              </p>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-2 overflow-hidden">
+              <div className="bg-sky-500 h-2 rounded-full animate-pulse w-2/3" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

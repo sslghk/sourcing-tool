@@ -124,6 +124,44 @@ async function addImageToPDF(doc: jsPDF, imageUrl: string, x: number, y: number,
   }
 }
 
+// In-memory cache for images to avoid redundant fetches
+const imageCache = new Map<string, string>();
+
+// Helper function to fetch multiple images in parallel with caching
+async function fetchImagesInParallel(imageUrls: string[]): Promise<Map<string, string | null>> {
+  const results = new Map<string, string | null>();
+  
+  // Filter out URLs that are already cached
+  const urlsToFetch = imageUrls.filter(url => {
+    if (imageCache.has(url)) {
+      results.set(url, imageCache.get(url)!);
+      return false;
+    }
+    return true;
+  });
+  
+  if (urlsToFetch.length === 0) {
+    return results;
+  }
+  
+  // Fetch all uncached images in parallel
+  const fetchPromises = urlsToFetch.map(async (url) => {
+    try {
+      const base64Image = await fetchImageAsBase64(url);
+      if (base64Image) {
+        imageCache.set(url, base64Image);
+      }
+      results.set(url, base64Image);
+    } catch (error) {
+      console.error(`Error fetching image ${url}:`, error);
+      results.set(url, null);
+    }
+  });
+  
+  await Promise.all(fetchPromises);
+  return results;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { proposal, orientation = 'landscape' } = await request.json();
@@ -185,19 +223,66 @@ export async function POST(request: NextRequest) {
       if (product.image_urls && product.image_urls.length > 0) {
         await addImageToPDF(doc, product.image_urls[0], margin, imageStartY, leftHalfWidth, imageHeight);
         
-        // Additional images from cachedDetails (skip first image to avoid duplicate)
-        const additionalImages = product.cachedDetails?.item_imgs || [];
-        if (additionalImages.length > 1) {
-          // Skip first image (index 0) and take up to 4 more images
-          const imagesToShow = additionalImages.slice(1, 5);
+        // Use selected secondary images if available, otherwise use cachedDetails
+        const selectedImages = product.selectedSecondaryImages || [];
+        const additionalImages = selectedImages.length > 0 
+          ? selectedImages.map((url: string) => ({ url }))
+          : (product.cachedDetails?.item_imgs || []);
+        
+        if (additionalImages.length > 0) {
+          // Take up to 4 additional images
+          const imagesToShow = additionalImages.slice(0, 4);
           const smallImageSize = leftHalfWidth / 4; // 1/4 of main image width
           const additionalImagesY = imageStartY + imageHeight + 5;
           
+          // Normalize URLs
+          const imageUrls = imagesToShow.map((img: { url: string }) => {
+            const url = img.url.startsWith('//') ? `https:${img.url}` : img.url;
+            return url;
+          });
+          
+          // Fetch all images in parallel
+          const imageResults = await fetchImagesInParallel(imageUrls);
+          
+          // Add images to PDF
           for (let i = 0; i < imagesToShow.length; i++) {
             const col = i % 4;
             const xPos = margin + col * smallImageSize;
-            const imageUrl = imagesToShow[i].url.startsWith('//') ? `https:${imagesToShow[i].url}` : imagesToShow[i].url;
-            await addImageToPDF(doc, imageUrl, xPos, additionalImagesY, smallImageSize, smallImageSize);
+            const imageUrl = imageUrls[i];
+            const base64Image = imageResults.get(imageUrl);
+            
+            if (base64Image) {
+              try {
+                const dimensions = await getImageDimensions(base64Image);
+                const { width, height } = calculateAspectRatioDimensions(
+                  dimensions.width,
+                  dimensions.height,
+                  smallImageSize,
+                  smallImageSize
+                );
+                
+                // Center the image within the available space
+                const xOffset = xPos + (smallImageSize - width) / 2;
+                const yOffset = additionalImagesY + (smallImageSize - height) / 2;
+                
+                doc.addImage(base64Image, 'JPEG', xOffset, yOffset, width, height);
+              } catch (imgError) {
+                console.error(`Error adding cached image to PDF:`, imgError);
+                // Fallback to placeholder
+                doc.setFillColor(240, 240, 240);
+                doc.rect(xPos, additionalImagesY, smallImageSize, smallImageSize, 'F');
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('Image', xPos + smallImageSize / 2, additionalImagesY + smallImageSize / 2, { align: 'center' });
+              }
+            } else {
+              // Fallback to placeholder if image not available
+              doc.setFillColor(240, 240, 240);
+              doc.rect(xPos, additionalImagesY, smallImageSize, smallImageSize, 'F');
+              doc.setFontSize(8);
+              doc.setTextColor(150, 150, 150);
+              doc.text('Image', xPos + smallImageSize / 2, additionalImagesY + smallImageSize / 2, { align: 'center' });
+            }
           }
         }
       }
