@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2 } from "lucide-react";
+import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ProductDTO } from "@/types/product";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface Proposal {
   id: string;
@@ -26,6 +28,9 @@ interface Proposal {
 }
 
 export default function ProposalsPage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [proposalProducts, setProposalProducts] = useState<ProductDTO[]>([]);
@@ -35,34 +40,134 @@ export default function ProposalsPage() {
   const [clientName, setClientName] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Product details state
+  const [productDetails, setProductDetails] = useState<Map<string, any>>(new Map());
+  const [loadingDetails, setLoadingDetails] = useState<Set<string>>(new Set());
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    fetchProposals();
-    loadProposalProducts();
-  }, []);
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+    }
+  }, [status, router]);
 
   const loadProposalProducts = () => {
+    console.log('Loading proposal products from localStorage...');
     const stored = localStorage.getItem('proposalProducts');
+    console.log('Raw proposal products data:', stored);
+    
     if (stored) {
-      setProposalProducts(JSON.parse(stored));
+      const parsed = JSON.parse(stored);
+      console.log('Parsed proposal products:', parsed);
+      setProposalProducts(parsed);
+    } else {
+      console.log('No proposal products found in localStorage');
     }
   };
 
-  const fetchProposals = async () => {
-    try {
-      // Load from localStorage for now
-      const stored = localStorage.getItem('proposals');
-      if (stored) {
-        setProposals(JSON.parse(stored));
-      } else {
+  // Load proposals and products
+  useEffect(() => {
+    const fetchProposalsData = async () => {
+      try {
+        console.log('Loading proposals from localStorage...');
+        // Load from localStorage for now
+        const stored = localStorage.getItem('proposals');
+        console.log('Raw localStorage data:', stored);
+        
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          console.log('Parsed proposals:', parsed);
+          setProposals(parsed);
+        } else {
+          console.log('No proposals found in localStorage');
+          setProposals([]);
+        }
+      } catch (error) {
+        console.log("Error fetching proposals:", error);
         setProposals([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchProposalsData();
+    loadProposalProducts();
+  }, []);
+
+  // Fetch details for all proposal products
+  useEffect(() => {
+    proposalProducts.forEach(product => {
+      fetchProductDetails(product.id, product.source);
+    });
+  }, [proposalProducts]);
+
+  // Show loading while checking auth
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-sky-500" />
+      </div>
+    );
+  }
+  // Don't render content if not authenticated
+  if (!session) {
+    return null;
+  };
+
+  // Fetch product details
+  const fetchProductDetails = async (productId: string, platform: string) => {
+    if (productDetails.has(productId) || loadingDetails.has(productId)) {
+      return;
+    }
+
+    console.log(`Fetching details for product ${productId} from ${platform}`);
+    setLoadingDetails(prev => new Set(prev).add(productId));
+    
+    try {
+      const response = await fetch('/api/product-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform, productId }),
+      });
+      
+      console.log(`Response status: ${response.status}`);
+      
+      if (response.ok) {
+        const details = await response.json();
+        console.log('Product details received:', details);
+        setProductDetails(prev => new Map(prev).set(productId, details));
+      } else {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
       }
     } catch (error) {
-      console.log("Error fetching proposals:", error);
-      setProposals([]);
+      console.error('Failed to fetch product details:', error);
     } finally {
-      setIsLoading(false);
+      setLoadingDetails(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(productId);
+        return newSet;
+      });
     }
+  };
+
+  // Test function to manually fetch details
+  const testFetchDetails = () => {
+    if (proposalProducts.length > 0) {
+      const firstProduct = proposalProducts[0];
+      console.log('Test fetching details for:', firstProduct.id, firstProduct.source);
+      fetchProductDetails(firstProduct.id, firstProduct.source);
+    }
+  };
+
+  const handleDeleteProposal = (proposalId: string) => {
+    if (!confirm('Are you sure you want to delete this proposal?')) {
+      return;
+    }
+    const updated = proposals.filter(p => p.id !== proposalId);
+    setProposals(updated);
+    localStorage.setItem('proposals', JSON.stringify(updated));
   };
 
   const removeProduct = (productId: string) => {
@@ -72,6 +177,9 @@ export default function ProposalsPage() {
   };
 
   const handleSaveProposal = async () => {
+    console.log('Save proposal clicked');
+    console.log('Proposal name:', proposalName);
+    
     if (!proposalName.trim()) {
       alert('Please enter a proposal name');
       return;
@@ -93,10 +201,19 @@ export default function ProposalsPage() {
       totalValue: proposalProducts.reduce((sum, p) => sum + p.price.current, 0),
     };
 
+    console.log('Proposal object:', proposal);
+
     try {
       const existingProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
+      console.log('Existing proposals before save:', existingProposals);
+      
       existingProposals.unshift(proposal);
       localStorage.setItem('proposals', JSON.stringify(existingProposals));
+      console.log('Proposals saved to localStorage');
+      
+      // Verify it was saved
+      const savedProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
+      console.log('Proposals after save verification:', savedProposals);
       
       localStorage.removeItem('proposalProducts');
       
@@ -207,7 +324,7 @@ export default function ProposalsPage() {
                 </div>
                 <Button
                   onClick={handleSaveProposal}
-                  disabled={isSaving || proposalProducts.length === 0}
+                  disabled={isSaving}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   {isSaving ? 'Saving...' : 'Save Proposal'}
@@ -217,101 +334,173 @@ export default function ProposalsPage() {
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b bg-gray-50">
-              <h2 className="font-semibold text-gray-900">Products ({proposalProducts.length})</h2>
+            <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h2 className="font-semibold text-gray-900">Products ({proposalProducts.length})</h2>
+                <div className="text-xs text-gray-500">
+                  Details: {productDetails.size} | Loading: {loadingDetails.size}
+                </div>
+              </div>
+              {proposalProducts.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={testFetchDetails}
+                  className="text-xs"
+                >
+                  Test Fetch Details
+                </Button>
+              )}
             </div>
 
             {proposalProducts.length === 0 ? (
               <div className="p-12 text-center text-gray-500">
                 <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <p>No products added yet. Go to Search tab and add products.</p>
+                <p>No products added yet.</p>
+                <div className="mt-4">
+                  <Button
+                    onClick={() => router.push('/')}
+                    className="bg-sky-600 hover:bg-sky-700 text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Products
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
-                {proposalProducts.map((product) => (
-                  <div key={product.id} className="p-6 hover:bg-gray-50 transition-colors">
-                    <div className="flex gap-6">
-                      <div className="flex-shrink-0">
-                        <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
-                          {product.image_urls[0] ? (
-                            <img
-                              src={product.image_urls[0]}
-                              alt={product.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400">
-                              No image
-                            </div>
-                          )}
-                        </div>
-                        {product.image_urls.length > 1 && (
-                          <div className="mt-2 flex gap-2">
-                            {product.image_urls.slice(1, 4).map((url, idx) => (
-                              <div key={idx} className="w-10 h-10 bg-gray-100 rounded overflow-hidden">
-                                <img src={url} alt="" className="w-full h-full object-cover" />
-                              </div>
-                            ))}
-                            {product.image_urls.length > 4 && (
-                              <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-600">
-                                +{product.image_urls.length - 4}
+                {proposalProducts.map((product) => {
+                  const details = productDetails.get(product.id);
+                  const isLoading = loadingDetails.has(product.id);
+                  
+                  return (
+                    <div key={product.id} className="p-6 hover:bg-gray-50 transition-colors">
+                      <div className="flex gap-6">
+                        <div className="flex-shrink-0">
+                          <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
+                            {details?.pic_url || product.image_urls[0] ? (
+                              <img
+                                src={details?.pic_url || product.image_urls[0]}
+                                alt={details?.title || product.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                No image
                               </div>
                             )}
                           </div>
-                        )}
-                      </div>
-
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-2">{product.title}</h3>
-                        
-                        <div className="grid grid-cols-2 gap-4 text-sm mb-3">
-                          <div>
-                            <span className="text-gray-600">Price:</span>
-                            <span className="ml-2 font-semibold text-sky-600">
-                              {formatCurrency(product.price.current, product.price.currency)}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Platform:</span>
-                            <span className="ml-2 capitalize">{product.source}</span>
-                          </div>
-                          {product.moq && (
-                            <div>
-                              <span className="text-gray-600">MOQ:</span>
-                              <span className="ml-2">{product.moq} units</span>
-                            </div>
-                          )}
-                          {product.seller?.location && (
-                            <div>
-                              <span className="text-gray-600">Location:</span>
-                              <span className="ml-2">{product.seller.location}</span>
+                          {(details?.item_imgs?.length > 0 || product.image_urls.length > 1) && (
+                            <div className="mt-2 flex gap-2">
+                              {(details?.item_imgs?.slice(0, 4) || product.image_urls.slice(1, 5)).map((img: any, idx: number) => (
+                                <div key={idx} className="w-10 h-10 bg-gray-100 rounded overflow-hidden">
+                                  <img 
+                                    src={typeof img === 'string' ? img : img.url} 
+                                    alt="" 
+                                    className="w-full h-full object-cover" 
+                                  />
+                                </div>
+                              ))}
+                              {((details?.item_imgs?.length || product.image_urls.length - 1) > 4) && (
+                                <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-600">
+                                  +{((details?.item_imgs?.length || product.image_urls.length - 1) - 4)}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
 
-                        <a
-                          href={product.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-sky-600 hover:text-sky-700"
-                        >
-                          View on {product.source}
-                        </a>
-                      </div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-semibold text-gray-900">{details?.title || product.title}</h3>
+                            {isLoading && (
+                              <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                            )}
+                          </div>
+                          
+                          {details?.description && (
+                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                              {details.description}
+                            </p>
+                          )}
+                          
+                          <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                            <div>
+                              <span className="text-gray-600">Price:</span>
+                              <span className="ml-2 font-semibold text-sky-600">
+                                {formatCurrency(details?.price?.current || product.price.current, details?.price?.currency || product.price.currency)}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Platform:</span>
+                              <span className="ml-2 capitalize">{product.source}</span>
+                            </div>
+                            {details?.moq || product.moq ? (
+                              <div>
+                                <span className="text-gray-600">MOQ:</span>
+                                <span className="ml-2">{details?.moq || product.moq} units</span>
+                              </div>
+                            ) : null}
+                            {details?.seller?.name && (
+                              <div>
+                                <span className="text-gray-600">Seller:</span>
+                                <span className="ml-2">{details.seller.name}</span>
+                              </div>
+                            )}
+                            {details?.seller?.rating && (
+                              <div>
+                                <span className="text-gray-600">Rating:</span>
+                                <span className="ml-2">⭐ {details.seller.rating}</span>
+                              </div>
+                            )}
+                            {details?.sales && (
+                              <div>
+                                <span className="text-gray-600">Sales:</span>
+                                <span className="ml-2">{details.sales} sold</span>
+                              </div>
+                            )}
+                          </div>
 
-                      <div className="flex-shrink-0">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeProduct(product.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          {details?.specifications && Object.keys(details.specifications).length > 0 && (
+                            <div className="mb-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Info className="h-4 w-4 text-gray-500" />
+                                <span className="text-sm font-medium text-gray-700">Specifications</span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                {Object.entries(details.specifications).slice(0, 4).map(([key, value]) => (
+                                  <div key={key} className="text-gray-600">
+                                    <span className="font-medium">{key}:</span> {String(value)}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <a
+                            href={product.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-sky-600 hover:text-sky-700"
+                          >
+                            View on {product.source}
+                          </a>
+                        </div>
+
+                        <div className="flex-shrink-0">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeProduct(product.id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -516,6 +705,7 @@ export default function ProposalsPage() {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => handleDeleteProposal(proposal.id)}
                         className="border-gray-300 hover:border-red-500 hover:text-red-500 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />

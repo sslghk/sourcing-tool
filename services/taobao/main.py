@@ -250,6 +250,14 @@ async def search(request: SearchRequest):
             )
             
             print(f"OneBound response status: {response.status_code}")
+            
+            # Handle specific error codes
+            if response.status_code == 403:
+                error_detail = response.text[:200]
+                print(f"OneBound 403 Forbidden: {error_detail}")
+                print("Possible causes: Invalid API key, quota exceeded, or IP blocked")
+                raise HTTPException(status_code=403, detail=f"OneBound API authentication failed: {error_detail}")
+            
             print(f"OneBound response preview: {response.text[:500]}")
             
             response.raise_for_status()

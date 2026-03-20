@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import { SearchBar } from "@/components/search/search-bar";
 import { PlatformSelector } from "@/components/search/platform-selector";
@@ -9,8 +10,9 @@ import { ProductTable } from "@/components/products/product-table";
 import { ProductCardView } from "@/components/products/product-card-view";
 import { PriceFilter } from "@/components/filters/price-filter";
 import { Platform, ProductDTO } from "@/types/product";
-import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal, LayoutGrid, List, X } from "lucide-react";
+import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal, LayoutGrid, List, X, FolderOpen, FileImage, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +44,9 @@ interface SearchTab {
 
 export default function Home() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  
+  // All useState hooks must be at the top, before any conditional returns
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([
     "taobao",
   ]);
@@ -58,8 +63,23 @@ export default function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
   const [isDedupe, setIsDedupe] = useState(true);
+  
+  // Folder upload state
+  const [isProcessingFolder, setIsProcessingFolder] = useState(false);
+  const [folderImages, setFolderImages] = useState<File[]>([]);
+  const [currentProcessingIndex, setCurrentProcessingIndex] = useState(0);
+  const [proposalName, setProposalName] = useState('');
+  const [autoCreateProposal, setAutoCreateProposal] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+    }
+  }, [status, router]);
 
-  // Get current active tab
+  // Compute ALL values with useMemo BEFORE any conditional returns
   const activeTab = searchTabs.find(tab => tab.id === activeTabId);
   const searchResults = activeTab?.products || [];
   const hasSearched = searchTabs.length > 0;
@@ -77,6 +97,80 @@ export default function Home() {
     }
     return result;
   }, [searchTabs, selectedProducts]);
+
+  // Calculate price range from search results
+  const priceRange = useMemo(() => {
+    if (searchResults.length === 0) return { min: 0, max: 1000 };
+    
+    const prices = searchResults.map(p => p.price.current);
+    return {
+      min: Math.floor(Math.min(...prices)),
+      max: Math.ceil(Math.max(...prices))
+    };
+  }, [searchResults]);
+
+  // Filter products by price range, dedupe, and sort by price
+  const filteredProducts = useMemo(() => {
+    let products = priceFilter 
+      ? searchResults.filter(product => 
+          product.price.current >= priceFilter.min && 
+          product.price.current <= priceFilter.max
+        )
+      : searchResults;
+    
+    // Deduplicate by title OR image if enabled
+    if (isDedupe) {
+      const seenTitles = new Map<string, ProductDTO>();
+      const seenImages = new Map<string, ProductDTO>();
+      const uniqueProducts = new Map<string, ProductDTO>();
+      
+      products.forEach(product => {
+        const normalizedTitle = product.title.toLowerCase().trim();
+        const primaryImage = product.image_urls?.[0] || '';
+        const normalizedImage = primaryImage.replace(/^https?:/, '').replace(/^\/\//, '');
+        
+        let isDuplicate = false;
+        
+        // Check if title already seen
+        if (normalizedTitle && seenTitles.has(normalizedTitle)) {
+          const existing = seenTitles.get(normalizedTitle)!;
+          if (product.price.current < existing.price.current) {
+            // Replace with cheaper version
+            uniqueProducts.delete(existing.id);
+            seenTitles.set(normalizedTitle, product);
+            if (normalizedImage) seenImages.set(normalizedImage, product);
+            uniqueProducts.set(product.id, product);
+          }
+          isDuplicate = true;
+        }
+        
+        // Check if image already seen
+        if (normalizedImage && seenImages.has(normalizedImage)) {
+          const existing = seenImages.get(normalizedImage)!;
+          if (product.price.current < existing.price.current) {
+            // Replace with cheaper version
+            uniqueProducts.delete(existing.id);
+            if (normalizedTitle) seenTitles.set(normalizedTitle, product);
+            seenImages.set(normalizedImage, product);
+            uniqueProducts.set(product.id, product);
+          }
+          isDuplicate = true;
+        }
+        
+        // If not a duplicate, add it
+        if (!isDuplicate) {
+          if (normalizedTitle) seenTitles.set(normalizedTitle, product);
+          if (normalizedImage) seenImages.set(normalizedImage, product);
+          uniqueProducts.set(product.id, product);
+        }
+      });
+      
+      products = Array.from(uniqueProducts.values());
+    }
+    
+    // Sort by price (ascending) by default
+    return [...products].sort((a, b) => a.price.current - b.price.current);
+  }, [searchResults, priceFilter, isDedupe]);
 
   // Load proposal products and tabs from localStorage on mount
   useEffect(() => {
@@ -120,6 +214,20 @@ export default function Home() {
       sessionStorage.setItem('activeTabId', activeTabId);
     }
   }, [activeTabId]);
+
+  // Show loading while checking auth
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-sky-500" />
+      </div>
+    );
+  }
+
+  // Don't render content if not authenticated
+  if (!session) {
+    return null;
+  }
 
   // Helper function to create a new tab
   const createNewTab = (query: string, type: 'text' | 'image' | 'similar', products: ProductDTO[], platforms: Platform[]) => {
@@ -237,80 +345,6 @@ export default function Home() {
       setIsAddingToProposal(false);
     }
   };
-
-  // Calculate price range from search results
-  const priceRange = useMemo(() => {
-    if (searchResults.length === 0) return { min: 0, max: 1000 };
-    
-    const prices = searchResults.map(p => p.price.current);
-    return {
-      min: Math.floor(Math.min(...prices)),
-      max: Math.ceil(Math.max(...prices))
-    };
-  }, [searchResults]);
-
-  // Filter products by price range, dedupe, and sort by price
-  const filteredProducts = useMemo(() => {
-    let products = priceFilter 
-      ? searchResults.filter(product => 
-          product.price.current >= priceFilter.min && 
-          product.price.current <= priceFilter.max
-        )
-      : searchResults;
-    
-    // Deduplicate by title OR image if enabled
-    if (isDedupe) {
-      const seenTitles = new Map<string, ProductDTO>();
-      const seenImages = new Map<string, ProductDTO>();
-      const uniqueProducts = new Map<string, ProductDTO>();
-      
-      products.forEach(product => {
-        const normalizedTitle = product.title.toLowerCase().trim();
-        const primaryImage = product.image_urls?.[0] || '';
-        const normalizedImage = primaryImage.replace(/^https?:/, '').replace(/^\/\//, '');
-        
-        let isDuplicate = false;
-        
-        // Check if title already seen
-        if (normalizedTitle && seenTitles.has(normalizedTitle)) {
-          const existing = seenTitles.get(normalizedTitle)!;
-          if (product.price.current < existing.price.current) {
-            // Replace with cheaper version
-            uniqueProducts.delete(existing.id);
-            seenTitles.set(normalizedTitle, product);
-            if (normalizedImage) seenImages.set(normalizedImage, product);
-            uniqueProducts.set(product.id, product);
-          }
-          isDuplicate = true;
-        }
-        
-        // Check if image already seen
-        if (normalizedImage && seenImages.has(normalizedImage)) {
-          const existing = seenImages.get(normalizedImage)!;
-          if (product.price.current < existing.price.current) {
-            // Replace with cheaper version
-            uniqueProducts.delete(existing.id);
-            if (normalizedTitle) seenTitles.set(normalizedTitle, product);
-            seenImages.set(normalizedImage, product);
-            uniqueProducts.set(product.id, product);
-          }
-          isDuplicate = true;
-        }
-        
-        // If not a duplicate, add it
-        if (!isDuplicate) {
-          if (normalizedTitle) seenTitles.set(normalizedTitle, product);
-          if (normalizedImage) seenImages.set(normalizedImage, product);
-          uniqueProducts.set(product.id, product);
-        }
-      });
-      
-      products = Array.from(uniqueProducts.values());
-    }
-    
-    // Sort by price (ascending) by default
-    return [...products].sort((a, b) => a.price.current - b.price.current);
-  }, [searchResults, priceFilter, isDedupe]);
 
   const handlePriceFilterChange = (min: number, max: number) => {
     setPriceFilter({ min, max });
@@ -486,6 +520,111 @@ export default function Home() {
     }
   };
 
+  // Folder upload functions
+  const handleFolderSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    setFolderImages(imageFiles);
+    
+    // Auto-generate proposal name from count
+    if (imageFiles.length > 0) {
+      setProposalName(`Batch Search ${new Date().toLocaleDateString()}`);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    setFolderImages(imageFiles);
+    
+    // Auto-generate proposal name
+    if (imageFiles.length > 0) {
+      setProposalName(`Batch Search ${new Date().toLocaleDateString()}`);
+    }
+  };
+
+  const processFolderImages = async () => {
+    if (folderImages.length === 0) return;
+    
+    setIsProcessingFolder(true);
+    setCurrentProcessingIndex(0);
+    const allFoundProducts: ProductDTO[] = [];
+    
+    // Clear existing tabs and proposal products
+    setSearchTabs([]);
+    setProposalProducts([]);
+    
+    try {
+      for (let i = 0; i < folderImages.length; i++) {
+        const file = folderImages[i];
+        setCurrentProcessingIndex(i + 1);
+        
+        try {
+          // Perform image search
+          const formData = new FormData();
+          formData.append('image', file);
+          
+          const response = await fetch('/api/search-image', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            const products = data.products || [];
+            
+            // Create tab for this image
+            const tabLabel = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
+            createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao']);
+            
+            // Add products to collection
+            allFoundProducts.push(...products);
+            
+            // Add delay to avoid overwhelming the API
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        } catch (error) {
+          console.error(`Error processing ${file.name}:`, error);
+        }
+      }
+      
+      // Auto-create proposal if enabled
+      if (autoCreateProposal && allFoundProducts.length > 0) {
+        // Remove duplicates and add to proposal
+        const uniqueProducts = new Map<string, ProductDTO>();
+        allFoundProducts.forEach(product => {
+          if (!uniqueProducts.has(product.id)) {
+            uniqueProducts.set(product.id, product);
+          }
+        });
+        
+        const finalProducts = Array.from(uniqueProducts.values());
+        setProposalProducts(finalProducts);
+        
+        // Navigate to proposals page
+        setTimeout(() => {
+          router.push('/proposals');
+        }, 1000);
+      }
+    } finally {
+      setIsProcessingFolder(false);
+      setCurrentProcessingIndex(0);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-24 pb-12">
@@ -496,10 +635,171 @@ export default function Home() {
         </div>
         
         <div className="space-y-8 mb-12 max-w-5xl mx-auto">
+          {/* Folder Upload Section */}
+          <Card className="shadow-lg border-0">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <FolderOpen className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <CardTitle>Batch Image Search</CardTitle>
+                  <CardDescription>Upload a folder of images to search and create a proposal automatically</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Folder Input */}
+              <div 
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
+                  isDragging 
+                    ? 'border-green-500 bg-green-50' 
+                    : 'border-gray-300 hover:border-gray-400'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById('folder-upload')?.click()}
+              >
+                <input
+                  type="file"
+                  id="folder-upload"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFolderSelect}
+                  disabled={isProcessingFolder}
+                />
+                <div className="flex flex-col items-center gap-3">
+                  <FolderOpen className="h-12 w-12 text-gray-400" />
+                  <div>
+                    <p className="text-lg font-medium text-gray-700">
+                      {folderImages.length > 0 ? `${folderImages.length} images selected` : 'Drag & drop images here'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Or click to select multiple image files
+                    </p>
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    disabled={isProcessingFolder}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const input = document.getElementById('folder-upload') as HTMLInputElement;
+                      if (input) {
+                        console.log('Triggering file input click');
+                        input.click();
+                      } else {
+                        console.error('File input not found');
+                      }
+                    }}
+                  >
+                    <FileImage className="h-4 w-4 mr-2" />
+                    Select Images
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('Current folderImages:', folderImages.length);
+                      alert(`Selected images: ${folderImages.length}`);
+                    }}
+                  >
+                    Test
+                  </Button>
+                </div>
+              </div>
+
+              {/* Selected Images Preview */}
+              {folderImages.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-700">
+                      Selected Images: {folderImages.length}
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFolderImages([])}
+                      disabled={isProcessingFolder}
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  
+                  {/* Settings */}
+                  <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Proposal name"
+                        value={proposalName}
+                        onChange={(e) => setProposalName(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="auto-proposal"
+                        checked={autoCreateProposal}
+                        onChange={(e) => setAutoCreateProposal(e.target.checked)}
+                        className="rounded"
+                      />
+                      <label htmlFor="auto-proposal" className="text-sm text-gray-700">
+                        Auto-create proposal
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Process Button */}
+                  <Button
+                    onClick={processFolderImages}
+                    disabled={isProcessingFolder || folderImages.length === 0}
+                    className="w-full"
+                  >
+                    {isProcessingFolder ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Processing {currentProcessingIndex}/{folderImages.length}...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-4 w-4 mr-2" />
+                        Process Images & Create Proposal
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Processing Status */}
+              {isProcessingFolder && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Processing images...</span>
+                    <span className="text-gray-900 font-medium">
+                      {currentProcessingIndex}/{folderImages.length}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${(currentProcessingIndex / folderImages.length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <SearchBar 
             onSearch={handleSearch} 
             onImageSearch={handleImageSearch}
-            isLoading={isLoading} 
+            isLoading={isLoading || isProcessingFolder} 
           />
         </div>
 
