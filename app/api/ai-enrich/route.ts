@@ -133,7 +133,7 @@ async function callGemini(imageUrl: string, prompt: string) {
   const base64Image = Buffer.from(imageBuffer).toString('base64');
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: {
@@ -198,7 +198,7 @@ async function generateImageWithImagen(prompt: string): Promise<string> {
   console.log(`Generating image with Gemini for prompt: ${prompt.substring(0, 100)}...`);
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: {
