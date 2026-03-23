@@ -47,6 +47,11 @@ export async function POST(request: NextRequest) {
           const errorData = await response.json().catch(() => ({}));
           const errorMessage = errorData.detail || `${platform} service returned ${response.status}`;
           
+          // Check for authentication errors (403)
+          if (response.status === 403 || errorMessage.includes('authentication failed') || errorMessage.includes('Forbidden')) {
+            throw new Error(`OneBound API authentication failed. Please check your API key and secret in the .env file.`);
+          }
+          
           // Check for quota exceeded error
           if (errorMessage.includes('已超量') || errorMessage.includes('quota') || errorMessage.includes('exceeded')) {
             throw new Error(`API quota exceeded. Please check your OneBound API key or upgrade your plan.`);
