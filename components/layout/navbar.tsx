@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Search, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { UserMenu } from "@/components/auth/user-menu";
 
 const navItems = [
   { href: "/", label: "Search", icon: Search },
@@ -61,6 +62,7 @@ export function Navbar() {
             );
           })}
             </div>
+            <UserMenu />
           </div>
         </div>
       </div>

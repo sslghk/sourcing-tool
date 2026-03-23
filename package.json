@@ -16,6 +16,7 @@
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.2",
     "@tanstack/react-query": "^5.17.19",
+    "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.0.6",
@@ -24,6 +25,7 @@
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.468.0",
     "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.30",
     "pptxgenjs": "^4.0.1",
     "probe-image-size": "^7.2.3",
     "radix-ui": "^1.4.3",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/probe-image-size": "^7.2.5",
     "@types/react": "^19",
