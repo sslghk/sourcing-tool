@@ -14,5 +14,13 @@
     "id": "user_1773408232799",
     "createdAt": "2026-03-13T13:23:52.799Z",
     "updatedAt": "2026-03-13T13:23:52.799Z"
+  },
+  {
+    "email": "jacktong@simplesymbol.com",
+    "name": "jacktong",
+    "password": "$2b$10$hYIJu9LIFQT8ip6ypAGDke0wuRp.51P1lrO0tGPk9dP7SpuHlipdq",
+    "id": "user_1774235505795",
+    "createdAt": "2026-03-23T03:11:45.795Z",
+    "updatedAt": "2026-03-23T03:11:45.795Z"
   }
 ]
