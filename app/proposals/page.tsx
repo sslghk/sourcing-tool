@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info } from "lucide-react";
+import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,8 +22,10 @@ interface Proposal {
   status: string;
   created_at: string;
   updated_at: string;
+  createdBy?: { email: string; name: string } | null;
   totalItems?: number;
   totalValue?: number;
+  successfulItems?: number;
   products?: ProductDTO[];
 }
 
@@ -40,6 +42,7 @@ export default function ProposalsPage() {
   const [clientName, setClientName] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [filterMode, setFilterMode] = useState<'my' | 'all'>('my');
   
   // Product details state
   const [productDetails, setProductDetails] = useState<Map<string, any>>(new Map());
@@ -66,41 +69,30 @@ export default function ProposalsPage() {
     }
   };
 
-  // Load proposals and products
-  useEffect(() => {
-    const fetchProposalsData = async () => {
-      try {
-        console.log('Loading proposals from localStorage...');
-        // Load from localStorage for now
-        const stored = localStorage.getItem('proposals');
-        console.log('Raw localStorage data:', stored);
-        
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          console.log('Parsed proposals:', parsed);
-          setProposals(parsed);
-        } else {
-          console.log('No proposals found in localStorage');
-          setProposals([]);
-        }
-      } catch (error) {
-        console.log("Error fetching proposals:", error);
+  // Load proposals from server JSON files and products from localStorage
+  const fetchProposalsData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/proposals');
+      if (response.ok) {
+        const data = await response.json();
+        setProposals(data.proposals || []);
+      } else {
+        console.error('Failed to fetch proposals from API');
         setProposals([]);
-      } finally {
-        setIsLoading(false);
       }
-    };
-    
+    } catch (error) {
+      console.error('Error fetching proposals:', error);
+      setProposals([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProposalsData();
     loadProposalProducts();
   }, []);
-
-  // Fetch details for all proposal products
-  useEffect(() => {
-    proposalProducts.forEach(product => {
-      fetchProductDetails(product.id, product.source);
-    });
-  }, [proposalProducts]);
 
   // Show loading while checking auth
   if (status === 'loading') {
@@ -161,13 +153,32 @@ export default function ProposalsPage() {
     }
   };
 
-  const handleDeleteProposal = (proposalId: string) => {
+  const handleDeleteProposal = async (proposalId: string) => {
     if (!confirm('Are you sure you want to delete this proposal?')) {
       return;
     }
-    const updated = proposals.filter(p => p.id !== proposalId);
-    setProposals(updated);
-    localStorage.setItem('proposals', JSON.stringify(updated));
+    try {
+      const response = await fetch(`/api/proposals?id=${encodeURIComponent(proposalId)}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setProposals(prev => prev.filter(p => p.id !== proposalId));
+        // Also remove from localStorage if present
+        try {
+          const stored = localStorage.getItem('proposals');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            const updated = parsed.filter((p: any) => p.id !== proposalId);
+            localStorage.setItem('proposals', JSON.stringify(updated));
+          }
+        } catch (e) { /* ignore localStorage errors */ }
+      } else {
+        alert('Failed to delete proposal');
+      }
+    } catch (error) {
+      console.error('Error deleting proposal:', error);
+      alert('Failed to delete proposal');
+    }
   };
 
   const removeProduct = (productId: string) => {
@@ -176,6 +187,8 @@ export default function ProposalsPage() {
     localStorage.setItem('proposalProducts', JSON.stringify(updated));
   };
 
+  const [savingProgress, setSavingProgress] = useState('');
+  
   const handleSaveProposal = async () => {
     console.log('Save proposal clicked');
     console.log('Proposal name:', proposalName);
@@ -186,9 +199,11 @@ export default function ProposalsPage() {
     }
 
     setIsSaving(true);
+    setSavingProgress('Saving proposal...');
 
+    const proposalId = `proposal_${Date.now()}`;
     const proposal = {
-      id: `proposal_${Date.now()}`,
+      id: proposalId,
       name: proposalName,
       client_name: clientName,
       currency: 'CNY',
@@ -204,20 +219,46 @@ export default function ProposalsPage() {
     console.log('Proposal object:', proposal);
 
     try {
+      // Step 1: Save proposal to localStorage
+      setSavingProgress('Saving proposal to local storage...');
       const existingProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
-      console.log('Existing proposals before save:', existingProposals);
-      
       existingProposals.unshift(proposal);
       localStorage.setItem('proposals', JSON.stringify(existingProposals));
-      console.log('Proposals saved to localStorage');
       
-      // Verify it was saved
-      const savedProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
-      console.log('Proposals after save verification:', savedProposals);
+      // Step 2: Fetch and save all item details to server-side JSON
+      if (proposalProducts.length > 0) {
+        setSavingProgress(`Fetching item details for ${proposalProducts.length} products... This may take a few minutes.`);
+        console.log('Fetching item details for all products...');
+        const detailsResponse = await fetch('/api/proposal-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            proposalId,
+            proposalName,
+            clientName,
+            notes,
+            products: proposalProducts,
+            createdBy: session?.user ? {
+              email: session.user.email || '',
+              name: session.user.name || '',
+            } : null
+          })
+        });
+        
+        if (!detailsResponse.ok) {
+          console.error('Failed to fetch item details:', await detailsResponse.text());
+          setSavingProgress('Warning: Some item details may not have been saved.');
+        } else {
+          const result = await detailsResponse.json();
+          console.log('Item details saved:', result);
+          setSavingProgress(`Saved! ${result.successfulItems}/${result.totalItems} item details fetched.`);
+        }
+      }
       
       localStorage.removeItem('proposalProducts');
       
-      setProposals(existingProposals);
+      // Reload proposals from server
+      await fetchProposalsData();
       setProposalProducts([]);
       setShowCreateForm(false);
       setUserDismissedForm(false);
@@ -231,6 +272,7 @@ export default function ProposalsPage() {
       alert('Failed to save proposal');
     } finally {
       setIsSaving(false);
+      setSavingProgress('');
     }
   };
 
@@ -327,9 +369,22 @@ export default function ProposalsPage() {
                   disabled={isSaving}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  {isSaving ? 'Saving...' : 'Save Proposal'}
+                  {isSaving ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Saving...
+                    </span>
+                  ) : 'Save Proposal'}
                 </Button>
               </div>
+              {isSaving && savingProgress && (
+                <div className="mt-3 p-3 bg-sky-50 border border-sky-200 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="h-5 w-5 animate-spin text-sky-600 flex-shrink-0" />
+                    <p className="text-sm text-sky-700">{savingProgress}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -517,21 +572,30 @@ export default function ProposalsPage() {
           <h1 className="text-3xl font-bold text-gray-900">
             Proposals
           </h1>
-          <Button 
-            onClick={() => {
-              setShowCreateForm(true);
-              setUserDismissedForm(false);
-            }}
-            className="bg-sky-500 hover:bg-sky-600 text-white relative"
-          >
-            <Plus className="h-5 w-5 mr-2" />
-            New Proposal
-            {proposalProducts.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
-                {proposalProducts.length}
-              </span>
-            )}
-          </Button>
+          <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setFilterMode('my')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                filterMode === 'my'
+                  ? 'bg-white text-sky-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <User className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+              My Proposals
+            </button>
+            <button
+              onClick={() => setFilterMode('all')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                filterMode === 'all'
+                  ? 'bg-white text-sky-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <FileText className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+              All Proposals
+            </button>
+          </div>
         </div>
 
         {/* Pending Products Alert */}
@@ -554,9 +618,13 @@ export default function ProposalsPage() {
                   setShowCreateForm(true);
                   setUserDismissedForm(false);
                 }}
-                className="bg-sky-600 hover:bg-sky-700 text-white"
+                className="bg-sky-600 hover:bg-sky-700 text-white relative"
               >
-                Create Proposal
+                <Plus className="h-4 w-4 mr-2" />
+                Add to New Proposal
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {proposalProducts.length}
+                </span>
               </Button>
             </div>
           </div>
@@ -604,7 +672,13 @@ export default function ProposalsPage() {
             <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-sky-500 border-r-transparent"></div>
             <p className="mt-4 text-gray-600">Loading proposals...</p>
           </div>
-        ) : proposals.length === 0 ? (
+        ) : (() => {
+          const userEmail = session?.user?.email;
+          const filteredProposals = filterMode === 'my' && userEmail
+            ? proposals.filter(p => p.createdBy?.email === userEmail)
+            : proposals;
+          return filteredProposals;
+        })().length === 0 ? (
           <Card className="bg-white border-gray-200">
             <CardContent className="p-12 text-center">
               <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -612,23 +686,18 @@ export default function ProposalsPage() {
                 No proposals yet
               </h3>
               <p className="text-gray-600 mb-6">
-                Create your first proposal to get started
+                Search for products and add them to create your first proposal
               </p>
-              <Button 
-                onClick={() => {
-                  setShowCreateForm(true);
-                  setUserDismissedForm(false);
-                }}
-                className="bg-sky-500 hover:bg-sky-600 text-white"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Create Proposal
-              </Button>
             </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {proposals.map((proposal, index) => (
+            {(() => {
+              const userEmail = session?.user?.email;
+              return filterMode === 'my' && userEmail
+                ? proposals.filter(p => p.createdBy?.email === userEmail)
+                : proposals;
+            })().map((proposal, index) => (
               <motion.div
                 key={proposal.id}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -648,6 +717,11 @@ export default function ProposalsPage() {
                     {proposal.client_name && (
                       <p className="text-sm text-gray-600">
                         Client: {proposal.client_name}
+                      </p>
+                    )}
+                    {proposal.createdBy?.name && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        By: {proposal.createdBy.name}
                       </p>
                     )}
                   </CardHeader>

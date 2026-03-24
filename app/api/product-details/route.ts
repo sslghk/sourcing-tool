@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const SERVICE_URLS: Record<string, string> = {
-  taobao: process.env.TAOBAO_SERVICE_URL || 'http://localhost:8001',
+  taobao: process.env.TAOBAO_SERVICE_URL || 'http://localhost:8000',
 };
 
 export async function GET(request: NextRequest) {

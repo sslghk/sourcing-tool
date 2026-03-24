@@ -1,6 +1,7 @@
 // Edge-compatible auth configuration (no Node.js modules)
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
 import { z } from 'zod';
 
 const credentialsSchema = z.object({
@@ -11,6 +12,10 @@ const credentialsSchema = z.object({
 const nextAuthConfig = NextAuth({
   secret: process.env.AUTH_SECRET || 'development-secret-do-not-use-in-production',
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    }),
     Credentials({
       credentials: {
         email: {},

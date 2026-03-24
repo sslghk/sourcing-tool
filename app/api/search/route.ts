@@ -16,7 +16,7 @@ const searchSchema = z.object({
 });
 
 const SERVICE_URLS: Record<Platform, string> = {
-  taobao: process.env.TAOBAO_SERVICE_URL || 'http://localhost:8001',
+  taobao: process.env.TAOBAO_SERVICE_URL || 'http://localhost:8000',
   '1688': 'http://localhost:8002', // Not implemented yet
   temu: 'http://localhost:8003', // Not implemented yet
   amazon: 'http://localhost:8004', // Not implemented yet

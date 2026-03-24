@@ -69,8 +69,15 @@ export default function Home() {
   const [folderImages, setFolderImages] = useState<File[]>([]);
   const [currentProcessingIndex, setCurrentProcessingIndex] = useState(0);
   const [proposalName, setProposalName] = useState('');
-  const [autoCreateProposal, setAutoCreateProposal] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
+  
+  // Batch summary report
+  const [showBatchSummary, setShowBatchSummary] = useState(false);
+  const [batchSummary, setBatchSummary] = useState<{
+    successful: number;
+    failed: { name: string; reason: string; thumbnail?: string }[];
+    total: number;
+  } | null>(null);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -271,26 +278,8 @@ export default function Home() {
       return;
     }
     
-    // Fetch details for the product using source_id
-    try {
-      const response = await fetch(`/api/product-details?productId=${product.source_id}&platform=${product.source}`);
-      if (response.ok) {
-        const details = await response.json();
-        const productWithDetails = {
-          ...product,
-          cachedDetails: details,
-          detailsFetchedAt: new Date().toISOString()
-        };
-        setProposalProducts([...proposalProducts, productWithDetails]);
-      } else {
-        // Add without details if fetch fails
-        setProposalProducts([...proposalProducts, product]);
-      }
-    } catch (error) {
-      console.error(`Failed to fetch details for ${product.source_id}:`, error);
-      // Add without details if fetch fails
-      setProposalProducts([...proposalProducts, product]);
-    }
+    // Add product WITHOUT fetching details - details will be fetched when saving proposal
+    setProposalProducts([...proposalProducts, product]);
   };
 
   const handleAddSelectedToProposal = async () => {
@@ -306,34 +295,12 @@ export default function Home() {
       
       const newProposalProducts = [...proposalProducts];
       
-      // Fetch details for selected products that aren't already in proposal
+      // Add products WITHOUT fetching details - details will be fetched when saving proposal
       const productsToAdd = allProducts.filter(
         product => !newProposalProducts.some(p => p.id === product.id)
       );
       
-      // Fetch details for each product in parallel
-      const productsWithDetails = await Promise.all(
-        productsToAdd.map(async (product) => {
-          try {
-            const response = await fetch(`/api/product-details?productId=${product.source_id}&platform=${product.source}`);
-            if (response.ok) {
-              const details = await response.json();
-              // Store details with the product
-              return {
-                ...product,
-                cachedDetails: details,
-                detailsFetchedAt: new Date().toISOString()
-              };
-            }
-          } catch (error) {
-            console.error(`Failed to fetch details for ${product.source_id}:`, error);
-          }
-          // Return product without details if fetch fails
-          return product;
-        })
-      );
-      
-      newProposalProducts.push(...productsWithDetails);
+      newProposalProducts.push(...productsToAdd);
       setProposalProducts(newProposalProducts);
       setSelectedProducts(new Set());
       
@@ -561,11 +528,13 @@ export default function Home() {
     
     setIsProcessingFolder(true);
     setCurrentProcessingIndex(0);
-    const allFoundProducts: ProductDTO[] = [];
+    setBatchSummary(null);
     
-    // Clear existing tabs and proposal products
+    // Clear existing tabs
     setSearchTabs([]);
-    setProposalProducts([]);
+    
+    let successfulCount = 0;
+    const failedImages: { name: string; reason: string; thumbnail?: string }[] = [];
     
     try {
       for (let i = 0; i < folderImages.length; i++) {
@@ -586,47 +555,108 @@ export default function Home() {
             const data = await response.json();
             const products = data.products || [];
             
-            // Create tab for this image
-            const tabLabel = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
-            createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao']);
-            
-            // Add products to collection
-            allFoundProducts.push(...products);
+            if (products.length === 0) {
+              failedImages.push({ name: file.name, reason: 'No similar products found', thumbnail: URL.createObjectURL(file) });
+            } else {
+              // Create tab for this image
+              const tabLabel = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
+              createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao']);
+              successfulCount++;
+            }
             
             // Add delay to avoid overwhelming the API
             await new Promise(resolve => setTimeout(resolve, 1000));
+          } else {
+            let reason = `HTTP ${response.status}`;
+            try {
+              const errData = await response.json();
+              if (errData.error) reason = errData.error;
+              else if (errData.detail) reason = errData.detail;
+            } catch {}
+            // Trim long API doc URLs from error messages
+            reason = reason.split(' 接口文档')[0].split(' API文档')[0];
+            failedImages.push({ name: file.name, reason, thumbnail: URL.createObjectURL(file) });
           }
         } catch (error) {
           console.error(`Error processing ${file.name}:`, error);
+          failedImages.push({ name: file.name, reason: 'Network error or request failed', thumbnail: URL.createObjectURL(file) });
         }
-      }
-      
-      // Auto-create proposal if enabled
-      if (autoCreateProposal && allFoundProducts.length > 0) {
-        // Remove duplicates and add to proposal
-        const uniqueProducts = new Map<string, ProductDTO>();
-        allFoundProducts.forEach(product => {
-          if (!uniqueProducts.has(product.id)) {
-            uniqueProducts.set(product.id, product);
-          }
-        });
-        
-        const finalProducts = Array.from(uniqueProducts.values());
-        setProposalProducts(finalProducts);
-        
-        // Navigate to proposals page
-        setTimeout(() => {
-          router.push('/proposals');
-        }, 1000);
       }
     } finally {
       setIsProcessingFolder(false);
       setCurrentProcessingIndex(0);
+      
+      // Show summary if there were any failures
+      if (failedImages.length > 0 || successfulCount > 0) {
+        setBatchSummary({
+          successful: successfulCount,
+          failed: failedImages,
+          total: folderImages.length,
+        });
+        setShowBatchSummary(true);
+      }
     }
   };
 
   return (
     <div className="min-h-screen">
+      {/* Batch Search Summary Dialog */}
+      {showBatchSummary && batchSummary && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Batch Search Summary</h2>
+              <button onClick={() => setShowBatchSummary(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="px-6 py-4 space-y-4">
+              {/* Stats row */}
+              <div className="flex gap-4">
+                <div className="flex-1 bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-green-700">{batchSummary.successful}</p>
+                  <p className="text-xs text-green-600 mt-1">Successful</p>
+                </div>
+                <div className="flex-1 bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-red-700">{batchSummary.failed.length}</p>
+                  <p className="text-xs text-red-600 mt-1">Failed</p>
+                </div>
+                <div className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-gray-700">{batchSummary.total}</p>
+                  <p className="text-xs text-gray-600 mt-1">Total</p>
+                </div>
+              </div>
+              
+              {/* Failed images list */}
+              {batchSummary.failed.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Failed Images:</h3>
+                  <div className="max-h-60 overflow-y-auto space-y-2">
+                    {batchSummary.failed.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+                        {item.thumbnail ? (
+                          <img src={item.thumbnail} alt={item.name} className="flex-shrink-0 w-10 h-10 rounded object-cover border border-red-200" />
+                        ) : (
+                          <div className="flex-shrink-0 w-10 h-10 bg-red-200 rounded flex items-center justify-center">
+                            <X className="h-4 w-4 text-red-700" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-800 truncate" title={item.name}>{item.name}</p>
+                          <p className="text-xs text-red-600 mt-0.5">{item.reason}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <Button onClick={() => setShowBatchSummary(false)}>Close</Button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="mb-8 mt-12 max-w-5xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-900">
@@ -735,23 +765,11 @@ export default function Home() {
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
-                        placeholder="Proposal name"
+                        placeholder="Proposal name (optional)"
                         value={proposalName}
                         onChange={(e) => setProposalName(e.target.value)}
                         className="px-3 py-2 border border-gray-300 rounded-md text-sm"
                       />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="auto-proposal"
-                        checked={autoCreateProposal}
-                        onChange={(e) => setAutoCreateProposal(e.target.checked)}
-                        className="rounded"
-                      />
-                      <label htmlFor="auto-proposal" className="text-sm text-gray-700">
-                        Auto-create proposal
-                      </label>
                     </div>
                   </div>
 

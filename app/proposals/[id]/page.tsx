@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +44,11 @@ interface Proposal {
 
 interface ProductDetails {
   title?: string;
+  desc?: string;
   desc_short?: string;
+  sku?: string;
+  num?: string;
+  shop_name?: string;
   brand?: string;
   pic_url?: string;
   item_imgs?: Array<{ url: string }>;
@@ -63,6 +67,7 @@ interface ProductDetails {
   };
   sales_volume?: number;
   description?: string;
+  cached?: boolean;
 }
 
 export default function ProposalDetailPage() {
@@ -91,6 +96,13 @@ export default function ProposalDetailPage() {
   const [aiEnrichRemarksOpen, setAiEnrichRemarksOpen] = useState<string | null>(null);
   const [aiEnrichRemarks, setAiEnrichRemarks] = useState<Record<string, string>>({});
   const [selectedSecondaryImages, setSelectedSecondaryImages] = useState<Record<string, string[]>>({});
+  
+  // Proposal data from JSON storage
+  const [proposalData, setProposalData] = useState<any>(null);
+  const [isLoadingProposalData, setIsLoadingProposalData] = useState(false);
+  
+  // Expanded product details for full text display
+  const [expandedDetails, setExpandedDetails] = useState<Set<string>>(new Set());
 
   // Fetch product details with retry logic
   const fetchProductDetailsWithRetry = async (productId: string, platform: string, maxRetries = 3): Promise<ProductDetails | null> => {
@@ -119,69 +131,190 @@ export default function ProposalDetailPage() {
     return null;
   };
 
-  // Fetch all product details on load
-  const fetchAllProductDetails = async () => {
+  // Load proposal data from server-side JSON storage
+  const loadProposalDataFromStorage = useCallback(async () => {
     if (!proposal) return;
-
-    const detailsToFetch: Array<{ productId: string; product: ProductDTO }> = [];
     
-    // Identify products that need details
-    proposal.products.forEach(product => {
-      const productId = product.source_id;
+    setIsLoadingProposalData(true);
+    console.log('Loading proposal data from JSON storage...');
+    
+    try {
+      const response = await fetch(`/api/proposal-details?proposalId=${proposal.id}`);
       
-      // Skip if already in memory
-      if (productDetails.has(productId)) {
-        return;
-      }
-      
-      // Skip if has cached details
-      if (product.cachedDetails) {
-        const newDetails = new Map(productDetails);
-        newDetails.set(productId, product.cachedDetails);
+      if (response.ok) {
+        const data = await response.json();
+        setProposalData(data);
+        console.log('Loaded proposal data:', data);
+        
+        // Load item details from storage into productDetails map
+        const newDetails = new Map<string, ProductDetails>();
+        const newSelectedImages: Record<string, string[]> = {};
+        
+        Object.entries(data.itemDetails || {}).forEach(([key, details]: [string, any]) => {
+          // Use the key directly as productId (it's the source_id / num_iid)
+          const productId = details.productId || key;
+          newDetails.set(productId, details);
+          
+          // Load saved secondary image selections
+          const product = proposal.products.find(p => p.source_id === productId);
+          if (product) {
+            if (details.selectedSecondaryImages && details.selectedSecondaryImages.length > 0) {
+              newSelectedImages[product.id] = details.selectedSecondaryImages;
+            } else if (details.item_imgs && details.item_imgs.length > 0) {
+              // Auto-select first 4 secondary images from item_imgs
+              const imageUrls = details.item_imgs.slice(0, 4).map((img: any) => {
+                const url = typeof img === 'string' ? img : img.url;
+                return url.startsWith('//') ? `https:${url}` : url;
+              });
+              newSelectedImages[product.id] = imageUrls;
+            }
+          }
+        });
+        
         setProductDetails(newDetails);
-        return;
+        setSelectedSecondaryImages(newSelectedImages);
+        
+        console.log(`Loaded ${newDetails.size} product details from storage`);
+      } else if (response.status === 404) {
+        // No storage file yet - this is normal for older proposals
+        console.log('No proposal data file found - will create when saving');
+      } else {
+        console.error('Failed to load proposal data:', await response.text());
       }
-      
-      detailsToFetch.push({ productId, product });
-    });
-
-    if (detailsToFetch.length === 0) return;
-
-    console.log(`Fetching details for ${detailsToFetch.length} products...`);
-    
-    // Mark all as loading
-    const newLoading = new Set(loadingDetails);
-    detailsToFetch.forEach(({ productId }) => newLoading.add(productId));
-    setLoadingDetails(newLoading);
-
-    // Fetch all details in parallel
-    const results = await Promise.all(
-      detailsToFetch.map(async ({ productId, product }) => {
-        const details = await fetchProductDetailsWithRetry(productId, product.source);
-        return { productId, details };
-      })
-    );
-
-    // Update state with all fetched details
-    const newDetails = new Map(productDetails);
-    results.forEach(({ productId, details }) => {
-      if (details) {
-        newDetails.set(productId, details);
-      }
-    });
-    setProductDetails(newDetails);
-
-    // Save to localStorage for caching
-    if (proposal) {
-      const cachedDetailsKey = `proposal_details_${proposal.id}`;
-      const detailsObj = Object.fromEntries(newDetails);
-      localStorage.setItem(cachedDetailsKey, JSON.stringify(detailsObj));
+    } catch (error) {
+      console.error('Error loading proposal data:', error);
+    } finally {
+      setIsLoadingProposalData(false);
     }
+  }, [proposal]);
 
-    // Clear loading state
-    setLoadingDetails(new Set());
+  // Fetch a single product detail on demand (for expand functionality)
+  const fetchProductDetailOnDemand = async (productId: string) => {
+    if (!proposal) return;
     
-    console.log(`Successfully fetched details for ${results.filter(r => r.details).length}/${detailsToFetch.length} products`);
+    const product = proposal.products.find(p => p.source_id === productId || p.id === productId);
+    if (!product) return;
+    
+    setLoadingDetails(prev => new Set(prev).add(productId));
+    
+    try {
+      // Try to fetch from storage with fetch=true to trigger API call if not cached
+      const response = await fetch(`/api/proposal-details?proposalId=${proposal.id}&productId=${productId}&fetch=true`);
+      
+      if (response.ok) {
+        const details = await response.json();
+        
+        // Update productDetails map
+        setProductDetails(prev => new Map(prev).set(productId, details));
+        
+        // Update proposalData
+        setProposalData((prev: any) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            itemDetails: {
+              ...prev.itemDetails,
+              [`${proposal.id}_${productId}`]: details
+            }
+          };
+        });
+        
+        // Auto-select first 4 secondary images if not already selected
+        if (details.item_imgs && !selectedSecondaryImages[product.id]) {
+          const imageUrls = details.item_imgs.slice(0, 4).map((img: { url: string }) => {
+            const url = img.url.startsWith('//') ? `https:${img.url}` : img.url;
+            return url;
+          });
+          
+          setSelectedSecondaryImages(prev => ({
+            ...prev,
+            [product.id]: imageUrls
+          }));
+          
+          // Save to server
+          await saveSecondaryImageSelection(productId, imageUrls);
+        }
+        
+        console.log(`Fetched details for ${productId}`);
+      } else {
+        console.error(`Failed to fetch details for ${productId}:`, await response.text());
+      }
+    } catch (error) {
+      console.error(`Error fetching details for ${productId}:`, error);
+    } finally {
+      setLoadingDetails(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(productId);
+        return newSet;
+      });
+    }
+  };
+
+  // Save secondary image selection to JSON file
+  const saveSecondaryImageSelection = async (productId: string, images: string[]) => {
+    if (!proposal) return;
+    
+    try {
+      const response = await fetch('/api/proposal-details', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId: proposal.id,
+          productId,
+          selectedSecondaryImages: images
+        })
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to save secondary image selection:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error saving secondary image selection:', error);
+    }
+  };
+
+  // Toggle expand for full text item details
+  const toggleDetailExpansion = (productId: string) => {
+    setExpandedDetails(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
+
+  // Sequential fetch all remaining product details (for force reload)
+  const fetchAllProductDetailsSequential = async () => {
+    if (!proposal || !proposalData) return;
+    
+    const productsToFetch = proposal.products.filter(p => {
+      const key = `${proposal.id}_${p.source_id}`;
+      return !proposalData.itemDetails?.[key];
+    });
+    
+    if (productsToFetch.length === 0) {
+      console.log('All product details already loaded');
+      return;
+    }
+    
+    console.log(`Fetching details for ${productsToFetch.length} remaining products...`);
+    
+    for (let i = 0; i < productsToFetch.length; i++) {
+      const product = productsToFetch[i];
+      console.log(`[${i + 1}/${productsToFetch.length}] Fetching ${product.source_id}...`);
+      
+      await fetchProductDetailOnDemand(product.source_id);
+      
+      // Add delay between requests
+      if (i < productsToFetch.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 10000));
+      }
+    }
+    
+    console.log('Finished fetching all product details');
   };
 
   useEffect(() => {
@@ -191,7 +324,7 @@ export default function ProposalDetailPage() {
   // Fetch details for all products on load
   useEffect(() => {
     if (proposal && proposal.products.length > 0) {
-      fetchAllProductDetails();
+      loadProposalDataFromStorage();
     }
   }, [proposal?.id]);
 
@@ -207,18 +340,6 @@ export default function ProposalDetailPage() {
           setEditedClientName(found.client_name || "");
           setEditedNotes(found.notes || "");
           setEditedStatus(found.status);
-          
-          // Load cached product details from localStorage
-          const cachedDetailsKey = `proposal_details_${found.id}`;
-          const cachedDetailsStr = localStorage.getItem(cachedDetailsKey);
-          if (cachedDetailsStr) {
-            try {
-              const cachedDetailsObj = JSON.parse(cachedDetailsStr);
-              setProductDetails(new Map(Object.entries(cachedDetailsObj)));
-            } catch (e) {
-              console.error('Error loading cached details:', e);
-            }
-          }
         } else {
           setProposal(null);
         }
@@ -290,13 +411,25 @@ export default function ProposalDetailPage() {
     setExportProgress({ type: 'pdf', message: 'Generating PDF...' });
 
     try {
-      // Add selected secondary images to each product
-      const proposalWithSelectedImages = {
+      // Add selected secondary images and cached details to each product
+      const proposalWithDetails = {
         ...proposal,
-        products: proposal.products.map(product => ({
-          ...product,
-          selectedSecondaryImages: selectedSecondaryImages[product.id] || []
-        }))
+        products: proposal.products.map(product => {
+          const details = productDetails.get(product.source_id);
+          return {
+            ...product,
+            selectedSecondaryImages: selectedSecondaryImages[product.id] || [],
+            // Include cached details if available
+            cachedDetails: details ? {
+              desc: details.desc,
+              props: details.props,
+              sku: details.sku,
+              num: details.num,
+              shop_name: details.shop_name,
+              item_imgs: details.item_imgs,
+            } : undefined
+          };
+        })
       };
 
       const response = await fetch('/api/export/pdf', {
@@ -305,7 +438,7 @@ export default function ProposalDetailPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          proposal: proposalWithSelectedImages,
+          proposal: proposalWithDetails,
           orientation: 'landscape',
         }),
       });
@@ -338,13 +471,25 @@ export default function ProposalDetailPage() {
     setIsExportingPPTX(true);
     setExportProgress({ type: 'pptx', message: 'Generating PowerPoint...' });
     try {
-      // Add selected secondary images to each product
-      const proposalWithSelectedImages = {
+      // Add selected secondary images and cached details to each product
+      const proposalWithDetails = {
         ...proposal,
-        products: proposal.products.map(product => ({
-          ...product,
-          selectedSecondaryImages: selectedSecondaryImages[product.id] || []
-        }))
+        products: proposal.products.map(product => {
+          const details = productDetails.get(product.source_id);
+          return {
+            ...product,
+            selectedSecondaryImages: selectedSecondaryImages[product.id] || [],
+            // Include cached details if available
+            cachedDetails: details ? {
+              desc: details.desc,
+              props: details.props,
+              sku: details.sku,
+              num: details.num,
+              shop_name: details.shop_name,
+              item_imgs: details.item_imgs,
+            } : undefined
+          };
+        })
       };
 
       const response = await fetch('/api/export/pptx', {
@@ -353,7 +498,7 @@ export default function ProposalDetailPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          proposal: proposalWithSelectedImages,
+          proposal: proposalWithDetails,
           orientation: 'landscape',
           templateId: templateId || 'default',
         }),
@@ -410,87 +555,62 @@ export default function ProposalDetailPage() {
     }
   };
 
-  const toggleSecondaryImageSelection = (productId: string, imageUrl: string) => {
+  const toggleSecondaryImageSelection = async (productId: string, imageUrl: string) => {
     const currentSelection = selectedSecondaryImages[productId] || [];
     const newSelection = currentSelection.includes(imageUrl)
-      ? currentSelection.filter(url => url !== imageUrl)
+      ? currentSelection.filter((url: string) => url !== imageUrl)
       : [...currentSelection, imageUrl].slice(0, 4); // Max 4 images
     
     setSelectedSecondaryImages(prev => ({
       ...prev,
       [productId]: newSelection
     }));
+    
+    // Find the product's source_id for saving to JSON
+    const product = proposal?.products.find(p => p.id === productId);
+    if (product) {
+      await saveSecondaryImageSelection(product.source_id, newSelection);
+    }
   };
 
-  // Load product details automatically
-  useEffect(() => {
-    if (proposal) {
-      console.log('Loading product details for', proposal.products.length, 'products');
-      
-      const loadAllDetails = async () => {
-        const detailsPromises = proposal.products.map(async (product) => {
-          if (productDetails.has(product.id)) {
-            console.log(`Details already loaded for product ${product.id}`);
-            return null;
-          }
-          
-          console.log(`Loading details for product ${product.id}`);
-          
-          // Check if product has cached details with secondary images
-          const hasCachedDetails = product.cachedDetails && 
-            product.cachedDetails.item_imgs && 
-            product.cachedDetails.item_imgs.length > 0;
-          
-          if (hasCachedDetails) {
-            console.log(`Using cached details for ${product.id} (${product.cachedDetails?.item_imgs?.length} images)`);
-            return { id: product.id, details: product.cachedDetails };
-          }
-
-          // Fetch from web if no cached details or no secondary images
-          console.log(`Fetching from web for ${product.id} (no cached details or no images)`);
-          try {
-            const response = await fetch(`/api/product-details?productId=${product.id}&platform=${product.source}`);
-            
-            if (!response.ok) {
-              console.error(`Failed to fetch details for ${product.id}:`, response.status);
-              return null;
-            }
-
-            const details = await response.json();
-            console.log(`Successfully loaded details from web for ${product.id}:`, details);
-            return { id: product.id, details };
-          } catch (error) {
-            console.error(`Error fetching product details for ${product.id}:`, error);
-            return null;
-          }
-        });
-        
-        // Wait for all promises to complete
-        const results = await Promise.all(detailsPromises);
-        
-        // Batch update state with all loaded details
-        const newDetails = new Map(productDetails);
-        let hasNewDetails = false;
-        
-        results.forEach(result => {
-          if (result) {
-            newDetails.set(result.id, result.details);
-            hasNewDetails = true;
-          }
-        });
-        
-        if (hasNewDetails) {
-          setProductDetails(newDetails);
-        }
-      };
-      
-      loadAllDetails();
+  // Helper function to normalize item_imgs from various API formats
+  const normalizeItemImgs = (itemImgs: any): Array<{ url: string }> => {
+    if (!itemImgs) return [];
+    
+    // Already an array of objects with url
+    if (Array.isArray(itemImgs) && itemImgs.length > 0 && typeof itemImgs[0] === 'object' && itemImgs[0].url) {
+      return itemImgs;
     }
-  }, [proposal?.products]);
+    
+    // Array of strings (URLs)
+    if (Array.isArray(itemImgs) && itemImgs.length > 0 && typeof itemImgs[0] === 'string') {
+      return itemImgs.map((url: string) => ({ url }));
+    }
+    
+    // Single string
+    if (typeof itemImgs === 'string') {
+      return [{ url: itemImgs }];
+    }
+    
+    // Object with nested structure (some APIs wrap images differently)
+    if (typeof itemImgs === 'object' && !Array.isArray(itemImgs)) {
+      // Try to extract from common nested formats
+      const possibleArrays = ['img', 'image', 'url', 'src', 'thumb'];
+      for (const key of possibleArrays) {
+        if (Array.isArray(itemImgs[key])) {
+          return normalizeItemImgs(itemImgs[key]);
+        }
+      }
+    }
+    
+    return [];
+  };
 
-  const toggleRowExpansion = async (productId: string, product: ProductDTO) => {
-    // Disabled - details are now shown directly
-    console.log(`Expand functionality disabled for ${productId}`);
+  // Force reload all product details (fetch missing details sequentially)
+  const forceReloadAllProductDetails = async () => {
+    if (!proposal || !proposalData) return;
+    
+    await fetchAllProductDetailsSequential();
   };
 
   const openImageCarousel = (images: Array<{ url: string }>, initialIndex: number = 0) => {
@@ -833,6 +953,20 @@ export default function ProposalDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={forceReloadAllProductDetails}
+                    className="border-sky-300 text-sky-600 hover:bg-sky-50 rounded-full h-9 w-9 p-0"
+                    disabled={loadingDetails.size > 0}
+                    title="Reload All Secondary Photos"
+                  >
+                    {loadingDetails.size > 0 ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="h-4 w-4" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setIsEditing(true)}
                     className="rounded-full h-9 w-9 p-0"
                     title="Edit"
@@ -881,17 +1015,18 @@ export default function ProposalDetailPage() {
             <div>
               <p className="text-sm text-gray-600 mb-1">Details Status</p>
               {(() => {
-                const productsWithDetails = proposal.products.filter(p => p.cachedDetails);
-                const allHaveDetails = productsWithDetails.length === proposal.products.length;
+                const loadedCount = proposalData?.successfulItems || 0;
+                const totalCount = proposal?.products.length || 0;
+                const allHaveDetails = loadedCount === totalCount && totalCount > 0;
                 return allHaveDetails ? (
                   <div className="flex items-center text-green-600">
                     <CheckCircle2 className="h-4 w-4 mr-2" />
                     <span className="text-sm font-medium">All loaded</span>
                   </div>
-                ) : productsWithDetails.length > 0 ? (
+                ) : loadedCount > 0 ? (
                   <div className="flex items-center text-amber-600">
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    <span className="text-sm font-medium">{productsWithDetails.length}/{proposal.products.length} loaded</span>
+                    <span className="text-sm font-medium">{loadedCount}/{totalCount} loaded</span>
                   </div>
                 ) : (
                   <div className="flex items-center text-gray-500">
@@ -939,7 +1074,7 @@ export default function ProposalDetailPage() {
           ) : (
             <div className="divide-y divide-gray-200">
               {proposal.products.map((product) => {
-                const details = productDetails.get(product.id);
+                const details = productDetails.get(product.source_id);
 
                 return (
                   <div key={product.id}>
@@ -983,7 +1118,20 @@ export default function ProposalDetailPage() {
                           
                           {/* Secondary Images with Checkboxes */}
                           <div className="space-y-2">
-                            <h5 className="text-sm font-medium text-gray-700 mb-2">Select up to 4 secondary photos for export:</h5>
+                            <h5 className="text-sm font-medium text-gray-700 mb-2">
+                              Select up to 4 secondary photos for export:
+                              {details?.item_imgs && (
+                                <span className="ml-2 text-xs text-gray-500">
+                                  ({details.item_imgs.length} available)
+                                </span>
+                              )}
+                            </h5>
+                            {!details?.item_imgs && (
+                              <p className="text-xs text-gray-400">No secondary images data available</p>
+                            )}
+                            {details?.item_imgs && details.item_imgs.length === 0 && (
+                              <p className="text-xs text-gray-400">Empty image list from API</p>
+                            )}
                             {details?.item_imgs && details.item_imgs.length > 0 && (
                               <div className="flex gap-2 overflow-x-auto">
                                 {details.item_imgs.slice(0, 6).map((img, idx) => {
@@ -1050,6 +1198,81 @@ export default function ProposalDetailPage() {
                             >
                               View on {product.source}
                             </a>
+                            
+                            {/* Expand/Collapse Button */}
+                            <button
+                              onClick={() => toggleDetailExpansion(product.source_id)}
+                              className="flex items-center gap-1 text-sky-600 hover:text-sky-700 text-sm mt-2"
+                            >
+                              {expandedDetails.has(product.source_id) ? (
+                                <>
+                                  <ChevronUp className="h-4 w-4" />
+                                  Hide Details
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="h-4 w-4" />
+                                  Show Full Details
+                                  {!details && loadingDetails.has(product.source_id) && (
+                                    <Loader2 className="h-3 w-3 animate-spin ml-1" />
+                                  )}
+                                </>
+                              )}
+                            </button>
+                            
+                            {/* Expanded Full Details */}
+                            {expandedDetails.has(product.source_id) && details && (
+                              <div className="mt-3 p-3 bg-gray-50 rounded-lg text-sm">
+                                {loadingDetails.has(product.source_id) ? (
+                                  <div className="flex items-center gap-2 text-gray-500">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Loading details...
+                                  </div>
+                                ) : (
+                                  <div className="space-y-2">
+                                    {details.desc && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Description:</span>
+                                        <p className="text-gray-600 mt-1 whitespace-pre-wrap">{details.desc}</p>
+                                      </div>
+                                    )}
+                                    {details.props && details.props.length > 0 && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Properties:</span>
+                                        <div className="mt-1 grid grid-cols-2 gap-1">
+                                          {details.props.slice(0, 8).map((prop: { name: string; value: string }, idx: number) => (
+                                            <div key={idx} className="text-xs text-gray-600">
+                                              <span className="font-medium">{prop.name}:</span> {prop.value}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {details.sku && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">SKU:</span>
+                                        <span className="text-gray-600 ml-1">{details.sku}</span>
+                                      </div>
+                                    )}
+                                    {details.num && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Item ID:</span>
+                                        <span className="text-gray-600 ml-1">{details.num}</span>
+                                      </div>
+                                    )}
+                                    {details.shop_name && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Shop:</span>
+                                        <span className="text-gray-600 ml-1">{details.shop_name}</span>
+                                      </div>
+                                    )}
+                                    <div className="text-xs text-gray-400 mt-2">
+                                      {details.cached ? 'Loaded from cache' : 'Fetched from API'}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                         

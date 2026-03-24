@@ -1,160 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import PptxGenJS from 'pptxgenjs';
-import probe from 'probe-image-size';
+import {
+  prefetchAllProposalImages,
+  getProcessedImage,
+  getSecondaryImageUrls,
+  calculateFitDimensions,
+  normalizeUrl,
+  type ProcessedImage
+} from '../image-utils';
 
-// Helper function to fetch image as base64
-async function fetchImageAsBase64(imageUrl: string): Promise<string | null> {
-  try {
-    let url = imageUrl;
-    if (url.startsWith('//')) {
-      url = `https:${url}`;
-    }
-    
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
-    }
-    
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString('base64');
-    
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    
-    return `data:${contentType};base64,${base64}`;
-  } catch (error) {
-    console.error('Error fetching image:', error);
-    return null;
-  }
-}
-
-// Helper function to calculate dimensions maintaining aspect ratio
-function calculateAspectRatioDimensions(originalWidth: number, originalHeight: number, maxWidth: number, maxHeight: number): { width: number; height: number } {
-  const aspectRatio = originalWidth / originalHeight;
-  
-  let width = maxWidth;
-  let height = maxWidth / aspectRatio;
-  
-  if (height > maxHeight) {
-    height = maxHeight;
-    width = maxHeight * aspectRatio;
-  }
-  
-  return { width, height };
-}
-
-// Helper function to get image dimensions from base64
-async function getImageDimensions(base64Image: string): Promise<{ width: number; height: number }> {
-  try {
-    // Extract the base64 data (remove data:image/...;base64, prefix)
-    const base64Data = base64Image.replace(/^data:image\/[a-z]+;base64,/, '');
-    
-    const result = await probe('data:image/jpeg;base64,' + base64Data);
-    return { width: result.width, height: result.height };
-  } catch (error) {
-    console.error('Error getting image dimensions:', error);
-    // Fallback to 1:1 aspect ratio
-    return { width: 300, height: 300 };
-  }
-}
-
-// Helper function to add image to PPTX with aspect ratio preservation
-async function addImageToPptx(slide: any, imageUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) {
-  try {
-    const base64Image = await fetchImageAsBase64(imageUrl);
-    
-    if (base64Image) {
-      try {
-        // Get image dimensions to calculate aspect ratio
-        const dimensions = await getImageDimensions(base64Image);
-        const { width, height } = calculateAspectRatioDimensions(
-          dimensions.width,
-          dimensions.height,
-          maxWidth,
-          maxHeight
-        );
-        
-        // Center the image within the available space
-        const xOffset = x + (maxWidth - width) / 2;
-        const yOffset = y + (maxHeight - height) / 2;
-        
-        slide.addImage({
-          data: base64Image,
-          x: xOffset,
-          y: yOffset,
-          w: width,
-          h: height
-        });
-      } catch (imgError) {
-        console.error('Error adding image to PPTX:', imgError);
-        // Fallback to placeholder
-        slide.addShape(PptxGenJS.ShapeType.rect, {
-          x,
-          y,
-          w: maxWidth,
-          h: maxHeight,
-          fill: { color: 'F0F0F0' }
-        });
-      }
-    } else {
-      // Fallback to placeholder if image fetch fails
-      slide.addShape(PptxGenJS.ShapeType.rect, {
-        x,
-        y,
-        w: maxWidth,
-        h: maxHeight,
-        fill: { color: 'F0F0F0' }
-      });
-    }
-  } catch (error) {
-    console.error('Error in addImageToPptx:', error);
-    // Fallback to placeholder
-    slide.addShape(PptxGenJS.ShapeType.rect, {
-      x,
-      y,
-      w: maxWidth,
-      h: maxHeight,
-      fill: { color: 'F0F0F0' }
-    });
-  }
-}
-
-// In-memory cache for images to avoid redundant fetches
-const imageCache = new Map<string, string>();
-
-// Helper function to fetch multiple images in parallel with caching
-async function fetchImagesInParallel(imageUrls: string[]): Promise<Map<string, string | null>> {
-  const results = new Map<string, string | null>();
-  
-  // Filter out URLs that are already cached
-  const urlsToFetch = imageUrls.filter(url => {
-    if (imageCache.has(url)) {
-      results.set(url, imageCache.get(url)!);
-      return false;
-    }
-    return true;
-  });
-  
-  if (urlsToFetch.length === 0) {
-    return results;
-  }
-  
-  // Fetch all uncached images in parallel
-  const fetchPromises = urlsToFetch.map(async (url) => {
+// Add a processed image to a PPTX slide with aspect ratio preservation and centering
+function addProcessedImageToSlide(
+  slide: any,
+  image: ProcessedImage | null,
+  x: number, y: number,
+  maxWidth: number, maxHeight: number
+) {
+  if (image) {
     try {
-      const base64Image = await fetchImageAsBase64(url);
-      if (base64Image) {
-        imageCache.set(url, base64Image);
-      }
-      results.set(url, base64Image);
-    } catch (error) {
-      console.error(`Error fetching image ${url}:`, error);
-      results.set(url, null);
+      const { width, height } = calculateFitDimensions(image.width, image.height, maxWidth, maxHeight);
+      const xOffset = x + (maxWidth - width) / 2;
+      const yOffset = y + (maxHeight - height) / 2;
+      slide.addImage({ data: image.base64, x: xOffset, y: yOffset, w: width, h: height });
+      return;
+    } catch (e) {
+      console.error('Error adding image to PPTX:', e);
     }
+  }
+  // Placeholder fallback
+  slide.addShape(PptxGenJS.ShapeType.rect, {
+    x, y, w: maxWidth, h: maxHeight,
+    fill: { color: 'F0F0F0' }
   });
-  
-  await Promise.all(fetchPromises);
-  return results;
 }
 
 // Helper function to generate item number
@@ -169,6 +46,9 @@ function generateItemNumber(createdDate: string, source: string, index: number):
   
   return `A${yy}${mm}${dd}-${sourcePrefix}${runningNumber}`;
 }
+
+const MAIN_IMG_MAX = 600;
+const SECONDARY_IMG_MAX = 300;
 
 export async function POST(request: NextRequest) {
   try {
@@ -203,6 +83,10 @@ export async function POST(request: NextRequest) {
       // Custom template support will be implemented when user provides template
       console.log(`Custom template requested: ${templateId}, using default for now`);
     }
+
+    // Pre-fetch and compress ALL images in parallel before generating slides
+    console.log('PPTX: Pre-fetching all images...');
+    const imageMap = await prefetchAllProposalImages(proposal, MAIN_IMG_MAX, SECONDARY_IMG_MAX);
 
     const pptx = new PptxGenJS();
     pptx.layout = 'LAYOUT_WIDE'; // 16:9 landscape
@@ -288,121 +172,44 @@ export async function POST(request: NextRequest) {
       });
       
       // Left section: Images
-      const mainImageSize = 3.5; // Main image size
+      const mainImageSize = 4.0; // Main image size (increased from 3.5)
       const imageStartX = 0.3;
-      const imageStartY = 1.2;
+      const imageStartY = 1.0;
+      
+      // Secondary images layout - fit height to match main image
+      const maxSecondaryImages = 4;
+      const imageSpacing = 0.12; // Slightly reduced spacing
+      // Calculate secondary image size to fit within main image height
+      // Total height available = mainImageSize
+      // Space needed for N images + (N-1) gaps
+      // imageSize = (mainImageSize - (N-1) * spacing) / N
+      const secondaryImageSize = (mainImageSize - (maxSecondaryImages - 1) * imageSpacing) / maxSecondaryImages;
       
       // Main image (square container)
       if (product.image_urls && product.image_urls.length > 0) {
-        await addImageToPptx(slide, product.image_urls[0], imageStartX, imageStartY, mainImageSize, mainImageSize);
+        const mainImg = getProcessedImage(imageMap, product.image_urls[0], MAIN_IMG_MAX);
+        addProcessedImageToSlide(slide, mainImg, imageStartX, imageStartY, mainImageSize, mainImageSize);
         
-        // 3 supporting images vertically aligned to the right of main image
-        // Use selected secondary images if available, otherwise use cachedDetails
-        let allImages: any[] = [];
-        const selectedImages = product.selectedSecondaryImages || [];
+        // Secondary images
+        const secondaryUrls = getSecondaryImageUrls(product);
         
-        if (selectedImages.length > 0) {
-          allImages = selectedImages.map((url: string) => ({ url }));
-          console.log(`Using ${allImages.length} selected secondary images for ${product.source_id}`);
-        } else {
-          // Priority 1: item_imgs from cached details (fastest)
-          if (product.cachedDetails?.item_imgs && Array.isArray(product.cachedDetails.item_imgs) && product.cachedDetails.item_imgs.length > 0) {
-            allImages = product.cachedDetails.item_imgs.map((img: any) => img.url || img);
-            console.log(`Found ${allImages.length} images from cached item_imgs for ${product.source_id}`);
-          }
-          // Priority 2: product.image_urls (fallback)
-          else if (product.image_urls && product.image_urls.length > 0) {
-            allImages = [...product.image_urls];
-            console.log(`Using ${allImages.length} images from product.image_urls for ${product.source_id}`);
-          }
-        }
-        
-        // Take up to 4 additional images (skip first one as it's used as main image)
-        const additionalImages = allImages.slice(0, 4);
-        console.log(`Will add ${additionalImages.length} additional images for ${product.source_id}`);
-        
-        if (additionalImages.length > 0) {
-          const smallImageSize = 1.1; // Size for supporting images
-          const imageSpacing = 0.15; // Vertical space between images
-          const smallImageX = imageStartX + mainImageSize + 0.2; // To the right of main image
+        if (secondaryUrls.length > 0) {
+          const secondaryImageX = imageStartX + mainImageSize + 0.2;
           
-          // Normalize URLs and prepare for parallel fetching
-          const imageUrls = additionalImages.map((img, i) => {
-            let imageUrl: string = img;
-            
-            // Normalize URL - handle both string and object formats
-            if (typeof imageUrl === 'string') {
-              if (imageUrl.startsWith('//')) {
-                imageUrl = `https:${imageUrl}`;
-              }
-            } else if (typeof imageUrl === 'object' && imageUrl !== null && 'url' in imageUrl) {
-              const urlStr = (imageUrl as any).url;
-              imageUrl = urlStr.startsWith('//') ? `https:${urlStr}` : urlStr;
-            }
-            
-            return { url: imageUrl, index: i };
-          });
-          
-          // Fetch all images in parallel
-          const urlsToFetch = imageUrls.map(item => item.url);
-          const imageResults = await fetchImagesInParallel(urlsToFetch);
-          
-          // Add images to slide
-          for (let i = 0; i < imageUrls.length; i++) {
-            const { url: imageUrl, index } = imageUrls[i];
-            const yPos = imageStartY + index * (smallImageSize + imageSpacing);
-            const base64Image = imageResults.get(imageUrl);
-            
-            if (base64Image) {
-              try {
-                const dimensions = await getImageDimensions(base64Image);
-                const { width, height } = calculateAspectRatioDimensions(
-                  dimensions.width,
-                  dimensions.height,
-                  smallImageSize,
-                  smallImageSize
-                );
-                
-                // Center the image within the available space
-                const xOffset = smallImageX + (smallImageSize - width) / 2;
-                const yOffset = yPos + (smallImageSize - height) / 2;
-                
-                slide.addImage({
-                  data: base64Image,
-                  x: xOffset,
-                  y: yOffset,
-                  w: width,
-                  h: height
-                });
-              } catch (imgError) {
-                console.error(`Error adding cached image to PPTX:`, imgError);
-                // Fallback to placeholder
-                slide.addShape(PptxGenJS.ShapeType.rect, {
-                  x: smallImageX,
-                  y: yPos,
-                  w: smallImageSize,
-                  h: smallImageSize,
-                  fill: { color: 'F0F0F0' }
-                });
-              }
-            } else {
-              // Fallback to placeholder if image not available
-              slide.addShape(PptxGenJS.ShapeType.rect, {
-                x: smallImageX,
-                y: yPos,
-                w: smallImageSize,
-                h: smallImageSize,
-                fill: { color: 'F0F0F0' }
-              });
-            }
+          for (let i = 0; i < Math.min(secondaryUrls.length, maxSecondaryImages); i++) {
+            const yPos = imageStartY + i * (secondaryImageSize + imageSpacing);
+            const secImg = getProcessedImage(imageMap, secondaryUrls[i], SECONDARY_IMG_MAX);
+            addProcessedImageToSlide(slide, secImg, secondaryImageX, yPos, secondaryImageSize, secondaryImageSize);
           }
         }
       }
       
-      // Right section: Details
-      const rightSectionX = 5.2;
-      const rightSectionWidth = 7.5;
-      let currentY = 1.2;
+      // Right section: Details - positioned to the right of images
+      // Images end at approximately: imageStartX (0.3) + mainImageSize (4.0) + spacing (0.2) + secondaryImageSize (~0.94)
+      // So right section should start after ~5.5 inches
+      const rightSectionX = 5.8; // Moved right to avoid overlap with images
+      const rightSectionWidth = 7.0; // Slightly reduced width
+      let currentY = 1.0; // Aligned with image startY
       
       // Product title
       slide.addText(product.title, {

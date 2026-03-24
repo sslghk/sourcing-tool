@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jsPDF from 'jspdf';
-import probe from 'probe-image-size';
+import {
+  prefetchAllProposalImages,
+  getProcessedImage,
+  getSecondaryImageUrls,
+  calculateFitDimensions,
+  normalizeUrl,
+  type ProcessedImage
+} from '../image-utils';
 
 // Helper function to generate item number
 function generateItemNumber(createdDate: string, source: string, index: number): string {
@@ -15,152 +22,34 @@ function generateItemNumber(createdDate: string, source: string, index: number):
   return `A${yy}${mm}${dd}-${sourcePrefix}${runningNumber}`;
 }
 
-// Helper function to fetch image as base64
-async function fetchImageAsBase64(imageUrl: string): Promise<string | null> {
-  try {
-    // Ensure URL has protocol
-    let url = imageUrl;
-    if (url.startsWith('//')) {
-      url = `https:${url}`;
-    }
-    
-    // Fetch the image
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
-    }
-    
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString('base64');
-    
-    // Determine image type from URL or content-type
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    const imageType = contentType.split('/')[1] || 'jpeg';
-    
-    return `data:${contentType};base64,${base64}`;
-  } catch (error) {
-    console.error('Error fetching image:', error);
-    return null;
-  }
-}
-
-// Helper function to calculate dimensions maintaining aspect ratio
-function calculateAspectRatioDimensions(originalWidth: number, originalHeight: number, maxWidth: number, maxHeight: number): { width: number; height: number } {
-  const aspectRatio = originalWidth / originalHeight;
-  
-  let width = maxWidth;
-  let height = maxWidth / aspectRatio;
-  
-  if (height > maxHeight) {
-    height = maxHeight;
-    width = maxHeight * aspectRatio;
-  }
-  
-  return { width, height };
-}
-
-// Helper function to get image dimensions from base64
-async function getImageDimensions(base64Image: string): Promise<{ width: number; height: number }> {
-  try {
-    // Extract the base64 data (remove data:image/...;base64, prefix)
-    const base64Data = base64Image.replace(/^data:image\/[a-z]+;base64,/, '');
-    
-    const result = await probe('data:image/jpeg;base64,' + base64Data);
-    return { width: result.width, height: result.height };
-  } catch (error) {
-    console.error('Error getting image dimensions:', error);
-    // Fallback to 1:1 aspect ratio
-    return { width: 300, height: 300 };
-  }
-}
-
-// Helper function to add image to PDF with aspect ratio preservation
-async function addImageToPDF(doc: jsPDF, imageUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) {
-  try {
-    const base64Image = await fetchImageAsBase64(imageUrl);
-    
-    if (base64Image) {
-      try {
-        // Get image dimensions to calculate aspect ratio
-        const dimensions = await getImageDimensions(base64Image);
-        const { width, height } = calculateAspectRatioDimensions(
-          dimensions.width,
-          dimensions.height,
-          maxWidth,
-          maxHeight
-        );
-        
-        // Center the image within the available space
-        const xOffset = x + (maxWidth - width) / 2;
-        const yOffset = y + (maxHeight - height) / 2;
-        
-        doc.addImage(base64Image, 'JPEG', xOffset, yOffset, width, height);
-      } catch (imgError) {
-        console.error('Error adding image to PDF:', imgError);
-        // Fallback to placeholder
-        doc.setFillColor(240, 240, 240);
-        doc.rect(x, y, maxWidth, maxHeight, 'F');
-        doc.setFontSize(8);
-        doc.setTextColor(150, 150, 150);
-        doc.text('Image', x + maxWidth / 2, y + maxHeight / 2, { align: 'center' });
-      }
-    } else {
-      // Fallback to placeholder if image fetch fails
-      doc.setFillColor(240, 240, 240);
-      doc.rect(x, y, maxWidth, maxHeight, 'F');
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text('Image', x + maxWidth / 2, y + maxHeight / 2, { align: 'center' });
-    }
-  } catch (error) {
-    console.error('Error in addImageToPDF:', error);
-    // Fallback to placeholder
-    doc.setFillColor(240, 240, 240);
-    doc.rect(x, y, maxWidth, maxHeight, 'F');
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
-    doc.text('Image', x + maxWidth / 2, y + maxHeight / 2, { align: 'center' });
-  }
-}
-
-// In-memory cache for images to avoid redundant fetches
-const imageCache = new Map<string, string>();
-
-// Helper function to fetch multiple images in parallel with caching
-async function fetchImagesInParallel(imageUrls: string[]): Promise<Map<string, string | null>> {
-  const results = new Map<string, string | null>();
-  
-  // Filter out URLs that are already cached
-  const urlsToFetch = imageUrls.filter(url => {
-    if (imageCache.has(url)) {
-      results.set(url, imageCache.get(url)!);
-      return false;
-    }
-    return true;
-  });
-  
-  if (urlsToFetch.length === 0) {
-    return results;
-  }
-  
-  // Fetch all uncached images in parallel
-  const fetchPromises = urlsToFetch.map(async (url) => {
+// Add a processed image to PDF with aspect ratio preservation and centering
+function addProcessedImageToPDF(
+  doc: jsPDF,
+  image: ProcessedImage | null,
+  x: number, y: number,
+  maxWidth: number, maxHeight: number
+) {
+  if (image) {
     try {
-      const base64Image = await fetchImageAsBase64(url);
-      if (base64Image) {
-        imageCache.set(url, base64Image);
-      }
-      results.set(url, base64Image);
-    } catch (error) {
-      console.error(`Error fetching image ${url}:`, error);
-      results.set(url, null);
+      const { width, height } = calculateFitDimensions(image.width, image.height, maxWidth, maxHeight);
+      const xOffset = x + (maxWidth - width) / 2;
+      const yOffset = y + (maxHeight - height) / 2;
+      doc.addImage(image.base64, 'JPEG', xOffset, yOffset, width, height);
+      return;
+    } catch (e) {
+      console.error('Error adding image to PDF:', e);
     }
-  });
-  
-  await Promise.all(fetchPromises);
-  return results;
+  }
+  // Placeholder fallback
+  doc.setFillColor(240, 240, 240);
+  doc.rect(x, y, maxWidth, maxHeight, 'F');
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text('Image', x + maxWidth / 2, y + maxHeight / 2, { align: 'center' });
 }
+
+const MAIN_IMG_MAX = 600;
+const SECONDARY_IMG_MAX = 300;
 
 export async function POST(request: NextRequest) {
   try {
@@ -172,6 +61,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Pre-fetch and compress ALL images in parallel before generating pages
+    console.log('PDF: Pre-fetching all images...');
+    const imageMap = await prefetchAllProposalImages(proposal, MAIN_IMG_MAX, SECONDARY_IMG_MAX);
 
     const doc = new jsPDF({
       orientation: orientation,
@@ -216,87 +109,41 @@ export async function POST(request: NextRequest) {
       
       // Left section: Images (convert PPTX coordinates to PDF mm)
       // PPTX uses inches, PDF uses mm. Convert: 1 inch = 25.4mm
-      // PPTX coordinates: 0.3, 1.2, 3.5, 1.1, 0.15, 5.2, 7.5
-      // Convert to mm: multiply by 25.4
       const imageStartX = 0.3 * 25.4; // ~7.6mm
-      const imageStartY = 1.2 * 25.4; // ~30.5mm  
-      const mainImageSize = 3.5 * 25.4 * 0.95; // Enlarge by 10% (from 0.85 to 0.95, ~83.3mm)
+      const imageStartY = 1.0 * 25.4; // ~25.4mm (adjusted to match PPTX)
+      const mainImageSize = 4.0 * 25.4; // 101.6mm (increased to match PPTX)
+      
+      // Secondary images layout - fit height to match main image
+      const maxSecondaryImages = 4;
+      const imageSpacing = 0.12 * 25.4; // ~3mm
+      // Calculate secondary image size to fit within main image height
+      const secondaryImageSize = (mainImageSize - (maxSecondaryImages - 1) * imageSpacing) / maxSecondaryImages;
       
       // Main image
       if (product.image_urls && product.image_urls.length > 0) {
-        await addImageToPDF(doc, product.image_urls[0], imageStartX, imageStartY, mainImageSize, mainImageSize);
+        const mainImg = getProcessedImage(imageMap, product.image_urls[0], MAIN_IMG_MAX);
+        addProcessedImageToPDF(doc, mainImg, imageStartX, imageStartY, mainImageSize, mainImageSize);
         
-        // Use selected secondary images if available, otherwise use cachedDetails
-        const selectedImages = product.selectedSecondaryImages || [];
-        const additionalImages = selectedImages.length > 0 
-          ? selectedImages.map((url: string) => ({ url }))
-          : (product.cachedDetails?.item_imgs || []);
+        // Secondary images
+        const secondaryUrls = getSecondaryImageUrls(product);
         
-        if (additionalImages.length > 0) {
-          // Take up to 4 additional images
-          const imagesToShow = additionalImages.slice(0, 4);
+        if (secondaryUrls.length > 0) {
+          const secondaryImageX = imageStartX + mainImageSize + (0.2 * 25.4);
           
-          // Layout like PPTX: vertical alignment to the right of main image
-          const smallImageSize = 1.1 * 25.4 * 0.95; // Enlarge by 10% (from 0.85 to 0.95, ~26.5mm)
-          const imageSpacing = 0.15 * 25.4; // ~3.8mm
-          const smallImageX = imageStartX + mainImageSize + 0.2 * 25.4; // ~5.1mm from main image
-          const smallImageStartY = imageStartY;
-          
-          // Normalize URLs
-          const imageUrls = imagesToShow.map((img: { url: string }) => {
-            const url = img.url.startsWith('//') ? `https:${img.url}` : img.url;
-            return url;
-          });
-          
-          // Fetch all images in parallel
-          const imageResults = await fetchImagesInParallel(imageUrls);
-          
-          // Add images vertically to the right of main image
-          for (let i = 0; i < imagesToShow.length; i++) {
-            const yPos = smallImageStartY + i * (smallImageSize + imageSpacing);
-            const imageUrl = imageUrls[i];
-            const base64Image = imageResults.get(imageUrl);
-            
-            if (base64Image) {
-              try {
-                const dimensions = await getImageDimensions(base64Image);
-                const { width, height } = calculateAspectRatioDimensions(
-                  dimensions.width,
-                  dimensions.height,
-                  smallImageSize,
-                  smallImageSize
-                );
-                
-                // Center the image within the available space
-                const xOffset = smallImageX + (smallImageSize - width) / 2;
-                const yOffset = yPos + (smallImageSize - height) / 2;
-                
-                doc.addImage(base64Image, 'JPEG', xOffset, yOffset, width, height);
-              } catch (imgError) {
-                console.error(`Error adding cached image to PDF:`, imgError);
-                // Fallback to placeholder
-                doc.setFillColor(240, 240, 240);
-                doc.rect(smallImageX, yPos, smallImageSize, smallImageSize, 'F');
-                doc.setFontSize(8);
-                doc.setTextColor(150, 150, 150);
-                doc.text('Image', smallImageX + smallImageSize / 2, yPos + smallImageSize / 2, { align: 'center' });
-              }
-            } else {
-              // Fallback to placeholder if image not available
-              doc.setFillColor(240, 240, 240);
-              doc.rect(smallImageX, yPos, smallImageSize, smallImageSize, 'F');
-              doc.setFontSize(8);
-              doc.setTextColor(150, 150, 150);
-              doc.text('Image', smallImageX + smallImageSize / 2, yPos + smallImageSize / 2, { align: 'center' });
-            }
+          for (let i = 0; i < Math.min(secondaryUrls.length, maxSecondaryImages); i++) {
+            const yPos = imageStartY + i * (secondaryImageSize + imageSpacing);
+            const secImg = getProcessedImage(imageMap, secondaryUrls[i], SECONDARY_IMG_MAX);
+            addProcessedImageToPDF(doc, secImg, secondaryImageX, yPos, secondaryImageSize, secondaryImageSize);
           }
         }
       }
       
-      // Right section: Details (convert PPTX coordinates to PDF mm, move left)
-      const rightSectionX = (5.2 * 25.4) - (mainImageSize * 0.05); // Move left by 5% of image size
-      const rightSectionWidth = 7.5 * 25.4 * 0.8; // Shorten by 20% (~152.4mm)
-      let currentY = 1.2 * 25.4; // ~30.5mm
+      // Right section: Details (positioned to the right of images)
+      // Images end at approximately: 7.6mm + 101.6mm (main) + 5mm (spacing) + ~23mm (secondary) = ~137mm
+      // So text section should start after ~140mm
+      const rightSectionX = 145; // ~5.7 inches, safely to the right of images
+      const rightSectionWidth = pageWidth - rightSectionX - margin; // Use remaining width
+      let currentY = imageStartY; // Align with image start
       
       // Product title
       doc.setFontSize(12); // Changed from 16 to 12
