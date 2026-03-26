@@ -470,17 +470,29 @@ export async function PATCH(request: NextRequest) {
         url: p.url, moq: p.moq, seller: p.seller,
       })),
     ];
+    // Deduplicate the merged array by source_id to ensure no double-counting
+    const seen = new Set<string>();
+    data.products = data.products.filter((p: any) => {
+      const key = p.source_id || p.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
     data.totalItems = data.products.length;
     data.updatedAt = new Date().toISOString();
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    console.log(`Appended ${toAdd.length} product(s) to proposal ${proposalId}`);
+    console.log(`Appended ${toAdd.length} product(s) to proposal ${proposalId} (total: ${data.totalItems})`);
 
-    const successfulCount = await fetchAndSaveItemDetails(data, toAdd, filePath);
-    console.log(`PATCH complete: ${successfulCount}/${toAdd.length} details fetched`);
+    // Fetch item details in the background — don't block the response
+    fetchAndSaveItemDetails(data, toAdd, filePath)
+      .then(count => console.log(`PATCH background: ${count}/${toAdd.length} details fetched for ${proposalId}`))
+      .catch(err => console.error(`PATCH background fetch error for ${proposalId}:`, err));
 
     return NextResponse.json({
-      success: true, added: toAdd.length, detailsFetched: successfulCount,
-      message: `${toAdd.length} product(s) added, ${successfulCount} details fetched.`,
+      success: true,
+      added: toAdd.length,
+      totalItems: data.totalItems,
+      message: `${toAdd.length} product(s) added. Details are being fetched in the background.`,
     });
 
   } catch (error) {

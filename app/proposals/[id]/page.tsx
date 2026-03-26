@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw, GripVertical } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -105,6 +105,10 @@ export default function ProposalDetailPage() {
   
   // Expanded product details for full text display
   const [expandedDetails, setExpandedDetails] = useState<Set<string>>(new Set());
+
+  // Drag-and-drop reorder state
+  const dragIndexRef = useRef<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // Fetch product details with retry logic
   const fetchProductDetailsWithRetry = async (productId: string, platform: string, maxRetries = 3): Promise<ProductDetails | null> => {
@@ -350,24 +354,7 @@ export default function ProposalDetailPage() {
 
   const loadProposal = async () => {
     try {
-      // Try localStorage first
-      const stored = localStorage.getItem('proposals');
-      if (stored) {
-        const proposals = JSON.parse(stored);
-        const found = proposals.find((p: Proposal) => p.id === params.id);
-        if (found) {
-          setProposal(found);
-          setEditedName(found.name);
-          setEditedClientName(found.client_name || "");
-          setEditedNotes(found.notes || "");
-          setEditedStatus(found.status);
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      // Fallback: load from server-side JSON file
-      console.log('Proposal not in localStorage, fetching from server...');
+      // Always fetch from server first — server JSON is the source of truth
       const response = await fetch(`/api/proposal-details?proposalId=${params.id}`);
       if (response.ok) {
         const data = await response.json();
@@ -388,7 +375,7 @@ export default function ProposalDetailPage() {
           created_at: data.createdAt,
           updated_at: data.updatedAt,
           products,
-          totalItems: data.totalItems,
+          totalItems: data.products?.length || 0,
           totalValue: data.products?.reduce((sum: number, p: any) => sum + (p.price?.current || 0), 0) || 0,
           createdBy: data.createdBy,
         };
@@ -399,17 +386,37 @@ export default function ProposalDetailPage() {
         setEditedNotes(serverProposal.notes || '');
         setEditedStatus(serverProposal.status);
 
-        // Cache in localStorage so subsequent loads are instant
+        // Update localStorage to keep it in sync with server
         try {
           const existing = JSON.parse(localStorage.getItem('proposals') || '[]');
-          if (!existing.find((p: any) => p.id === serverProposal.id)) {
-            existing.unshift(stripBase64Images(serverProposal));
-            localStorage.setItem('proposals', JSON.stringify(existing));
+          const idx = existing.findIndex((p: any) => p.id === serverProposal.id);
+          const stripped = stripBase64Images(serverProposal);
+          if (idx >= 0) {
+            existing[idx] = stripped;
+          } else {
+            existing.unshift(stripped);
           }
+          localStorage.setItem('proposals', JSON.stringify(existing));
         } catch (e) { /* ignore storage errors */ }
-      } else {
-        setProposal(null);
+        return;
       }
+
+      // Fallback: load from localStorage if server returns 404 or error
+      console.log('Server fetch failed, falling back to localStorage...');
+      const stored = localStorage.getItem('proposals');
+      if (stored) {
+        const proposals = JSON.parse(stored);
+        const found = proposals.find((p: Proposal) => p.id === params.id);
+        if (found) {
+          setProposal(found);
+          setEditedName(found.name);
+          setEditedClientName(found.client_name || "");
+          setEditedNotes(found.notes || "");
+          setEditedStatus(found.status);
+          return;
+        }
+      }
+      setProposal(null);
     } catch (error) {
       console.error('Error loading proposal:', error);
     } finally {
@@ -573,7 +580,8 @@ export default function ProposalDetailPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate PPTX');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.details || errData.error || `Server error ${response.status}`);
       }
 
       const blob = await response.blob();
@@ -748,6 +756,53 @@ export default function ProposalDetailPage() {
   };
 
   // Helper function to strip base64 data: URLs before saving to localStorage (keep regular URLs)
+  const saveProductOrder = async (orderedProducts: ProductDTO[]) => {
+    if (!proposal) return;
+    try {
+      await fetch('/api/proposal-details', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId: proposal.id,
+          updatedProducts: orderedProducts.map(p => ({
+            id: p.id, source_id: p.source_id, source: p.source,
+            title: p.title, price: p.price, image_urls: p.image_urls,
+            url: p.url, moq: p.moq, seller: p.seller,
+          })),
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to save product order:', err);
+    }
+  };
+
+  const handleDragStart = (index: number) => {
+    dragIndexRef.current = index;
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const fromIndex = dragIndexRef.current;
+    if (fromIndex === null || fromIndex === dropIndex || !proposal) return;
+    const reordered = [...proposal.products];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(dropIndex, 0, moved);
+    setProposal({ ...proposal, products: reordered });
+    saveProductOrder(reordered);
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  };
+
   const stripBase64Images = (proposal: Proposal): Proposal => {
     return {
       ...proposal,
@@ -1182,13 +1237,28 @@ export default function ProposalDetailPage() {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {proposal.products.map((product) => {
+              {proposal.products.map((product, index) => {
                 const details = productDetails.get(product.source_id);
 
                 return (
-                  <div key={product.id}>
+                  <div
+                    key={product.id}
+                    draggable
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onDragEnd={handleDragEnd}
+                    className={`transition-colors ${
+                      dragOverIndex === index && dragIndexRef.current !== index
+                        ? 'border-t-2 border-sky-400 bg-sky-50'
+                        : ''
+                    }`}
+                  >
                     <div className="p-6 hover:bg-gray-50 transition-colors">
                       <div className="flex gap-6">
+                        <div className="flex-shrink-0 flex items-center pr-1 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500">
+                          <GripVertical className="h-5 w-5" />
+                        </div>
                         <div className="flex-shrink-0">
                           <button
                             onClick={() => openImageCarousel(
@@ -1279,9 +1349,9 @@ export default function ProposalDetailPage() {
                           {product.aiEnrichment?.design_alternatives && product.aiEnrichment.design_alternatives.some(a => a.generated_image_url) && (
                             <div className="mt-3 space-y-2">
                               <h5 className="text-sm font-medium text-purple-700">
-                                Select AI designs for export (up to 3):
+                                Select AI designs for export (up to 4):
                                 <span className="ml-2 text-xs text-gray-500">
-                                  ({selectedAIImages[product.id]?.length || 0}/3 selected)
+                                  ({selectedAIImages[product.id]?.length || 0}/4 selected)
                                 </span>
                               </h5>
                               <div className="flex gap-2 overflow-x-auto pb-1">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User } from "lucide-react";
+import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +43,8 @@ export default function ProposalsPage() {
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [filterMode, setFilterMode] = useState<'my' | 'all'>('my');
+  const [sortField, setSortField] = useState<'name' | 'date'>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   
   // Product details state
   const [productDetails, setProductDetails] = useState<Map<string, any>>(new Map());
@@ -92,7 +94,27 @@ export default function ProposalsPage() {
   useEffect(() => {
     fetchProposalsData();
     loadProposalProducts();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchProposalsData();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
+
+  const userEmail = session?.user?.email;
+  const filteredProposals = filterMode === 'all' || !userEmail
+    ? proposals
+    : proposals.filter(p => !p.createdBy || p.createdBy?.email === userEmail);
+
+  const sortedProposals = [...filteredProposals].sort((a, b) => {
+    const cmp = sortField === 'name'
+      ? (a.name || '').localeCompare(b.name || '')
+      : new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
 
   // Show loading while checking auth
   if (status === 'loading') {
@@ -572,6 +594,28 @@ export default function ProposalsPage() {
           <h1 className="text-3xl font-bold text-gray-900">
             Proposals
           </h1>
+          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setSortField('name')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                sortField === 'name' ? 'bg-white text-sky-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >Name</button>
+            <button
+              onClick={() => setSortField('date')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                sortField === 'date' ? 'bg-white text-sky-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >Date</button>
+            <button
+              onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
+              className="px-2 py-1.5 rounded-md text-gray-600 hover:text-sky-700 transition-colors"
+              title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              {sortDir === 'asc' ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />}
+            </button>
+          </div>
           <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
             <button
               onClick={() => setFilterMode('my')}
@@ -595,6 +639,7 @@ export default function ProposalsPage() {
               <FileText className="h-4 w-4 inline mr-1.5 -mt-0.5" />
               All Proposals
             </button>
+          </div>
           </div>
         </div>
 
@@ -633,15 +678,15 @@ export default function ProposalsPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {[
-            { label: "Total Proposals", value: proposals.length, icon: FileText },
+            { label: "Total Proposals", value: sortedProposals.length, icon: FileText },
             {
               label: "Draft",
-              value: proposals.filter((p) => p.status === "draft").length,
+              value: sortedProposals.filter((p) => p.status === "draft").length,
               icon: FileText,
             },
             {
               label: "Submitted",
-              value: proposals.filter((p) => p.status === "submitted").length,
+              value: sortedProposals.filter((p) => p.status === "submitted").length,
               icon: FileText,
             },
           ].map((stat, index) => (
@@ -672,13 +717,7 @@ export default function ProposalsPage() {
             <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-sky-500 border-r-transparent"></div>
             <p className="mt-4 text-gray-600">Loading proposals...</p>
           </div>
-        ) : (() => {
-          const userEmail = session?.user?.email;
-          const filteredProposals = filterMode === 'my' && userEmail
-            ? proposals.filter(p => p.createdBy?.email === userEmail)
-            : proposals;
-          return filteredProposals;
-        })().length === 0 ? (
+        ) : sortedProposals.length === 0 ? (
           <Card className="bg-white border-gray-200">
             <CardContent className="p-12 text-center">
               <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -692,12 +731,7 @@ export default function ProposalsPage() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(() => {
-              const userEmail = session?.user?.email;
-              return filterMode === 'my' && userEmail
-                ? proposals.filter(p => p.createdBy?.email === userEmail)
-                : proposals;
-            })().map((proposal, index) => (
+            {sortedProposals.map((proposal, index) => (
               <motion.div
                 key={proposal.id}
                 initial={{ opacity: 0, scale: 0.9 }}

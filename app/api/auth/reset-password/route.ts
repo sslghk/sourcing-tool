@@ -47,6 +47,7 @@ async function sendPinEmail(to: string, pin: string): Promise<void> {
     port,
     secure: port === 465,
     auth: { user, pass },
+    tls: { rejectUnauthorized: false },
   });
 
   await transporter.sendMail({
@@ -81,7 +82,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Email is required' }, { status: 400 });
       }
 
+      console.log('[reset-password] step 1: looking up user', email);
       const user = await userStore.findByEmail(email);
+      console.log('[reset-password] step 2: user found =', !!user);
       if (!user) {
         // Return success to avoid leaking which emails are registered
         return NextResponse.json({ success: true });

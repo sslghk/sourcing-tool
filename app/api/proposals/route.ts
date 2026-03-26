@@ -9,7 +9,7 @@ const DATA_DIR = path.join(process.cwd(), 'data', 'proposals');
 export async function GET(request: NextRequest) {
   try {
     if (!fs.existsSync(DATA_DIR)) {
-      return NextResponse.json({ proposals: [] });
+      return NextResponse.json({ proposals: [] }, { headers: { 'Cache-Control': 'no-store' } });
     }
 
     const files = fs.readdirSync(DATA_DIR).filter(f => f.endsWith('.json'));
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
           created_at: data.createdAt,
           updated_at: data.updatedAt,
           createdBy: data.createdBy || null,
-          totalItems: data.totalItems || data.products?.length || 0,
+          totalItems: data.products?.length || 0,
           successfulItems: data.successfulItems || 0,
           totalValue: data.products?.reduce((sum: number, p: any) => sum + (p.price?.current || 0), 0) || 0,
           currency: 'CNY',
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     // Sort by created_at descending (newest first)
     proposals.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-    return NextResponse.json({ proposals });
+    return NextResponse.json({ proposals }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('Error listing proposals:', error);
     return NextResponse.json(

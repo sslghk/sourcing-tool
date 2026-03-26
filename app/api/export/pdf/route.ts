@@ -17,7 +17,8 @@ function generateItemNumber(createdDate: string, source: string, index: number):
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   
-  const sourcePrefix = source.toLowerCase() === 'taobao' ? 'T' : source.charAt(0).toUpperCase();
+  const src = (source || 'unknown').toLowerCase();
+  const sourcePrefix = src === 'taobao' ? 'T' : (source || 'X').charAt(0).toUpperCase();
   const runningNumber = String(index + 1).padStart(3, '0');
   
   return `A${yy}${mm}${dd}-${sourcePrefix}${runningNumber}`;
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
     }
     
     doc.setFontSize(14);
-    doc.text(`Status: ${proposal.status.toUpperCase()}`, pageWidth / 2, pageHeight / 2 + 25, { align: 'center' });
+    doc.text(`Status: ${(proposal.status || 'draft').toUpperCase()}`, pageWidth / 2, pageHeight / 2 + 25, { align: 'center' });
     doc.text(`Created: ${new Date(proposal.created_at).toLocaleDateString()}`, pageWidth / 2, pageHeight / 2 + 35, { align: 'center' });
     doc.text(`Total Items: ${proposal.products.length}`, pageWidth / 2, pageHeight / 2 + 45, { align: 'center' });
 
@@ -168,7 +169,9 @@ export async function POST(request: NextRequest) {
       doc.setFontSize(12); // Changed from 16 to 12
       doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
       doc.setTextColor(14, 165, 233);
-      doc.text(`${product.price.current} ${product.price.currency}`, rightSectionX, currentY);
+      const priceValue = product.price?.current ?? product.price ?? 'N/A';
+      const priceCurrency = product.price?.currency ?? '';
+      doc.text(`${priceValue} ${priceCurrency}`.trim(), rightSectionX, currentY);
       currentY += 0.4 * 25.4; // Same as PPTX (0.4 inches)
       
       doc.setTextColor(0, 0, 0);
@@ -189,14 +192,14 @@ export async function POST(request: NextRequest) {
       doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
       doc.text('FOB Price:', rightSectionX, currentY);
       doc.setFont('calibri', 'normal'); // Changed from helvetica to calibri
-      doc.text(product.fob ? `${product.fob} ${product.price.currency}` : 'N/A', rightSectionX + 35, currentY);
+      doc.text(product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', rightSectionX + 35, currentY);
       currentY += 0.15 * 25.4; // Same as PPTX (0.15 inches)
       
       // ELC
       doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
       doc.text('ELC:', rightSectionX, currentY);
       doc.setFont('calibri', 'normal'); // Changed from helvetica to calibri
-      doc.text(product.elc ? `${product.elc} ${product.price.currency}` : 'N/A', rightSectionX + 35, currentY);
+      doc.text(product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', rightSectionX + 35, currentY);
       currentY += 0.15 * 25.4; // Same as PPTX (0.15 inches)
       
       // Description - use fresh details, cached details, or product fields

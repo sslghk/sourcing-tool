@@ -29,7 +29,7 @@ function addProcessedImageToSlide(
     }
   }
   // Placeholder fallback
-  slide.addShape(PptxGenJS.ShapeType.rect, {
+  slide.addShape('rect' as any, {
     x, y, w: maxWidth, h: maxHeight,
     fill: { color: 'F0F0F0' }
   });
@@ -42,7 +42,8 @@ function generateItemNumber(createdDate: string, source: string, index: number):
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   
-  const sourcePrefix = source.toLowerCase() === 'taobao' ? 'T' : source.charAt(0).toUpperCase();
+  const src = (source || 'unknown').toLowerCase();
+  const sourcePrefix = src === 'taobao' ? 'T' : (source || 'X').charAt(0).toUpperCase();
   const runningNumber = String(index + 1).padStart(3, '0');
   
   return `A${yy}${mm}${dd}-${sourcePrefix}${runningNumber}`;
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    titleSlide.addText(`Status: ${proposal.status.toUpperCase()}`, {
+    titleSlide.addText(`Status: ${(proposal.status || 'draft').toUpperCase()}`, {
       x: 1,
       y: 4,
       w: 11,
@@ -237,7 +238,9 @@ export async function POST(request: NextRequest) {
       currentY += 0.8;
       
       // Price
-      slide.addText(`${product.price.current} ${product.price.currency}`, {
+      const priceValue = product.price?.current ?? product.price ?? 'N/A';
+      const priceCurrency = product.price?.currency ?? '';
+      slide.addText(`${priceValue} ${priceCurrency}`.trim(), {
         x: rightSectionX,
         y: currentY,
         w: rightSectionWidth,
@@ -256,15 +259,15 @@ export async function POST(request: NextRequest) {
         ],
         [
           { text: 'Platform:', options: { bold: true } },
-          { text: product.source, options: {} }
+          { text: product.source ?? 'N/A', options: {} }
         ],
         [
           { text: 'FOB Price:', options: { bold: true } },
-          { text: product.fob ? `${product.fob} ${product.price.currency}` : 'N/A', options: {} }
+          { text: product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', options: {} }
         ],
         [
           { text: 'ELC:', options: { bold: true } },
-          { text: product.elc ? `${product.elc} ${product.price.currency}` : 'N/A', options: {} }
+          { text: product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', options: {} }
         ],
       ];
       

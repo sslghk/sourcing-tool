@@ -8,41 +8,13 @@
     "name": "Admin User"
   },
   "createdAt": "2026-03-24T09:29:51.614Z",
-  "updatedAt": "2026-03-24T10:12:40.212Z",
+  "updatedAt": "2026-03-26T11:41:19.695Z",
   "products": [
     {
-      "id": "taobao_620409965800",
-      "source": "taobao",
-      "source_id": "620409965800",
-      "title": "Export solid color children's nap blanket Falei velvet office cover leg knee blanket air conditioning blanket pet blanket",
-      "description_short": "",
-      "price": {
-        "current": 9.84,
-        "currency": "CNY",
-        "original": 9.84
-      },
-      "image_urls": [
-        "https://img.alicdn.com/imgextra/O1CN01GGlcw21qtmqsSDwVW_!!67945554.jpg"
-      ],
-      "url": "//item.taobao.com/item.htm?id=620409965800",
-      "seller": {
-        "name": "Unknown",
-        "id": null,
-        "rating": null,
-        "location": ""
-      },
-      "attributes": {
-        "sales": "0",
-        "shopType": ""
-      },
-      "fetched_at": "2026-03-24T09:28:32.547452"
-    },
-    {
       "id": "taobao_842352644739",
-      "source": "taobao",
       "source_id": "842352644739",
+      "source": "taobao",
       "title": "Thin pineapple blanket, flannel blanket, office nap blanket, thickened coral fleece cover blanket, air conditioning blanket, velvet blanket",
-      "description_short": "",
       "price": {
         "current": 9.09,
         "currency": "CNY",
@@ -57,12 +29,28 @@
         "id": null,
         "rating": null,
         "location": ""
+      }
+    },
+    {
+      "id": "taobao_620409965800",
+      "source_id": "620409965800",
+      "source": "taobao",
+      "title": "Export solid color children's nap blanket Falei velvet office cover leg knee blanket air conditioning blanket pet blanket",
+      "price": {
+        "current": 9.84,
+        "currency": "CNY",
+        "original": 9.84
       },
-      "attributes": {
-        "sales": "0",
-        "shopType": ""
-      },
-      "fetched_at": "2026-03-24T09:28:32.547716"
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01GGlcw21qtmqsSDwVW_!!67945554.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=620409965800",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
     },
     {
       "id": "taobao_652837285644",
@@ -1436,6 +1424,12 @@
         "https://img.alicdn.com/imgextra/i2/67945554/O1CN01pOzTpS1qtml9KKWnw_!!67945554.jpg",
         "https://img.alicdn.com/imgextra/i2/67945554/O1CN01sTw0uA1qtmSbaE8PR_!!67945554.jpg",
         "https://img.alicdn.com/imgextra/i4/67945554/O1CN01jdWGbx1qtmlBbx3ve_!!67945554.jpg"
+      ],
+      "selectedAIImages": [
+        "/ai-images/proposal_1774344591523/652837285644/concept-3.png",
+        "/ai-images/proposal_1774344591523/652837285644/concept-2.png",
+        "/ai-images/proposal_1774344591523/652837285644/concept-1.png",
+        "/ai-images/proposal_1774344591523/652837285644/concept-0.png"
       ]
     },
     "852864486588": {
@@ -1933,39 +1927,160 @@
   "aiEnrichments": {
     "825532754040": {
       "original_product": {
-        "title": "Plum Plush Throw Blanket",
-        "description": "Soft, cozy plush blanket in a deep plum color, folded and secured with a simple ribbon.",
+        "title": "Plush Fleece Throw Blanket",
+        "description": "Soft, cozy polyester fleece throw blanket in a deep plum color, elegantly packaged with a ribbon.",
         "specifications": {
-          "dimensions": "30 x 25 x 10 cm (folded)",
-          "weight": "1.2 kg",
-          "materials": "Polyester plush, synthetic ribbon",
+          "dimensions": "Approx. 30 x 25 x 10 cm (packaged); standard throw size when unfolded (e.g., 127 x 152 cm)",
+          "weight": "N/A",
+          "materials": "Polyester fleece",
           "other_specs": "N/A"
         }
       },
       "design_alternatives": [
         {
-          "concept_title": "Luxe Faux Fur Throw",
-          "generated_image_prompt": "A plush throw blanket made from high-quality faux fur in a soft cream color, folded neatly and tied with a wide satin ribbon in a matching cream hue. The ribbon has a simple, elegant debossed logo. The blanket is presented on a minimalist wooden surface, suggesting a sophisticated gift.",
-          "short_description": "Ultra-soft faux fur throw, elegantly packaged for luxurious gifting.",
-          "design_rationale": "Elevates a basic blanket into a premium gift item. The faux fur adds perceived value and tactile appeal, while sophisticated satin ribbon packaging enhances the unboxing experience, making it highly appealing for e-commerce gifting and special occasions.",
+          "concept_title": "The 'Snuggle Sleeve' Wearable Blanket",
+          "generated_image_prompt": "An oversized, soft wearable blanket in a warm heather grey fleece, featuring large kangaroo pockets on the front and ribbed cuffs on the sleeves. The blanket is draped loosely on a person sitting comfortably on a modern sofa, holding a mug. The background is a cozy, well-lit living room.",
+          "short_description": "Oversized wearable fleece blanket with sleeves and pockets for ultimate hands-free comfort.",
+          "design_rationale": "Addresses the desire for warmth and mobility, highly functional for lounging or working from home. Strong e-commerce appeal due to comfort and viral potential.",
           "generated_image_url": "/ai-images/proposal_1774344591523/825532754040/concept-0.png"
         },
         {
-          "concept_title": "Character Hooded Blanket",
-          "generated_image_prompt": "A cozy, soft fleece hooded blanket designed as a cute sleeping fox. The blanket is folded to display the fox's face (with embroidered eyes and nose) on the hood, and two small plush fox ears protrude from the top. The main blanket material is a warm burnt orange, with a cream belly panel. It's rolled and tied with a simple natural twine, presented against a playful, bright background with soft focus elements.",
-          "short_description": "Wearable fleece blanket with an adorable animal hood for kids.",
-          "design_rationale": "Adds a playful, functional element (wearable and hooded) that appeals strongly to children and parents. The character theme makes it highly giftable and visually engaging for e-commerce, offering a clear differentiation from a standard blanket and encouraging imaginative play.",
+          "concept_title": "Nordic Knit Texture Throw",
+          "generated_image_prompt": "A luxurious, chunky cable knit throw blanket in a natural, undyed ivory wool blend. It features a prominent, intricate cable knit pattern and is elegantly draped over a minimalist wooden armchair in a bright, Scandinavian-style living room. A warm, inviting atmosphere.",
+          "short_description": "Elegant chunky cable knit throw in natural ivory, adding sophisticated texture and warmth.",
+          "design_rationale": "Elevates the aesthetic with a premium, textured material (knit), appealing to minimalist and 'hygge' decor trends. Higher perceived value and gifting appeal.",
           "generated_image_url": "/ai-images/proposal_1774344591523/825532754040/concept-1.png"
         },
         {
-          "concept_title": "Modern Waffle Knit Throw",
-          "generated_image_prompt": "A chunky, soft throw blanket with a distinct waffle weave texture, made from a cotton-blend yarn in a muted sage green color. The blanket is casually draped over the arm of a modern minimalist sofa, showcasing its texture and natural weight. It's wrapped with a simple, wide recycled paper band featuring a clean, minimalist graphic design and a small plant motif.",
-          "short_description": "Stylish cotton-blend throw with a cozy waffle texture, perfect for modern homes.",
-          "design_rationale": "Focuses on texture and contemporary aesthetics, appealing to home decor enthusiasts seeking functional yet stylish items. The waffle weave offers a tactile and visual upgrade, making it a chic accent piece that also provides comfort, broadening its market appeal beyond just warmth. The minimalist packaging reinforces its modern, eco-conscious appeal.",
+          "concept_title": "Reversible Dual-Texture Throw",
+          "generated_image_prompt": "A neatly folded throw blanket showcasing two distinct sides: one side is a smooth, rich forest green flannel, and the other is a creamy white, incredibly fluffy sherpa fleece. It's displayed on a clean, light-colored bedspread in a contemporary bedroom setting.",
+          "short_description": "Reversible throw with smooth flannel on one side, fluffy sherpa on the other for versatile comfort.",
+          "design_rationale": "Offers two distinct textures and visual styles in one product, maximizing versatility and perceived value. Appeals to consumers seeking options and comfort.",
           "generated_image_url": "/ai-images/proposal_1774344591523/825532754040/concept-2.png"
+        },
+        {
+          "concept_title": "'Critter Cube' Transformable Pillow Blanket",
+          "generated_image_prompt": "A soft, plush blanket that is folded and zipped into a cute, cubic form resembling a cartoon fox's head. The 'fox head' cube is sitting on a child's bed, with a hint of the blanket partially unzipped to show the plush fabric inside. The fox features embroidered eyes, nose, and soft 3D ears. The overall color is a warm orange and white.",
+          "short_description": "Plush blanket that zips into a cute animal-shaped decorative pillow, perfect for gifting.",
+          "design_rationale": "Combines a blanket and a decorative pillow, offering dual functionality and space-saving. High gifting appeal, especially for children, and strong potential for viral e-commerce due to its 'cute' factor and novelty.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/825532754040/concept-3.png"
         }
       ],
-      "enriched_at": "2026-03-24T10:12:11.543Z"
+      "enriched_at": "2026-03-26T11:33:11.025Z"
+    },
+    "652837285644": {
+      "original_product": {
+        "title": "Reversible Sherpa Buffalo Check Throw",
+        "description": "Luxuriously soft, reversible throw blanket with classic buffalo check pattern for cozy comfort.",
+        "specifications": {
+          "dimensions": "127 x 152 cm (50 x 60 inches)",
+          "weight": "N/A",
+          "materials": "Polyester Sherpa fleece",
+          "other_specs": "N/A"
+        }
+      },
+      "design_alternatives": [
+        {
+          "concept_title": "Cozy Sherpa Pillow Cover",
+          "generated_image_prompt": "A square cushion cover made from soft, reversible Sherpa fleece. One side features a muted sage green solid color, the other a cream white. Visible zipper closure along one edge. Photographed on a modern light grey sofa with warm lighting.",
+          "short_description": "Soft, reversible Sherpa cushion cover for adding warmth and texture to home decor.",
+          "design_rationale": "Directly addresses the user's 'cushion cover' note, offering a versatile home decor item that leverages the original product's material and comfort. Easy to manufacture with existing textile processes and highly appealing for e-commerce as an accent piece.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/652837285644/concept-0.png"
+        },
+        {
+          "concept_title": "Hands-Free Sherpa Poncho",
+          "generated_image_prompt": "A cozy, oversized wearable poncho made from thick, reversible Sherpa fleece. It features a deep V-neck and simple armholes, in a charcoal grey color with an ivory Sherpa lining visible at the edges. A model is comfortably lounging on a couch, holding a book, wearing the poncho.",
+          "short_description": "Ultra-soft Sherpa poncho for hands-free warmth and comfort while lounging at home.",
+          "design_rationale": "Extends the blanket's function to a wearable item, providing hands-free warmth and comfort. This taps into the popular 'cozy core' aesthetic, making it highly appealing for e-commerce and a great gift item. Manufacturing is straightforward, requiring basic sewing and pattern cutting.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/652837285644/concept-1.png"
+        },
+        {
+          "concept_title": "Plush Pet Nap Mat",
+          "generated_image_prompt": "A rectangular pet mat made from plush Sherpa fleece, featuring a subtle quilted design for added structure. The top surface is a warm beige Sherpa, and the bottom is a non-slip dark brown fabric. A small, contented dog is sleeping peacefully on it in a sunlit room.",
+          "short_description": "Ultra-soft Sherpa mat providing cozy comfort for pets at home or on the go.",
+          "design_rationale": "Expands the target market to pet owners, a high-growth segment. Utilizes the same soft Sherpa material for pet comfort. The design is simple, essentially a padded, quilted mat, making it easy to produce at scale and an attractive gift for pet lovers.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/652837285644/concept-2.png"
+        },
+        {
+          "concept_title": "Cloud-Soft Sherpa Slippers",
+          "generated_image_prompt": "A pair of open-back, slip-on house slippers with a thick, plush Sherpa fleece exterior in a dusty rose pink and a soft cream Sherpa lining. They have a simple, rounded toe design and a thin, flexible rubber sole. Photographed on a light wooden floor with soft focus.",
+          "short_description": "Luxurious Sherpa-lined slip-on slippers for ultimate indoor comfort and warmth.",
+          "design_rationale": "Diversifies into a new product category while leveraging the core material's comfort. Slippers are popular impulse buys and gift items, especially for e-commerce. The design is simple and uses standard textile manufacturing techniques, making it highly manufacturable.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/652837285644/concept-3.png"
+        }
+      ],
+      "enriched_at": "2026-03-26T11:40:43.982Z"
+    },
+    "825534931627": {
+      "original_product": {
+        "title": "Panda Supersoft Plush Throw Blanket",
+        "description": "Antistatic, machine-washable plush throw blanket featuring a charming panda pattern and sherpa reverse.",
+        "specifications": {
+          "dimensions": "152 x 183 cm",
+          "weight": "N/A",
+          "materials": "Polyester plush, Sherpa fleece (reverse side)",
+          "other_specs": "Antistatic, Machine Washable, Soft & Delicate"
+        }
+      },
+      "design_alternatives": [
+        {
+          "concept_title": "Modern Checkered Plush Throw",
+          "generated_image_prompt": "A supersoft plush throw blanket, folded and tied with a simple ribbon. The blanket features a large-scale checkerboard pattern in two contrasting, modern colors: charcoal grey and cream. One side is smooth plush, the reverse is sherpa fleece. The overall aesthetic is minimalist and chic, suitable for contemporary home decor.",
+          "short_description": "Chic checkerboard plush throw for modern homes, reversible comfort.",
+          "design_rationale": "This design leverages the requested 'checkers pattern' and aligns with current minimalist and Scandinavian interior design trends. The two-tone geometric pattern offers broad commercial appeal and easy integration into various home aesthetics, making it a strong e-commerce seller and housewarming gift.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/825534931627/concept-0.png"
+        },
+        {
+          "concept_title": "Whimsical Forest Friends Throw",
+          "generated_image_prompt": "A cozy, supersoft plush throw blanket, neatly folded. The blanket features a repeating pattern of stylized, cute woodland animals such as foxes, bears, and owls, interspersed with simple leaf motifs. The color palette is muted and earthy, including sage green, soft terracotta, cream, and dusty blue. One side is smooth plush, the reverse is sherpa fleece, emphasizing comfort and warmth. The style is playful and gentle.",
+          "short_description": "Cozy woodland animal print throw, perfect for kids or nature lovers.",
+          "design_rationale": "This concept targets a different demographic, appealing to families with children or individuals who appreciate whimsical, nature-inspired themes. The soft color palette and cute animal motifs create a comforting and playful emotional tone, ideal for nurseries, kids' rooms, or as a thoughtful gift.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/825534931627/concept-1.png"
+        },
+        {
+          "concept_title": "Sweet Treats Reversible Throw",
+          "generated_image_prompt": "A fun, supersoft plush throw blanket, folded to showcase its design. The blanket is printed with an oversized, realistic pattern of delicious chocolate chip cookies, making it look like a giant cookie. One side is smooth plush with the cookie print, and the reverse is a plain cream-colored sherpa fleece. The overall impression is whimsical and inviting, with rich, warm brown tones.",
+          "short_description": "Novelty cookie print plush throw, a sweet treat for cozy nights.",
+          "design_rationale": "This design leans into novelty and viral appeal, particularly strong in the e-commerce market for unique and giftable items. The 'foodie' theme, like a giant cookie, is visually striking and evokes comfort and indulgence, making it a fun item for teens, college students, or anyone with a playful sense of humor."
+        }
+      ],
+      "enriched_at": "2026-03-26T11:13:09.543Z"
+    },
+    "852864486588": {
+      "original_product": {
+        "title": "Ribbed Plush Throw Blanket",
+        "description": "Soft, vibrant purple ribbed plush blanket, folded and tied, perfect for cozy comfort.",
+        "specifications": {
+          "dimensions": "35 x 30 x 10 cm (folded)",
+          "weight": "1.2 kg",
+          "materials": "Polyester plush",
+          "other_specs": "N/A"
+        }
+      },
+      "design_alternatives": [
+        {
+          "concept_title": "Luxe Hygge Throw",
+          "generated_image_prompt": "A luxurious, thick, double-sided throw blanket. One side is a creamy white, long-pile faux fur, and the other side is a smooth, soft beige minky fleece. It's neatly folded and tied with a wide satin ribbon, presented in an elegant, minimalist kraft paper gift box with a subtle logo. Studio lighting, high quality product photography.",
+          "short_description": "Ultra-soft double-sided throw with faux fur and minky fleece for cozy luxury.",
+          "design_rationale": "Elevates gifting appeal with premium textures and a sophisticated neutral color palette, targeting a market seeking comfort and stylish home decor. Simple to manufacture by combining two existing fabric types.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/852864486588/concept-0.png"
+        },
+        {
+          "concept_title": "Character Hooded Blanket",
+          "generated_image_prompt": "A vibrant teal blue, soft ribbed plush hooded blanket, designed to look like a friendly shark. The hood features embroidered shark eyes and a small dorsal fin on top. The blanket itself is large enough to wrap around an adult or child, with small hand pockets integrated into the corners. It's folded loosely and displayed as if ready to be worn, on a white background. E-commerce style product image.",
+          "short_description": "Fun, wearable shark-themed hooded plush blanket with hand pockets for cozy play.",
+          "design_rationale": "Adds functionality and a playful theme, appealing to children, teens, and young adults for lounging or gaming. High viral potential and strong gifting appeal for birthdays or holidays. Uses existing plush material with simple pattern modifications.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/852864486588/concept-1.png"
+        },
+        {
+          "concept_title": "Modern Knit Texture Throw",
+          "generated_image_prompt": "A sophisticated charcoal grey throw blanket with a debossed or woven pattern that mimics a chunky cable knit, but made from soft, lightweight fleece. It is draped artfully over a minimalist light wood armchair in a modern living room setting. The blanket has a subtle, almost invisible reversible side in a slightly lighter grey. High-end lifestyle photography.",
+          "short_description": "Stylish chunky knit-texture fleece throw for modern home decor and cozy comfort.",
+          "design_rationale": "Offers a contemporary aesthetic that blends well with modern home decor, while retaining the comfort and lightweight nature of fleece. The 'chunky knit' look is popular but often heavy; this provides a practical, manufacturable, and lighter alternative. Reversible design adds perceived value.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/852864486588/concept-2.png"
+        }
+      ],
+      "enriched_at": "2026-03-26T11:22:22.599Z"
     }
   }
 }

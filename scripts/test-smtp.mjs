@@ -47,11 +47,12 @@ if (!successTransporter) {
 }
 
 console.log(`\n✅ Connected using port ${successConfig.port}, user "${successConfig.user}"`);
-console.log(`Sending test email to ${from} ...`);
+const testRecipient = 'jacktong@simplesymbol.com';
+console.log(`Sending test email to ${testRecipient} ...`);
 try {
   const info = await successTransporter.sendMail({
     from: `"SMTP Test" <${from}>`,
-    to: from,
+    to: testRecipient,
     subject: 'SMTP Test - Sourcing Tool',
     text: 'This is a test email from your Sourcing Tool SMTP configuration.',
   });

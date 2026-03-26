@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
@@ -10,7 +10,7 @@ import { ProductTable } from "@/components/products/product-table";
 import { ProductCardView } from "@/components/products/product-card-view";
 import { PriceFilter } from "@/components/filters/price-filter";
 import { Platform, ProductDTO } from "@/types/product";
-import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal, LayoutGrid, List, X, FolderOpen, FileImage, Play, FolderInput, CheckCircle2 } from "lucide-react";
+import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal, LayoutGrid, List, X, FolderOpen, FileImage, Play, FolderInput, CheckCircle2, RefreshCw, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
@@ -74,6 +74,9 @@ export default function Home() {
   const [isExistingProposalDialogOpen, setIsExistingProposalDialogOpen] = useState(false);
   const [existingProposals, setExistingProposals] = useState<any[]>([]);
   const [isAddingToExisting, setIsAddingToExisting] = useState(false);
+  const [dialogFilterMode, setDialogFilterMode] = useState<'my' | 'all'>('my');
+  const [dialogSortField, setDialogSortField] = useState<'name' | 'date'>('date');
+  const [dialogSortDir, setDialogSortDir] = useState<'asc' | 'desc'>('desc');
   const [appendSuccess, setAppendSuccess] = useState<{ proposalName: string; count: number; duplicates: number } | null>(null);
   
   // Folder upload state
@@ -82,13 +85,16 @@ export default function Home() {
   const [currentProcessingIndex, setCurrentProcessingIndex] = useState(0);
   const [proposalName, setProposalName] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const abortBatchRef = useRef(false);
   
   // Batch summary report
   const [showBatchSummary, setShowBatchSummary] = useState(false);
   const [batchSummary, setBatchSummary] = useState<{
     successful: number;
     failed: { name: string; reason: string; thumbnail?: string }[];
+    failedFiles: File[];
     total: number;
+    aborted?: boolean;
   } | null>(null);
   
   // Redirect to login if not authenticated
@@ -234,6 +240,18 @@ export default function Home() {
     }
   }, [activeTabId]);
 
+  // ESC key to abort batch image processing
+  useEffect(() => {
+    if (!isProcessingFolder) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        abortBatchRef.current = true;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isProcessingFolder]);
+
   // Show loading while checking auth
   if (status === 'loading') {
     return (
@@ -294,16 +312,15 @@ export default function Home() {
     setProposalProducts([...proposalProducts, product]);
   };
 
-  const openExistingProposalDialog = () => {
+  const openExistingProposalDialog = async () => {
     try {
-      const stored = localStorage.getItem('proposals');
-      const all: any[] = stored ? JSON.parse(stored) : [];
-      // Filter to current user's proposals (or show all if createdBy not set)
-      const userEmail = session?.user?.email;
-      const filtered = userEmail
-        ? all.filter(p => !p.createdBy || p.createdBy.email === userEmail)
-        : all;
-      setExistingProposals(filtered);
+      const response = await fetch('/api/proposals');
+      if (response.ok) {
+        const data = await response.json();
+        setExistingProposals(data.proposals || []);
+      } else {
+        setExistingProposals([]);
+      }
     } catch {
       setExistingProposals([]);
     }
@@ -323,34 +340,19 @@ export default function Home() {
 
       if (allSelected.length === 0) return;
 
-      // Update localStorage — append only non-duplicates
-      const stored = localStorage.getItem('proposals');
-      const proposals: any[] = stored ? JSON.parse(stored) : [];
-      const idx = proposals.findIndex(p => p.id === proposalId);
-      if (idx === -1) { alert('Proposal not found'); return; }
+      const existing = existingProposals.find(p => p.id === proposalId);
+      if (!existing) { alert('Proposal not found'); return; }
 
-      const existing = proposals[idx];
-      const existingIds = new Set((existing.products || []).map((p: any) => p.id));
-      const newProducts = allSelected.filter(p => !existingIds.has(p.id));
+      const existingIds = new Set((existing.products || []).map((p: any) => p.source_id || p.id));
+      const newProducts = allSelected.filter(p => !existingIds.has(p.source_id || p.id));
 
       if (newProducts.length === 0) {
         alert('All selected items are already in this proposal.');
         return;
       }
 
-      const merged = [...(existing.products || []), ...newProducts];
-      proposals[idx] = {
-        ...existing,
-        products: merged,
-        totalItems: merged.length,
-        updated_at: new Date().toISOString(),
-      };
-      localStorage.setItem('proposals', JSON.stringify(proposals));
-
-      // Fire PATCH — server appends products, fetches item details (get_item_pro),
-      // auto-selects first 4 secondary images, and saves JSON. Navigate immediately;
-      // the proposal page will load details as they arrive.
-      fetch('/api/proposal-details', {
+      // Await PATCH so we get the server's authoritative added count (after server-side dedup)
+      const patchRes = await fetch('/api/proposal-details', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -361,15 +363,19 @@ export default function Home() {
           notes: existing.notes,
           status: existing.status,
         }),
-      }).then(res => {
-        if (!res.ok) res.text().then(t => console.error('PATCH failed:', t));
-        else res.json().then(d => console.log('PATCH result:', d.message));
-      }).catch(err => console.error('PATCH error:', err));
-
-      const duplicateCount = allSelected.length - newProducts.length;
+      });
+      if (!patchRes.ok) {
+        const errText = await patchRes.text();
+        console.error('PATCH failed:', errText);
+        alert('Failed to add items to proposal.');
+        return;
+      }
+      const patchData = await patchRes.json();
+      const actualAdded = patchData.added ?? newProducts.length;
+      const duplicateCount = allSelected.length - actualAdded;
       setSelectedProducts(new Set());
       setIsExistingProposalDialogOpen(false);
-      setAppendSuccess({ proposalName: existing.name, count: newProducts.length, duplicates: duplicateCount });
+      setAppendSuccess({ proposalName: existing.name, count: actualAdded, duplicates: duplicateCount });
       setTimeout(() => setAppendSuccess(null), 5000);
     } catch (err) {
       console.error('Failed to add to existing proposal:', err);
@@ -623,18 +629,23 @@ export default function Home() {
   const processFolderImages = async () => {
     if (folderImages.length === 0) return;
     
+    abortBatchRef.current = false;
     setIsProcessingFolder(true);
     setCurrentProcessingIndex(0);
     setBatchSummary(null);
     
-    // Clear existing tabs
-    setSearchTabs([]);
-    
     let successfulCount = 0;
+    let wasAborted = false;
     const failedImages: { name: string; reason: string; thumbnail?: string }[] = [];
+    const failedFileObjects: File[] = [];
     
     try {
       for (let i = 0; i < folderImages.length; i++) {
+        if (abortBatchRef.current) {
+          wasAborted = true;
+          break;
+        }
+        
         const file = folderImages[i];
         setCurrentProcessingIndex(i + 1);
         
@@ -654,6 +665,7 @@ export default function Home() {
             
             if (products.length === 0) {
               failedImages.push({ name: file.name, reason: 'No similar products found', thumbnail: URL.createObjectURL(file) });
+              failedFileObjects.push(file);
             } else {
               // Create tab for this image
               const tabLabel = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
@@ -673,25 +685,104 @@ export default function Home() {
             // Trim long API doc URLs from error messages
             reason = reason.split(' 接口文档')[0].split(' API文档')[0];
             failedImages.push({ name: file.name, reason, thumbnail: URL.createObjectURL(file) });
+            failedFileObjects.push(file);
           }
         } catch (error) {
           console.error(`Error processing ${file.name}:`, error);
           failedImages.push({ name: file.name, reason: 'Network error or request failed', thumbnail: URL.createObjectURL(file) });
+          failedFileObjects.push(file);
         }
       }
     } finally {
       setIsProcessingFolder(false);
       setCurrentProcessingIndex(0);
       
-      // Show summary if there were any failures
-      if (failedImages.length > 0 || successfulCount > 0) {
+      // Show summary if there were any results
+      if (failedImages.length > 0 || successfulCount > 0 || wasAborted) {
         setBatchSummary({
           successful: successfulCount,
           failed: failedImages,
+          failedFiles: failedFileObjects,
           total: folderImages.length,
+          aborted: wasAborted,
         });
         setShowBatchSummary(true);
       }
+    }
+  };
+
+  const handleRetryFailedImages = async () => {
+    if (!batchSummary || batchSummary.failedFiles.length === 0) return;
+    
+    const filesToRetry = [...batchSummary.failedFiles];
+    const prevSuccessful = batchSummary.successful;
+    const totalItems = batchSummary.total;
+    setShowBatchSummary(false);
+    abortBatchRef.current = false;
+    setIsProcessingFolder(true);
+    setCurrentProcessingIndex(0);
+    
+    let newSuccessCount = 0;
+    const stillFailed: { name: string; reason: string; thumbnail?: string }[] = [];
+    const stillFailedFiles: File[] = [];
+    
+    try {
+      for (let i = 0; i < filesToRetry.length; i++) {
+        if (abortBatchRef.current) break;
+        
+        const file = filesToRetry[i];
+        setCurrentProcessingIndex(prevSuccessful + i + 1);
+        
+        try {
+          const formData = new FormData();
+          formData.append('image', file);
+          
+          const response = await fetch('/api/search-image', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            const products = data.products || [];
+            
+            if (products.length === 0) {
+              stillFailed.push({ name: file.name, reason: 'No similar products found', thumbnail: URL.createObjectURL(file) });
+              stillFailedFiles.push(file);
+            } else {
+              const tabLabel = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
+              createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao']);
+              newSuccessCount++;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } else {
+            let reason = `HTTP ${response.status}`;
+            try {
+              const errData = await response.json();
+              if (errData.error) reason = errData.error;
+              else if (errData.detail) reason = errData.detail;
+            } catch {}
+            reason = reason.split(' 接口文档')[0].split(' API文档')[0];
+            stillFailed.push({ name: file.name, reason, thumbnail: URL.createObjectURL(file) });
+            stillFailedFiles.push(file);
+          }
+        } catch (error) {
+          console.error(`Error retrying ${file.name}:`, error);
+          stillFailed.push({ name: file.name, reason: 'Network error or request failed', thumbnail: URL.createObjectURL(file) });
+          stillFailedFiles.push(file);
+        }
+      }
+    } finally {
+      setIsProcessingFolder(false);
+      setCurrentProcessingIndex(0);
+      setBatchSummary({
+        successful: prevSuccessful + newSuccessCount,
+        failed: stillFailed,
+        failedFiles: stillFailedFiles,
+        total: totalItems,
+      });
+      setShowBatchSummary(true);
     }
   };
 
@@ -748,8 +839,21 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
-              <Button onClick={() => setShowBatchSummary(false)}>Close</Button>
+            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between gap-4">
+              <div>
+                {batchSummary.aborted && (
+                  <p className="text-sm text-amber-600 font-medium">⚠ Search was aborted early.</p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                {batchSummary.failed.length > 0 && (
+                  <Button variant="outline" onClick={handleRetryFailedImages}>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Retry Failed ({batchSummary.failed.length})
+                  </Button>
+                )}
+                <Button onClick={() => { setShowBatchSummary(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Close</Button>
+              </div>
             </div>
           </div>
         </div>
@@ -825,18 +929,6 @@ export default function Home() {
                     <FileImage className="h-4 w-4 mr-2" />
                     Select Images
                   </Button>
-                  <Button 
-                    type="button" 
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log('Current folderImages:', folderImages.length);
-                      alert(`Selected images: ${folderImages.length}`);
-                    }}
-                  >
-                    Test
-                  </Button>
                 </div>
               </div>
 
@@ -895,7 +987,7 @@ export default function Home() {
               {isProcessingFolder && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Processing images...</span>
+                    <span className="text-gray-600">Processing images... <span className="text-gray-400 text-xs">(Press ESC to abort)</span></span>
                     <span className="text-gray-900 font-medium">
                       {currentProcessingIndex}/{folderImages.length}
                     </span>
@@ -921,27 +1013,35 @@ export default function Home() {
         {/* Search Tabs */}
         {searchTabs.length > 0 && (
           <div className="max-w-5xl mx-auto mb-6">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={() => setSearchTabs([])}
+                className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+              >
+                Clear all search results
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
               {searchTabs.map((tab) => (
                 <motion.div
                   key={tab.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all cursor-pointer flex-shrink-0 ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all cursor-pointer min-w-0 ${
                     tab.id === activeTabId
                       ? 'bg-sky-50 border-sky-400 shadow-sm'
                       : 'bg-white border-gray-200 hover:border-sky-300'
                   }`}
                   onClick={() => setActiveTabId(tab.id)}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className={`text-sm font-medium ${
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className={`text-sm font-medium truncate ${
                       tab.id === activeTabId ? 'text-sky-700' : 'text-gray-700'
                     }`}>
                       {tab.label}
                     </span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
                       tab.id === activeTabId 
                         ? 'bg-sky-100 text-sky-600' 
                         : 'bg-gray-100 text-gray-600'
@@ -954,7 +1054,7 @@ export default function Home() {
                       e.stopPropagation();
                       closeTab(tab.id);
                     }}
-                    className={`hover:bg-gray-200 rounded p-1 transition-colors ${
+                    className={`flex-shrink-0 hover:bg-gray-200 rounded p-1 transition-colors ${
                       tab.id === activeTabId ? 'text-sky-600' : 'text-gray-400'
                     }`}
                   >
@@ -1300,14 +1400,66 @@ export default function Home() {
             Select a proposal to add the {selectedProducts.size} selected item{selectedProducts.size !== 1 ? 's' : ''} to.
           </DialogDescription>
         </DialogHeader>
-        {existingProposals.length === 0 ? (
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setDialogFilterMode('my')}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                dialogFilterMode === 'my' ? 'bg-white text-sky-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              My Proposals
+            </button>
+            <button
+              onClick={() => setDialogFilterMode('all')}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                dialogFilterMode === 'all' ? 'bg-white text-sky-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              All
+            </button>
+          </div>
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setDialogSortField('name')}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                dialogSortField === 'name' ? 'bg-white text-sky-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >Name</button>
+            <button
+              onClick={() => setDialogSortField('date')}
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                dialogSortField === 'date' ? 'bg-white text-sky-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >Date</button>
+            <button
+              onClick={() => setDialogSortDir(d => d === 'asc' ? 'desc' : 'asc')}
+              className="px-2 py-1 rounded-md text-gray-600 hover:text-sky-700 transition-colors"
+              title={dialogSortDir === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              {dialogSortDir === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+            </button>
+          </div>
+        </div>
+        {(() => {
+          const userEmail = session?.user?.email;
+          const filtered = dialogFilterMode === 'my' && userEmail
+            ? existingProposals.filter(p => !p.createdBy || p.createdBy?.email === userEmail)
+            : existingProposals;
+          const sorted = [...filtered].sort((a, b) => {
+            const cmp = dialogSortField === 'name'
+              ? (a.name || '').localeCompare(b.name || '')
+              : new Date(a.updated_at || a.created_at).getTime() - new Date(b.updated_at || b.created_at).getTime();
+            return dialogSortDir === 'asc' ? cmp : -cmp;
+          });
+          return sorted.length === 0 ? (
           <div className="py-8 text-center text-gray-400">
             <Package className="h-10 w-10 mx-auto mb-2 opacity-40" />
-            <p className="text-sm">No existing proposals found.</p>
+            <p className="text-sm">No proposals found.</p>
           </div>
         ) : (
-          <div className="mt-2 max-h-80 overflow-y-auto space-y-2 pr-1">
-            {existingProposals.map(p => (
+          <div className="mt-2 max-h-72 overflow-y-auto space-y-2 pr-1">
+            {sorted.map(p => (
               <button
                 key={p.id}
                 disabled={isAddingToExisting}
@@ -1340,7 +1492,8 @@ export default function Home() {
               </button>
             ))}
           </div>
-        )}
+        );
+        })()}
       </DialogContent>
     </Dialog>
     </div>

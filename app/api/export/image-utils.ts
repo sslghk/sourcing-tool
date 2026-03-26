@@ -1,4 +1,6 @@
 import sharp from 'sharp';
+import fs from 'fs';
+import path from 'path';
 
 export interface ProcessedImage {
   base64: string;       // data:image/jpeg;base64,... ready for embedding
@@ -29,6 +31,29 @@ export async function fetchAndProcessImage(
     return processedImageCache.get(cacheKey)!;
   }
 
+  // Handle local static file paths (e.g. /ai-images/... served from public/)
+  if (url.startsWith('/')) {
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+      const fileBuffer = fs.readFileSync(filePath);
+      const outputBuffer = await sharp(fileBuffer)
+        .resize(maxDimension, maxDimension, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 75, mozjpeg: true })
+        .toBuffer();
+      const metadata = await sharp(outputBuffer).metadata();
+      const result: ProcessedImage = {
+        base64: `data:image/jpeg;base64,${outputBuffer.toString('base64')}`,
+        width: metadata.width || 300,
+        height: metadata.height || 300,
+      };
+      processedImageCache.set(cacheKey, result);
+      return result;
+    } catch (error) {
+      console.error(`Error reading local image ${url}:`, error);
+      return null;
+    }
+  }
+
   // Handle base64 data URLs (e.g. from Gemini-generated images)
   if (url.startsWith('data:')) {
     try {
@@ -53,7 +78,12 @@ export async function fetchAndProcessImage(
 
   try {
     const response = await fetch(url, {
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(30000),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+        'Referer': 'https://www.taobao.com/',
+      },
     });
     if (!response.ok) return null;
 
