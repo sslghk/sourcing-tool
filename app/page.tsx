@@ -10,7 +10,7 @@ import { ProductTable } from "@/components/products/product-table";
 import { ProductCardView } from "@/components/products/product-card-view";
 import { PriceFilter } from "@/components/filters/price-filter";
 import { Platform, ProductDTO } from "@/types/product";
-import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal, LayoutGrid, List, X, FolderOpen, FileImage, Play } from "lucide-react";
+import { Loader2, Package, ShoppingCart, Download, FileJson, FileSpreadsheet, SlidersHorizontal, LayoutGrid, List, X, FolderOpen, FileImage, Play, FolderInput, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
@@ -23,6 +23,14 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { 
   convertToCSV, 
   convertToJSON, 
@@ -63,6 +71,10 @@ export default function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
   const [isDedupe, setIsDedupe] = useState(true);
+  const [isExistingProposalDialogOpen, setIsExistingProposalDialogOpen] = useState(false);
+  const [existingProposals, setExistingProposals] = useState<any[]>([]);
+  const [isAddingToExisting, setIsAddingToExisting] = useState(false);
+  const [appendSuccess, setAppendSuccess] = useState<{ proposalName: string; count: number; duplicates: number } | null>(null);
   
   // Folder upload state
   const [isProcessingFolder, setIsProcessingFolder] = useState(false);
@@ -280,6 +292,91 @@ export default function Home() {
     
     // Add product WITHOUT fetching details - details will be fetched when saving proposal
     setProposalProducts([...proposalProducts, product]);
+  };
+
+  const openExistingProposalDialog = () => {
+    try {
+      const stored = localStorage.getItem('proposals');
+      const all: any[] = stored ? JSON.parse(stored) : [];
+      // Filter to current user's proposals (or show all if createdBy not set)
+      const userEmail = session?.user?.email;
+      const filtered = userEmail
+        ? all.filter(p => !p.createdBy || p.createdBy.email === userEmail)
+        : all;
+      setExistingProposals(filtered);
+    } catch {
+      setExistingProposals([]);
+    }
+    setIsExistingProposalDialogOpen(true);
+  };
+
+  const handleAddToExistingProposal = async (proposalId: string) => {
+    setIsAddingToExisting(true);
+    try {
+      // Collect all selected products across all tabs (no duplicates)
+      const allSelected: any[] = [];
+      searchTabs.forEach(tab => {
+        tab.products.filter(p => selectedProducts.has(p.id)).forEach(p => {
+          if (!allSelected.some(x => x.id === p.id)) allSelected.push(p);
+        });
+      });
+
+      if (allSelected.length === 0) return;
+
+      // Update localStorage — append only non-duplicates
+      const stored = localStorage.getItem('proposals');
+      const proposals: any[] = stored ? JSON.parse(stored) : [];
+      const idx = proposals.findIndex(p => p.id === proposalId);
+      if (idx === -1) { alert('Proposal not found'); return; }
+
+      const existing = proposals[idx];
+      const existingIds = new Set((existing.products || []).map((p: any) => p.id));
+      const newProducts = allSelected.filter(p => !existingIds.has(p.id));
+
+      if (newProducts.length === 0) {
+        alert('All selected items are already in this proposal.');
+        return;
+      }
+
+      const merged = [...(existing.products || []), ...newProducts];
+      proposals[idx] = {
+        ...existing,
+        products: merged,
+        totalItems: merged.length,
+        updated_at: new Date().toISOString(),
+      };
+      localStorage.setItem('proposals', JSON.stringify(proposals));
+
+      // Fire PATCH — server appends products, fetches item details (get_item_pro),
+      // auto-selects first 4 secondary images, and saves JSON. Navigate immediately;
+      // the proposal page will load details as they arrive.
+      fetch('/api/proposal-details', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId,
+          newProducts,
+          proposalName: existing.name,
+          clientName: existing.client_name,
+          notes: existing.notes,
+          status: existing.status,
+        }),
+      }).then(res => {
+        if (!res.ok) res.text().then(t => console.error('PATCH failed:', t));
+        else res.json().then(d => console.log('PATCH result:', d.message));
+      }).catch(err => console.error('PATCH error:', err));
+
+      const duplicateCount = allSelected.length - newProducts.length;
+      setSelectedProducts(new Set());
+      setIsExistingProposalDialogOpen(false);
+      setAppendSuccess({ proposalName: existing.name, count: newProducts.length, duplicates: duplicateCount });
+      setTimeout(() => setAppendSuccess(null), 5000);
+    } catch (err) {
+      console.error('Failed to add to existing proposal:', err);
+      alert('Failed to add items to proposal.');
+    } finally {
+      setIsAddingToExisting(false);
+    }
   };
 
   const handleAddSelectedToProposal = async () => {
@@ -877,6 +974,18 @@ export default function Home() {
             </div>
           ) : searchResults.length > 0 ? (
             <>
+              {appendSuccess && (
+                <div className="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg bg-green-50 border border-green-300 text-green-800 text-sm">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />
+                  <span>
+                    <strong>{appendSuccess.count} item{appendSuccess.count !== 1 ? 's' : ''}</strong> added to <strong>{appendSuccess.proposalName}</strong>
+                    {appendSuccess.duplicates > 0 && (
+                      <span className="text-green-600"> · {appendSuccess.duplicates} duplicate{appendSuccess.duplicates !== 1 ? 's' : ''} skipped</span>
+                    )}. Details are being fetched in the background.
+                  </span>
+                  <button onClick={() => setAppendSuccess(null)} className="ml-auto text-green-600 hover:text-green-800">✕</button>
+                </div>
+              )}
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <p className="text-gray-700 font-medium">
@@ -1019,7 +1128,12 @@ export default function Home() {
                         <Package className="h-4 w-4 mr-2" />
                         Add to New Proposal
                       </DropdownMenuItem>
-                      
+
+                      <DropdownMenuItem onClick={openExistingProposalDialog}>
+                        <FolderInput className="h-4 w-4 mr-2" />
+                        Add to Existing Proposal...
+                      </DropdownMenuItem>
+
                       {proposalProducts.length > 0 && (
                         <DropdownMenuItem onClick={() => {
                           const selected = filteredProducts.filter(p => selectedProducts.has(p.id));
@@ -1177,6 +1291,58 @@ export default function Home() {
           )}
         </div>
       </div>
+    {/* Add to Existing Proposal Dialog */}
+    <Dialog open={isExistingProposalDialogOpen} onOpenChange={setIsExistingProposalDialogOpen}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Add to Existing Proposal</DialogTitle>
+          <DialogDescription>
+            Select a proposal to add the {selectedProducts.size} selected item{selectedProducts.size !== 1 ? 's' : ''} to.
+          </DialogDescription>
+        </DialogHeader>
+        {existingProposals.length === 0 ? (
+          <div className="py-8 text-center text-gray-400">
+            <Package className="h-10 w-10 mx-auto mb-2 opacity-40" />
+            <p className="text-sm">No existing proposals found.</p>
+          </div>
+        ) : (
+          <div className="mt-2 max-h-80 overflow-y-auto space-y-2 pr-1">
+            {existingProposals.map(p => (
+              <button
+                key={p.id}
+                disabled={isAddingToExisting}
+                onClick={() => handleAddToExistingProposal(p.id)}
+                className="w-full text-left flex items-center justify-between px-4 py-3 rounded-lg border border-gray-200 hover:border-sky-400 hover:bg-sky-50 transition-colors disabled:opacity-50"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-gray-900 truncate">{p.name}</p>
+                  {p.client_name && (
+                    <p className="text-xs text-gray-500 truncate">Client: {p.client_name}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 ml-3 shrink-0">
+                  <span className="text-xs text-gray-500">{(p.products?.length ?? p.totalItems ?? 0)} items</span>
+                  <Badge
+                    variant="outline"
+                    className={{
+                      draft: 'bg-gray-100 text-gray-600 border-gray-200',
+                      submitted: 'bg-blue-100 text-blue-600 border-blue-200',
+                      approved: 'bg-green-100 text-green-600 border-green-200',
+                      rejected: 'bg-red-100 text-red-600 border-red-200',
+                    }[p.status as string] || 'bg-gray-100 text-gray-600 border-gray-200'}
+                  >
+                    {p.status}
+                  </Badge>
+                  {isAddingToExisting && (
+                    <Loader2 className="h-4 w-4 animate-spin text-sky-500" />
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
     </div>
   );
 }

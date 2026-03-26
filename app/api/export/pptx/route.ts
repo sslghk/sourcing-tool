@@ -4,6 +4,7 @@ import {
   prefetchAllProposalImages,
   getProcessedImage,
   getSecondaryImageUrls,
+  getAIImageUrls,
   calculateFitDimensions,
   normalizeUrl,
   type ProcessedImage
@@ -190,7 +191,7 @@ export async function POST(request: NextRequest) {
         const mainImg = getProcessedImage(imageMap, product.image_urls[0], MAIN_IMG_MAX);
         addProcessedImageToSlide(slide, mainImg, imageStartX, imageStartY, mainImageSize, mainImageSize);
         
-        // Secondary images
+        // Secondary images - stacked vertically to the right of main image
         const secondaryUrls = getSecondaryImageUrls(product);
         
         if (secondaryUrls.length > 0) {
@@ -200,6 +201,17 @@ export async function POST(request: NextRequest) {
             const yPos = imageStartY + i * (secondaryImageSize + imageSpacing);
             const secImg = getProcessedImage(imageMap, secondaryUrls[i], SECONDARY_IMG_MAX);
             addProcessedImageToSlide(slide, secImg, secondaryImageX, yPos, secondaryImageSize, secondaryImageSize);
+          }
+        }
+
+        // AI images - horizontal row below main image, same size as secondary
+        const aiUrls = getAIImageUrls(product);
+        if (aiUrls.length > 0) {
+          const aiImageY = imageStartY + mainImageSize + 0.15;
+          for (let i = 0; i < Math.min(aiUrls.length, 4); i++) {
+            const xPos = imageStartX + i * (secondaryImageSize + imageSpacing);
+            const aiImg = getProcessedImage(imageMap, aiUrls[i], SECONDARY_IMG_MAX);
+            addProcessedImageToSlide(slide, aiImg, xPos, aiImageY, secondaryImageSize, secondaryImageSize);
           }
         }
       }

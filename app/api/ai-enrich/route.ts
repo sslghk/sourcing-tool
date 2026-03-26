@@ -1,4 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
+
+const DATA_DIR = path.join(process.cwd(), 'data', 'proposals');
+const AI_IMAGES_DIR = path.join(process.cwd(), 'public', 'ai-images');
+
+function saveImageToServer(dataUrl: string, proposalId: string, productId: string, index: number): string {
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) return dataUrl;
+  const mimeType = match[1];
+  const base64Data = match[2];
+  const ext = mimeType.split('/')[1] || 'png';
+  const safeProductId = productId.replace(/[^a-zA-Z0-9_-]/g, '_');
+  const dir = path.join(AI_IMAGES_DIR, proposalId, safeProductId);
+  fs.mkdirSync(dir, { recursive: true });
+  const filename = `concept-${index}.${ext}`;
+  fs.writeFileSync(path.join(dir, filename), Buffer.from(base64Data, 'base64'));
+  return `/ai-images/${proposalId}/${safeProductId}/${filename}`;
+}
 
 const AI_ENRICHMENT_PROMPT = `You are a senior industrial designer working for a global product sourcing company. Your task is to analyze the uploaded product image and propose alternative design concepts that could be manufactured and sold as product variations.
 
@@ -72,7 +91,7 @@ GUIDELINES
 
 export async function POST(request: NextRequest) {
   try {
-    const { imageUrl, userNotes } = await request.json();
+    const { imageUrl, userNotes, proposalId, productId } = await request.json();
 
     if (!imageUrl) {
       return NextResponse.json(
@@ -84,15 +103,21 @@ export async function POST(request: NextRequest) {
     // Prepare the prompt with user notes if provided
     const prompt = AI_ENRICHMENT_PROMPT.replace('{{user_notes}}', userNotes || 'None provided');
 
-    // Call Gemini API to get concept descriptions
-    const result = await callGemini(imageUrl, prompt);
+    // Fetch original image once and reuse for all calls
+    const normalizedUrl = imageUrl.startsWith('//') ? `https:${imageUrl}` : imageUrl;
+    const imageResponse = await fetch(normalizedUrl);
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const originalImageBase64 = Buffer.from(imageBuffer).toString('base64');
+
+    // Call Gemini API to get concept descriptions (with original image)
+    const result = await callGemini(originalImageBase64, prompt);
 
     // Generate images for each design alternative (sequentially to avoid rate limits)
     console.log('Generating images for design alternatives...');
     const enrichedAlternatives = [];
     for (const alt of result.design_alternatives) {
       try {
-        const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt);
+        const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, originalImageBase64);
         enrichedAlternatives.push({
           ...alt,
           generated_image_url: generatedUrl
@@ -103,6 +128,42 @@ export async function POST(request: NextRequest) {
       }
       // Small delay between image generation requests
       await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    // If proposalId + productId provided, save images to server and persist to proposal JSON
+    if (proposalId && productId) {
+      for (let i = 0; i < enrichedAlternatives.length; i++) {
+        const alt: any = enrichedAlternatives[i];
+        if (alt.generated_image_url?.startsWith('data:')) {
+          try {
+            enrichedAlternatives[i] = {
+              ...alt,
+              generated_image_url: saveImageToServer(alt.generated_image_url as string, proposalId, productId, i),
+            };
+          } catch (err) {
+            console.error(`Failed to save image ${i} to server:`, err);
+          }
+        }
+      }
+
+      // Persist AI enrichment into proposal JSON on disk
+      const proposalFilePath = path.join(DATA_DIR, `${proposalId}.json`);
+      if (fs.existsSync(proposalFilePath)) {
+        try {
+          const proposalData = JSON.parse(fs.readFileSync(proposalFilePath, 'utf-8'));
+          if (!proposalData.aiEnrichments) proposalData.aiEnrichments = {};
+          proposalData.aiEnrichments[productId] = {
+            ...result,
+            design_alternatives: enrichedAlternatives,
+            enriched_at: new Date().toISOString(),
+          };
+          proposalData.updatedAt = new Date().toISOString();
+          fs.writeFileSync(proposalFilePath, JSON.stringify(proposalData, null, 2));
+          console.log(`Saved AI enrichment for product ${productId} in proposal ${proposalId}`);
+        } catch (err) {
+          console.error('Failed to update proposal JSON with AI enrichment:', err);
+        }
+      }
     }
 
     return NextResponse.json({
@@ -120,17 +181,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function callGemini(imageUrl: string, prompt: string) {
+async function callGemini(base64Image: string, prompt: string) {
   const apiKey = process.env.GEMINI_API_KEY;
   
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY not configured');
   }
-
-  // Fetch the image and convert to base64
-  const imageResponse = await fetch(imageUrl.startsWith('//') ? `https:${imageUrl}` : imageUrl);
-  const imageBuffer = await imageResponse.arrayBuffer();
-  const base64Image = Buffer.from(imageBuffer).toString('base64');
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -159,7 +215,7 @@ async function callGemini(imageUrl: string, prompt: string) {
           temperature: 0.7,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 2048,
+          maxOutputTokens: 8192,
         },
       }),
     }
@@ -188,31 +244,33 @@ async function callGemini(imageUrl: string, prompt: string) {
   return JSON.parse(jsonMatch[0]);
 }
 
-async function generateImageWithGemini(prompt: string): Promise<string> {
+async function generateImageWithGemini(prompt: string, originalImageBase64: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
-  
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY not configured');
-  }
+  if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
 
-  console.log(`Generating image with Gemini for prompt: ${prompt.substring(0, 100)}...`);
+  console.log(`Generating image with gemini-2.5-flash-image for: ${prompt.substring(0, 80)}...`);
 
-  // Use gemini-2.5-flash-image (Nano Banana) with responseModalities for native image generation
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{
-          parts: [{
-            text: `Generate a high-quality product photo of: ${prompt}. The image should be a clean product shot on a white or neutral background, suitable for e-commerce listing.`
-          }]
+          parts: [
+            {
+              inline_data: {
+                mime_type: 'image/jpeg',
+                data: originalImageBase64,
+              }
+            },
+            {
+              text: `Generate a product photo variation: ${prompt}. Clean white background, professional e-commerce style, studio lighting.`
+            }
+          ]
         }],
         generationConfig: {
-          responseModalities: ['TEXT', 'IMAGE'],
+          responseModalities: ['IMAGE', 'TEXT'],
           temperature: 0.8,
         }
       }),
@@ -221,39 +279,32 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error('Gemini image generation error response:', errorBody);
-    throw new Error(`Gemini image generation error (${response.status}): ${response.statusText}`);
+    console.error('Gemini image generation error:', errorBody);
+    throw new Error(`Gemini image generation error (${response.status}): ${errorBody}`);
   }
 
   const data = await response.json();
-  console.log('Gemini image generation response received');
-  
-  // Extract image from response parts
-  const parts = data.candidates?.[0]?.content?.parts;
-  if (!parts || parts.length === 0) {
-    throw new Error('No parts in Gemini response');
-  }
+  const parts = data.candidates?.[0]?.content?.parts ?? [];
 
-  // Find the part with inline_data (the generated image)
-  const imagePart = parts.find((part: any) => part.inline_data || part.inlineData);
+  console.log('Gemini image response parts summary:', parts.map((p: any) => ({
+    keys: Object.keys(p),
+    hasInlineData: !!(p.inlineData ?? p.inline_data),
+    textSnippet: p.text ? p.text.substring(0, 80) : undefined,
+    mimeType: (p.inlineData ?? p.inline_data)?.mimeType ?? (p.inlineData ?? p.inline_data)?.mime_type,
+    dataLength: (p.inlineData ?? p.inline_data)?.data?.length,
+  })));
+
+  const imagePart = parts.find((p: any) => p.inlineData ?? p.inline_data);
+
   if (!imagePart) {
-    // Log what we got instead for debugging
-    const textParts = parts.filter((p: any) => p.text).map((p: any) => p.text);
-    console.error('No image in response. Text parts:', textParts.join('\n').substring(0, 200));
-    throw new Error('No image generated by Gemini - model returned text only');
+    console.error('No image part found. Full candidate:', JSON.stringify(data.candidates?.[0], null, 2).substring(0, 500));
+    throw new Error('No image returned by Gemini 2.5 Flash');
   }
 
-  // Get base64 image data (handle both inline_data and inlineData formats)
-  const inlineData = imagePart.inline_data || imagePart.inlineData;
-  const imageBase64 = inlineData?.data;
-  const mimeType = inlineData?.mime_type || inlineData?.mimeType || 'image/png';
-  
-  if (!imageBase64) {
-    throw new Error('No image data in Gemini response');
-  }
-
-  // Return as data URL for direct display
-  return `data:${mimeType};base64,${imageBase64}`;
+  const inlineData = imagePart.inlineData ?? imagePart.inline_data;
+  const mimeType = inlineData.mimeType ?? inlineData.mime_type ?? 'image/png';
+  console.log(`Image generated successfully — mimeType: ${mimeType}, base64 length: ${inlineData.data?.length}`);
+  return `data:${mimeType};base64,${inlineData.data}`;
 }
 
 async function callClaude(imageUrl: string, prompt: string) {

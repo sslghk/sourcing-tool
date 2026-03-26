@@ -208,25 +208,75 @@ async function fetchProductDetailsWithRetry(productId: string, platform: string,
   return null;
 }
 
-// POST /api/proposal-details - Save proposal with system-generated ID and fetch all item details
+// Shared helper: fetch item details for a list of products, save incrementally to file.
+// Skips products already present in data.itemDetails.
+// Returns the number of successfully fetched items.
+async function fetchAndSaveItemDetails(
+  data: any,
+  products: any[],
+  filePath: string,
+  maxRetries = 5
+): Promise<number> {
+  let successfulCount = 0;
+
+  for (let i = 0; i < products.length; i++) {
+    const product = products[i];
+    const numIid = product.source_id || product.id;
+    const platform = product.source || 'taobao';
+
+    if (data.itemDetails[numIid]) {
+      console.log(`[${i + 1}/${products.length}] Already cached: ${numIid}`);
+      successfulCount++;
+      continue;
+    }
+
+    console.log(`[${i + 1}/${products.length}] Fetching details for ${numIid}...`);
+    const details = await fetchProductDetailsWithRetry(numIid, platform, maxRetries);
+
+    if (details) {
+      console.log(`[${i + 1}/${products.length}] Translating details for ${numIid}...`);
+      const translated = await translateProductDetails(details);
+
+      data.itemDetails[numIid] = {
+        ...translated,
+        productId: numIid,
+        platform,
+        fetchedAt: new Date().toISOString(),
+        selectedSecondaryImages: translated.item_imgs?.slice(0, 4).map((img: any) => {
+          const url = typeof img === 'string' ? img : img.url;
+          return url.startsWith('//') ? `https:${url}` : url;
+        }) || [],
+      };
+      successfulCount++;
+    } else {
+      console.log(`✗ All ${maxRetries} attempts failed for ${numIid}`);
+    }
+
+    // Write after every product so progress survives partial failures
+    data.successfulItems = Object.keys(data.itemDetails).length;
+    data.updatedAt = new Date().toISOString();
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  }
+
+  return successfulCount;
+}
+
+// POST /api/proposal-details - Create proposal and fetch all item details
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { products, proposalName, clientName, notes, proposalId: clientProposalId, createdBy } = body;
-    
+
     if (!products || !Array.isArray(products) || products.length === 0) {
       return NextResponse.json(
         { error: 'products array is required and must not be empty' },
         { status: 400 }
       );
     }
-    
-    // Use client-sent proposalId if provided, otherwise generate UUID
+
     const proposalId = clientProposalId || randomUUID();
-    
     ensureDataDir();
-    
-    // Save initial proposal data
+
     const filePath = getProposalFilePath(proposalId);
     const data: any = {
       proposalId,
@@ -236,81 +286,28 @@ export async function POST(request: NextRequest) {
       createdBy: createdBy || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      products: products.map(p => ({
-        id: p.id,
-        source_id: p.source_id,
-        source: p.source,
-        title: p.title,
-        price: p.price,
-        image_urls: p.image_urls,
-        url: p.url,
-        moq: p.moq,
-        seller: p.seller
+      products: products.map((p: any) => ({
+        id: p.id, source_id: p.source_id, source: p.source,
+        title: p.title, price: p.price, image_urls: p.image_urls,
+        url: p.url, moq: p.moq, seller: p.seller,
       })),
       itemDetails: {},
       totalItems: products.length,
-      successfulItems: 0
+      successfulItems: 0,
     };
-    
+
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    console.log(`Created proposal data file at ${filePath} with ID: ${proposalId}`);
-    
-    // Fetch all item details sequentially with delays and retries
-    console.log(`Fetching details for ${products.length} products...`);
-    let successfulCount = 0;
-    
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
-      const numIid = product.source_id || product.id; // Use source_id as num_iid
-      const platform = product.source || 'taobao';
-      
-      console.log(`[${i + 1}/${products.length}] Fetching details for ${numIid}...`);
-      
-      const details = await fetchProductDetailsWithRetry(numIid, platform, 5);
-      
-      if (details) {
-        // Translate all text fields from Chinese to English
-        console.log(`[${i + 1}/${products.length}] Translating details for ${numIid}...`);
-        const translatedDetails = await translateProductDetails(details);
-        
-        // Use num_iid (source_id) as the key for item details
-        data.itemDetails[numIid] = {
-          ...translatedDetails,
-          productId: numIid,
-          platform,
-          fetchedAt: new Date().toISOString(),
-          selectedSecondaryImages: translatedDetails.item_imgs?.slice(0, 4).map((img: any) => {
-            const url = typeof img === 'string' ? img : img.url;
-            return url.startsWith('//') ? `https:${url}` : url;
-          }) || []
-        };
-        successfulCount++;
-      } else {
-        console.log(`✗ Failed to fetch details for ${numIid} after all retries`);
-      }
-      
-      // Add delay between requests (10 seconds to protect backend service)
-      if (i < products.length - 1) {
-        console.log(`⏳ Waiting 10 seconds before next request...`);
-        await new Promise(resolve => setTimeout(resolve, 10000));
-      }
-    }
-    
-    // Update the file with fetched details
-    data.successfulItems = successfulCount;
-    data.updatedAt = new Date().toISOString();
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    
-    console.log(`Finished fetching details: ${successfulCount}/${products.length} successful`);
-    
+    console.log(`Created proposal file: ${filePath}`);
+
+    const successfulCount = await fetchAndSaveItemDetails(data, products, filePath);
+    console.log(`POST complete: ${successfulCount}/${products.length} details fetched`);
+
     return NextResponse.json({
-      success: true,
-      proposalId,
-      totalItems: products.length,
-      successfulItems: successfulCount,
-      message: `Proposal saved with ${successfulCount}/${products.length} item details fetched.`
+      success: true, proposalId,
+      totalItems: products.length, successfulItems: successfulCount,
+      message: `Proposal saved with ${successfulCount}/${products.length} item details fetched.`,
     });
-    
+
   } catch (error) {
     console.error('Error in POST /api/proposal-details:', error);
     return NextResponse.json(
@@ -421,46 +418,167 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT /api/proposal-details - Update proposal details (e.g., save secondary image selection)
+// PATCH /api/proposal-details - Append new products to existing proposal and fetch their details
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { proposalId, newProducts } = body;
+
+    if (!proposalId) {
+      return NextResponse.json({ error: 'proposalId is required' }, { status: 400 });
+    }
+    if (!Array.isArray(newProducts) || newProducts.length === 0) {
+      return NextResponse.json({ error: 'newProducts array is required' }, { status: 400 });
+    }
+
+    ensureDataDir();
+    const filePath = getProposalFilePath(proposalId);
+
+    // Read or bootstrap the proposal JSON
+    let data: any;
+    if (fs.existsSync(filePath)) {
+      data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    } else {
+      data = {
+        proposalId,
+        proposalName: body.proposalName || '',
+        clientName: body.clientName || '',
+        notes: body.notes || '',
+        status: body.status || 'draft',
+        products: [], itemDetails: {}, aiEnrichments: {},
+        totalItems: 0, successfulItems: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    }
+    if (!data.itemDetails) data.itemDetails = {};
+    if (!data.products) data.products = [];
+
+    // Append only products not already present (deduplicate by source_id)
+    const existingIds = new Set(data.products.map((p: any) => p.source_id || p.id));
+    const toAdd = newProducts.filter((p: any) => !existingIds.has(p.source_id || p.id));
+
+    if (toAdd.length === 0) {
+      return NextResponse.json({ success: true, added: 0, message: 'No new products (all duplicates)' });
+    }
+
+    data.products = [
+      ...data.products,
+      ...toAdd.map((p: any) => ({
+        id: p.id, source_id: p.source_id, source: p.source,
+        title: p.title, price: p.price, image_urls: p.image_urls,
+        url: p.url, moq: p.moq, seller: p.seller,
+      })),
+    ];
+    data.totalItems = data.products.length;
+    data.updatedAt = new Date().toISOString();
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    console.log(`Appended ${toAdd.length} product(s) to proposal ${proposalId}`);
+
+    const successfulCount = await fetchAndSaveItemDetails(data, toAdd, filePath);
+    console.log(`PATCH complete: ${successfulCount}/${toAdd.length} details fetched`);
+
+    return NextResponse.json({
+      success: true, added: toAdd.length, detailsFetched: successfulCount,
+      message: `${toAdd.length} product(s) added, ${successfulCount} details fetched.`,
+    });
+
+  } catch (error) {
+    console.error('Error in PATCH /api/proposal-details:', error);
+    return NextResponse.json(
+      { error: 'Failed to append products', details: String(error) },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT /api/proposal-details - Update proposal details (image selections, metadata)
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { proposalId, productId, selectedSecondaryImages } = body;
-    
-    if (!proposalId || !productId) {
-      return NextResponse.json(
-        { error: 'proposalId and productId are required' },
-        { status: 400 }
-      );
+    const {
+      proposalId,
+      // Single-product secondary image save (legacy per-click save)
+      productId,
+      selectedSecondaryImages,
+      // Batch save: all AI image selections at once { [sourceId]: string[] }
+      allSelectedAIImages,
+      // Proposal metadata
+      proposalName,
+      clientName,
+      notes,
+      status,
+    } = body;
+
+    if (!proposalId) {
+      return NextResponse.json({ error: 'proposalId is required' }, { status: 400 });
     }
-    
+
     const filePath = getProposalFilePath(proposalId);
-    
+    const { updatedProducts } = body;
+
     if (!fs.existsSync(filePath)) {
-      return NextResponse.json(
-        { error: 'Proposal details not found' },
-        { status: 404 }
-      );
+      // Bootstrap a minimal file if we're given a product list (e.g. adding to older proposal)
+      if (Array.isArray(updatedProducts)) {
+        ensureDataDir();
+        const bootstrap = {
+          proposalId,
+          proposalName: body.proposalName || '',
+          clientName: body.clientName || '',
+          notes: body.notes || '',
+          status: body.status || 'draft',
+          products: updatedProducts,
+          totalItems: updatedProducts.length,
+          itemDetails: {},
+          aiEnrichments: {},
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        fs.writeFileSync(filePath, JSON.stringify(bootstrap, null, 2));
+        console.log(`Bootstrapped proposal JSON for ${proposalId} with ${updatedProducts.length} products`);
+        return NextResponse.json({ success: true, bootstrapped: true });
+      }
+      return NextResponse.json({ error: 'Proposal details not found' }, { status: 404 });
     }
-    
+
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    const numIid = productId; // productId is the num_iid (source_id)
-    
-    if (data.itemDetails[numIid]) {
-      data.itemDetails[numIid].selectedSecondaryImages = selectedSecondaryImages;
-      data.updatedAt = new Date().toISOString();
-      
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-      console.log(`Updated secondary image selection for ${numIid}`);
-      
-      return NextResponse.json({ success: true });
-    } else {
-      return NextResponse.json(
-        { error: 'Product details not found in proposal' },
-        { status: 404 }
-      );
+    data.updatedAt = new Date().toISOString();
+
+    // ── Single-product secondary image selection (per-click auto-save) ──
+    if (productId && selectedSecondaryImages !== undefined) {
+      const numIid = productId;
+      if (data.itemDetails && data.itemDetails[numIid]) {
+        data.itemDetails[numIid].selectedSecondaryImages = selectedSecondaryImages;
+        console.log(`Updated secondary image selection for ${numIid}`);
+      }
     }
-    
+
+    // ── Batch AI image selections save ───────────────────────────────────
+    if (allSelectedAIImages && typeof allSelectedAIImages === 'object') {
+      if (!data.itemDetails) data.itemDetails = {};
+      for (const [sourceId, images] of Object.entries(allSelectedAIImages)) {
+        if (!data.itemDetails[sourceId]) data.itemDetails[sourceId] = {};
+        (data.itemDetails[sourceId] as any).selectedAIImages = images;
+      }
+      console.log(`Saved AI image selections for ${Object.keys(allSelectedAIImages).length} products`);
+    }
+
+    // ── Product list update (e.g. after deletion / adding items) ─────────
+    if (Array.isArray(updatedProducts)) {
+      data.products = updatedProducts;
+      data.totalItems = updatedProducts.length;
+      console.log(`Updated product list: ${updatedProducts.length} items`);
+    }
+
+    // ── Proposal metadata ─────────────────────────────────────────────────
+    if (proposalName !== undefined) data.proposalName = proposalName;
+    if (clientName !== undefined) data.clientName = clientName;
+    if (notes !== undefined) data.notes = notes;
+    if (status !== undefined) data.status = status;
+
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    return NextResponse.json({ success: true });
+
   } catch (error) {
     console.error('Error in PUT /api/proposal-details:', error);
     return NextResponse.json(

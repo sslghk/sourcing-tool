@@ -1,0 +1,1971 @@
+{
+  "proposalId": "proposal_1774344591523",
+  "proposalName": "Jack",
+  "clientName": "",
+  "notes": "",
+  "createdBy": {
+    "email": "admin@example.com",
+    "name": "Admin User"
+  },
+  "createdAt": "2026-03-24T09:29:51.614Z",
+  "updatedAt": "2026-03-24T10:12:40.212Z",
+  "products": [
+    {
+      "id": "taobao_620409965800",
+      "source": "taobao",
+      "source_id": "620409965800",
+      "title": "Export solid color children's nap blanket Falei velvet office cover leg knee blanket air conditioning blanket pet blanket",
+      "description_short": "",
+      "price": {
+        "current": 9.84,
+        "currency": "CNY",
+        "original": 9.84
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01GGlcw21qtmqsSDwVW_!!67945554.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=620409965800",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      },
+      "attributes": {
+        "sales": "0",
+        "shopType": ""
+      },
+      "fetched_at": "2026-03-24T09:28:32.547452"
+    },
+    {
+      "id": "taobao_842352644739",
+      "source": "taobao",
+      "source_id": "842352644739",
+      "title": "Thin pineapple blanket, flannel blanket, office nap blanket, thickened coral fleece cover blanket, air conditioning blanket, velvet blanket",
+      "description_short": "",
+      "price": {
+        "current": 9.09,
+        "currency": "CNY",
+        "original": 9.09
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01FUL0GB1aPz7nZwjxj_!!2215938673323.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=842352644739",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      },
+      "attributes": {
+        "sales": "0",
+        "shopType": ""
+      },
+      "fetched_at": "2026-03-24T09:28:32.547716"
+    },
+    {
+      "id": "taobao_652837285644",
+      "source_id": "652837285644",
+      "source": "taobao",
+      "title": "Autumn and Winter Double layer Sofa Blanket Quilt Double sided Imitation Lamb Fleece Blanket Float Window Bed Tail Carpet Thickened Napping Cover Carpet",
+      "price": {
+        "current": 19.54,
+        "currency": "CNY",
+        "original": 19.54
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01t7ApYZ1qtmRwktPVz_!!67945554.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=652837285644",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_852864486588",
+      "source_id": "852864486588",
+      "source": "taobao",
+      "title": "Solid color wool warm Bed sheet blanket sofa cover blankets",
+      "price": {
+        "current": 13.18,
+        "currency": "CNY",
+        "original": 13.18
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN013xSihA2940gVroA0i_!!2586268013.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=852864486588",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_825534931627",
+      "source_id": "825534931627",
+      "source": "taobao",
+      "title": "Member store purchases panda anti-static blanket. The plush blanket is machine washable, easy to maintain, and has a soft, delicate, and comfortable touch",
+      "price": {
+        "current": 82.35,
+        "currency": "CNY",
+        "original": 82.35
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01UnJnDk1il4OIk6S07_!!456264452.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=825534931627",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_825532754040",
+      "source_id": "825532754040",
+      "source": "taobao",
+      "title": "Amazon Solid Color Blankets, Flannel Blankets, Coral Velvet Blankets, Falei Velvet Gift Blankets, Air Conditioning Blankets, Group Purchase",
+      "price": {
+        "current": 17.76,
+        "currency": "CNY",
+        "original": 17.76
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01KmHy0i1WQfEWcSnZ6_!!2654502783.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=825532754040",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    }
+  ],
+  "itemDetails": {
+    "620409965800": {
+      "title": "Export solid color children's nap blanket Falei velvet office cover leg knee blanket air conditioning blanket pet blanket",
+      "desc_short": "",
+      "brand": "USILK/Youchun Qingqing",
+      "pic_url": "//img.alicdn.com/imgextra/i3/67945554/O1CN01GZD5AX1qtmM0VWBor_!!67945554.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i3/67945554/O1CN01GZD5AX1qtmM0VWBor_!!67945554.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/67945554/O1CN01yjBCyn1qtmLvoxLlG_!!67945554.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/67945554/O1CN01IUBQzE1qtmM1V2yIX_!!67945554.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/67945554/O1CN01bax0oL1qtmcXVCUv2_!!67945554.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/67945554/O1CN016hefJE1qtmM63jdhz_!!67945554.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:3224421",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN018z3kVR1qtmmt4ODiW_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:28322",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN013cdDbJ1qtmdojxDEx_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:44501",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01FrxPiS1qtmcf0uAgK_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:35657783237",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN015fsUHK1qtmPw0GOV9_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:28341",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN01gLfwcQ1qtmhfafwSg_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:39096439627",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN01dqQnE51qtmRgaYMva_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:799092681",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN01UcWY5I1qtmkvMP92j_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:36804826",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN01v7dAON1qtmRoJSz5b_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:6616796",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01fu3A981qtmrPgTOAk_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:40932873",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01Pi48QC1qtmIdNY3RL_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:53929013",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN010Et90B1qtmhi9GjIk_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:7559232",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN01F7SE6r1qtmfxr1mi4_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:787274265",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01b21qzd1qtmqRlGL4Q_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:73800449",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN0190qi6Z1qtmrR3A6Pu_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:4333581",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01Gr1J1h1qtmUj0FPai_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:3609634",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01nq2AAh1qtmUOrMdap_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:131671313",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01VplUlD1qtmhi2UCWv_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:36131996522",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01JX4Btf1qtmlneUR3s_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:41104513863",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01lCHvk41qtmqT3Nv7N_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:33470823387",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01lLYx4n1qtmoWRgsXj_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:33597875461",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01E34zvE1qtmhkuSLAh_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:42296356394",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN01701xcJ1qtmghgyUx3_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:37590259400",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN01fg2EAK1qtmgayBchD_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:36527017996",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01ifqsAF1qtmkmTOCok_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:40607898787",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01jxNgB21qtmn8y9h6V_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:40607898788",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01zg0cpB1qtmbyS8aav_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:36543641569",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01PxhKL41qtmbsskRMk_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:40607898790",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01rqGzto1qtmbxeGJDZ_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:19223014818",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01uPd7nw1qtmPhXyFK3_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:40928685129",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01q2QikP1qtmkgmWbFq_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:41218247093",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01GGlcw21qtmqsSDwVW_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:41218247094",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01WL5qyb1qtmqrywk74_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:41471066533",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN010XleWT1qtmqsSmqSD_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:41218247092",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01uhyQZc1qtmqryxTsa_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:42055839189",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01b6GqA81qtmrBGPE0N_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:41218374074",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01AQFby41qtmqs2qZVt_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:41475099377",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01F5RQb11qtmqrHVUtg_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:42156760578",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01GKXSIw1qtmrAgj6S2_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:41471066537",
+            "url": "http://img.alicdn.com/imgextra/i4/67945554/O1CN01axz2Sa1qtmqrGtIDs_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:42077620404",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01GR1MDb1qtmrBGPUbu_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:42077521821",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01b6GqA81qtmrBGPE0N_!!67945554.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "style",
+          "value": "Minimalist and modern",
+          "name_original": "style",
+          "value_original": "Minimalist and modern"
+        },
+        {
+          "name": "brand",
+          "value": "USILK/Ultra Pure Qingqing",
+          "name_original": "brand",
+          "value_original": "USILK/Ultra Pure Qingqing"
+        },
+        {
+          "name": "Carpet material",
+          "value": "Polyester fiber, milk velvet, flannel",
+          "name_original": "Carpet material",
+          "value_original": "Polyester fiber, milk velvet, flannel"
+        },
+        {
+          "name": "Usage scenarios",
+          "value": "Office area",
+          "name_original": "Usage scenarios",
+          "value_original": "Office area"
+        },
+        {
+          "name": "Applicable season",
+          "value": "Autumn, winter, summer, spring",
+          "name_original": "Applicable season",
+          "value_original": "Autumn, winter, summer, spring"
+        },
+        {
+          "name": "Machine washable",
+          "value": "Machine washable",
+          "name_original": "Machine washable",
+          "value_original": "Machine washable"
+        },
+        {
+          "name": "function",
+          "value": "Zone heating",
+          "name_original": "function",
+          "value_original": "Zone heating"
+        },
+        {
+          "name": "Origin",
+          "value": "Chinese Mainland",
+          "name_original": "Origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "thermal insulation performance",
+          "value": "in",
+          "name_original": "thermal insulation performance",
+          "value_original": "in"
+        },
+        {
+          "name": "Warmth level",
+          "value": "Four Seasons Universal",
+          "name_original": "Warmth level",
+          "value_original": "Four Seasons Universal"
+        },
+        {
+          "name": "Blanket type",
+          "value": "Other/other",
+          "name_original": "Blanket type",
+          "value_original": "Other/other"
+        },
+        {
+          "name": "size",
+          "value": "70x100cm",
+          "name_original": "size",
+          "value_original": "70x100cm"
+        },
+        {
+          "name": "Edge modeling",
+          "value": "right angle",
+          "name_original": "Edge modeling",
+          "value_original": "right angle"
+        },
+        {
+          "name": "pattern",
+          "value": "Solid color",
+          "name_original": "pattern",
+          "value_original": "Solid color"
+        },
+        {
+          "name": "Applicable population",
+          "value": "Universal, children",
+          "name_original": "Applicable population",
+          "value_original": "Universal, children"
+        },
+        {
+          "name": "color classification",
+          "value": "Black, beige, silver gray, gray (ribbon packaging), peacock blue (ribbon packaging), thick gray blue, light coffee, skin powder, rose powder, thick deep red, light green, thick gray green, thick green, deep purple, turmeric, tourbillon, gray cut velvet diamond, 100x80cm thick deep blue embroidered letters, 95x80cm beige base hot stamping, 100x150cm line gray, 100x150cm line navy blue, 100x150cm line light tourbillon, 130x90cm wheat ear gray, 100x160cm waffle gray, 120x150cm meter tourbillon, 127x152cm orange, 127x152cm deep red, 125x152cm orange 50cm deep green cut velvet geometry, 100x150cm thick milk velvet rubber powder, 100x150cm thick milk velvet light gray, 100x150cm thick milk velvet rice coffee, 100x150cm thick milk velvet beige, 100x150cm thick milk velvet brown coffee, 90x120cm thick milk velvet rubber powder, 90x120cm thick milk velvet rice coffee, 90x130cm thick milk velvet dark gray, 90x120cm thick milk velvet Thickened Milk Velvet - beige, 90x120cm Thickened Milk Velvet - dark coffee, 90x120cm Thickened Milk Velvet - brown coffee",
+          "name_original": "color classification",
+          "value_original": "Black, beige, silver gray, gray (ribbon packaging), peacock blue (ribbon packaging), thick gray blue, light coffee, skin powder, rose powder, thick deep red, light green, thick gray green, thick green, deep purple, turmeric, tourbillon, gray cut velvet diamond, 100x80cm thick deep blue embroidered letters, 95x80cm beige base hot stamping, 100x150cm line gray, 100x150cm line navy blue, 100x150cm line light tourbillon, 130x90cm wheat ear gray, 100x160cm waffle gray, 120x150cm meter tourbillon, 127x152cm orange, 127x152cm deep red, 125x152cm orange 50cm deep green cut velvet geometry, 100x150cm thick milk velvet rubber powder, 100x150cm thick milk velvet light gray, 100x150cm thick milk velvet rice coffee, 100x150cm thick milk velvet beige, 100x150cm thick milk velvet brown coffee, 90x120cm thick milk velvet rubber powder, 90x120cm thick milk velvet rice coffee, 90x130cm thick milk velvet dark gray, 90x120cm thick milk velvet Thickened Milk Velvet - beige, 90x120cm Thickened Milk Velvet - dark coffee, 90x120cm Thickened Milk Velvet - brown coffee"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Wangji department store onegehome",
+        "location": "Jinhua, Zhejiang",
+        "rating": null,
+        "name_original": "旺基百货onegehome",
+        "location_original": "浙江金华"
+      },
+      "sales_volume": 700,
+      "description": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://gw.alicdn.com/imgextra/i1/O1CN01vWMf4v25HVynQwwXa_!!6000000007501-2-tps-1240-450.png\"><img usemap=\"#customizeHyperlinks-2\" style=\"display: block;margin-top: -347.0px;width: 750.0px;height: 347.0px;\" src=\"//gtms01.alicdn.com/tps/i1/TB1AHXiGXXXXXXAXVXX.uTD.FXX-10-10.png\"><map name=\"customizeHyperlinks-2\"><area shape=\"rect\" coords=\"0,0,750,347\" href=\"https://pages-fast.m.taobao.com/wow/z/tmtjb/town/home?x-ssr=true&disableNav=YES&x-sec=wua&asac=2A21B017LSI0KGN210C6D7&status_bar_transparent=true&largescreenstyle=fullscreen&hd_from=itemdetail1&detailTag=descArea&tjbTag=tjbDetail&actionArg=openHalfDetail&topIds=620409965800\"></map><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01r2i04J1qtmUzVBy94_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN011phtxM1qtmVClg52j_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01jwY9By1qtmV6KHXv2_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01bax0oL1qtmcXVCUv2_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01UfLR0h1qtmcYkAYZ9_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01acJATy1qtmVBcMOu4_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01KSS4wx1qtmrxT0EBq_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01GZD5AX1qtmM0VWBor_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01cQFwxA1qtmM8pg3m1_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01F61rVj1qtmM8VOEFA_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN010Lr4Pf1qtmLvowc1K_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01IUBQzE1qtmM1V2yIX_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01Cv9hVz1qtmV8XnYEU_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01inXePj1qtmM5RqXMB_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01k6TOku1qtmV7Nmhk8_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN013FGHwi1qtmLvowXsE_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01j67uN51qtmM4Suod0_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01S1pJhw1qtmM3qpUFX_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN016hefJE1qtmM63jdhz_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01K33h9m1qtmMRu2TC6_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01OMSsIv1qtmMQDqr5N_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01OxluHR1qtmMyPw6K1_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01Gcm1901qtmN7LXBXG_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01rdTcRt1qtmNBhbnQb_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01ppG4DI1qtmQQZ6qU3_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN018AcL431qtmQHQegJt_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01Ajd6hv1qtmQVfefYC_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01TCVAnh1qtmQHQc49Q_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01fmmGAC1qtmQX6MrQn_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01ZYzJ8O1qtmQRYGs9e_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01gelsK91qtmQX6MWhN_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01unZpoV1qtmQX6LWI8_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN019lKhQq1qtmQQ5RtNt_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01NwOIbQ1qtmQRYIY4x_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01wOaH2j1qtmQQ1sxS9_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN018ltmsM1qtmQRGoWpW_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN0145eNk51qtmQQ1rgKH_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN014JyC1x1qtmQO5f5aX_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN017uTtRi1qtmQNWWAZB_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01LpvILt1qtmQO5glRv_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN018G0JBB1qtmM1uApTR_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01yjBCyn1qtmLvoxLlG_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN011mrf871qtmVCSEouV_!!67945554.jpg\"></div></div>",
+      "title_original": "Export solid color children's nap blanket Falei velvet office cover leg knee blanket air conditioning blanket pet blanket",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://gw.alicdn.com/imgextra/i1/O1CN01vWMf4v25HVynQwwXa_!!6000000007501-2-tps-1240-450.png\"><img usemap=\"#customizeHyperlinks-2\" style=\"display: block;margin-top: -347.0px;width: 750.0px;height: 347.0px;\" src=\"//gtms01.alicdn.com/tps/i1/TB1AHXiGXXXXXXAXVXX.uTD.FXX-10-10.png\"><map name=\"customizeHyperlinks-2\"><area shape=\"rect\" coords=\"0,0,750,347\" href=\"https://pages-fast.m.taobao.com/wow/z/tmtjb/town/home?x-ssr=true&disableNav=YES&x-sec=wua&asac=2A21B017LSI0KGN210C6D7&status_bar_transparent=true&largescreenstyle=fullscreen&hd_from=itemdetail1&detailTag=descArea&tjbTag=tjbDetail&actionArg=openHalfDetail&topIds=620409965800\"></map><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01r2i04J1qtmUzVBy94_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN011phtxM1qtmVClg52j_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01jwY9By1qtmV6KHXv2_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01bax0oL1qtmcXVCUv2_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01UfLR0h1qtmcYkAYZ9_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01acJATy1qtmVBcMOu4_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01KSS4wx1qtmrxT0EBq_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01GZD5AX1qtmM0VWBor_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01cQFwxA1qtmM8pg3m1_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01F61rVj1qtmM8VOEFA_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN010Lr4Pf1qtmLvowc1K_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01IUBQzE1qtmM1V2yIX_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01Cv9hVz1qtmV8XnYEU_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01inXePj1qtmM5RqXMB_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01k6TOku1qtmV7Nmhk8_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN013FGHwi1qtmLvowXsE_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01j67uN51qtmM4Suod0_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01S1pJhw1qtmM3qpUFX_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN016hefJE1qtmM63jdhz_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01K33h9m1qtmMRu2TC6_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01OMSsIv1qtmMQDqr5N_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01OxluHR1qtmMyPw6K1_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01Gcm1901qtmN7LXBXG_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01rdTcRt1qtmNBhbnQb_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01ppG4DI1qtmQQZ6qU3_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN018AcL431qtmQHQegJt_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01Ajd6hv1qtmQVfefYC_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01TCVAnh1qtmQHQc49Q_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01fmmGAC1qtmQX6MrQn_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01ZYzJ8O1qtmQRYGs9e_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01gelsK91qtmQX6MWhN_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01unZpoV1qtmQX6LWI8_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN019lKhQq1qtmQQ5RtNt_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01NwOIbQ1qtmQRYIY4x_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01wOaH2j1qtmQQ1sxS9_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN018ltmsM1qtmQRGoWpW_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN0145eNk51qtmQQ1rgKH_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN014JyC1x1qtmQO5f5aX_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN017uTtRi1qtmQNWWAZB_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01LpvILt1qtmQO5glRv_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN018G0JBB1qtmM1uApTR_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01yjBCyn1qtmLvoxLlG_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN011mrf871qtmVCSEouV_!!67945554.jpg\"></div></div>",
+      "brand_original": "USILK/优纯青青",
+      "productId": "620409965800",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T09:29:57.790Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i3/67945554/O1CN01GZD5AX1qtmM0VWBor_!!67945554.jpg",
+        "https://img.alicdn.com/imgextra/i1/67945554/O1CN01yjBCyn1qtmLvoxLlG_!!67945554.jpg",
+        "https://img.alicdn.com/imgextra/i3/67945554/O1CN01IUBQzE1qtmM1V2yIX_!!67945554.jpg",
+        "https://img.alicdn.com/imgextra/i3/67945554/O1CN01bax0oL1qtmcXVCUv2_!!67945554.jpg"
+      ]
+    },
+    "842352644739": {
+      "title": "Thin pineapple blanket, flannel blanket, office nap blanket, thickened coral fleece cover blanket, air conditioning blanket, velvet blanket",
+      "desc_short": "",
+      "brand": "OTHER",
+      "pic_url": "//img.alicdn.com/imgextra/i2/2215938673323/O1CN01I3wu8K1aPz7iUYrJD_!!2215938673323.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2215938673323/O1CN01I3wu8K1aPz7iUYrJD_!!2215938673323.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2215938673323/O1CN01YAZNd81aPz7lhw4rN_!!2215938673323.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2215938673323/O1CN017KHAdG1aPz7m6lL1s_!!2215938673323.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2215938673323/O1CN01KhzoQ11aPz7kXiGVK_!!2215938673323.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2215938673323/O1CN01Pj9WQa1aPz7l5oOuQ_!!2215938673323.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:2664013191",
+            "url": "http://img.alicdn.com/imgextra/i2/2215938673323/O1CN01xAyB7j1aPz7n2iiVF_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:449094553",
+            "url": "http://img.alicdn.com/imgextra/i4/2215938673323/O1CN01AER4Mw1aPz7m7AaO9_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:413705637",
+            "url": "http://img.alicdn.com/imgextra/i4/2215938673323/O1CN01wtfVLZ1aPz7kXibJN_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:369951427",
+            "url": "http://img.alicdn.com/imgextra/i1/2215938673323/O1CN01J9syE11aPz7kRyzgG_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:1506646531",
+            "url": "http://img.alicdn.com/imgextra/i1/2215938673323/O1CN0135ZcP21aPz7l5tDnT_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:2664013188",
+            "url": "http://img.alicdn.com/imgextra/i4/2215938673323/O1CN0113cGqs1aPz7lhv0MB_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:4877467160",
+            "url": "http://img.alicdn.com/imgextra/i4/2215938673323/O1CN01OtCp7h1aPz7iCpTE8_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:8657848875",
+            "url": "http://img.alicdn.com/imgextra/i1/2215938673323/O1CN01pUi14x1aPz7iCsDjA_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:2294566736",
+            "url": "http://img.alicdn.com/imgextra/i4/2215938673323/O1CN01cT0nfx1aPz7jH4UIr_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:704945794",
+            "url": "http://img.alicdn.com/imgextra/i2/2215938673323/O1CN013KyTMD1aPz7kXiCNZ_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:2605839154",
+            "url": "http://img.alicdn.com/imgextra/i1/2215938673323/O1CN01FShI8e1aPz7n2hAtd_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:449094552",
+            "url": "http://img.alicdn.com/imgextra/i1/2215938673323/O1CN014AgV6s1aPz7l5st1Q_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:1451738644",
+            "url": "http://img.alicdn.com/imgextra/i2/2215938673323/O1CN01sLeA6F1aPz7lhw94d_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:5093227139",
+            "url": "http://img.alicdn.com/imgextra/i3/2215938673323/O1CN01826cNN1aPz7n2i77h_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:4906998305",
+            "url": "http://img.alicdn.com/imgextra/i1/2215938673323/O1CN01FUL0GB1aPz7nZwjxj_!!2215938673323.jpg"
+          },
+          {
+            "properties": "1627207:1303060297",
+            "url": "http://img.alicdn.com/imgextra/i2/2215938673323/O1CN01DhB5CS1aPz7m7AvBV_!!2215938673323.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "style",
+          "value": "Japanese",
+          "name_original": "style",
+          "value_original": "Japanese"
+        },
+        {
+          "name": "brand",
+          "value": "OTHER",
+          "name_original": "brand",
+          "value_original": "OTHER"
+        },
+        {
+          "name": "Article number",
+          "value": "Balau",
+          "name_original": "Article number",
+          "value_original": "Balau"
+        },
+        {
+          "name": "country of origin",
+          "value": "Chinese Mainland",
+          "name_original": "country of origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "Carpet material",
+          "value": "Coral fleece, flannel",
+          "name_original": "Carpet material",
+          "value_original": "Coral fleece, flannel"
+        },
+        {
+          "name": "Blanket type",
+          "value": "Coral blanket",
+          "name_original": "Blanket type",
+          "value_original": "Coral blanket"
+        },
+        {
+          "name": "size",
+          "value": "45 * 65 Pet Blanket Bare Blanket Simplified, 70 * 100 Bare Blanket Simplified, 100 * 150 Bare Blanket Simplified, 120 * 200 Bare Blanket Simplified, 150 * 200 Bare Blanket Simplified, 180 * 200 Bare Blanket Simplified, 200 * 230 Bare Blanket Simplified",
+          "name_original": "size",
+          "value_original": "45 * 65 Pet Blanket Bare Blanket Simplified, 70 * 100 Bare Blanket Simplified, 100 * 150 Bare Blanket Simplified, 120 * 200 Bare Blanket Simplified, 150 * 200 Bare Blanket Simplified, 180 * 200 Bare Blanket Simplified, 200 * 230 Bare Blanket Simplified"
+        },
+        {
+          "name": "pattern",
+          "value": "Solid color",
+          "name_original": "pattern",
+          "value_original": "Solid color"
+        },
+        {
+          "name": "Usage scenarios",
+          "value": "Administrative Area",
+          "name_original": "Usage scenarios",
+          "value_original": "Administrative Area"
+        },
+        {
+          "name": "Color classification",
+          "value": "Boluoge sky blue, Boluoge bright yellow, Boluoge coffee",
+          "name_original": "Color classification",
+          "value_original": "Boluoge smoked blue, Boluoge khaki, Boluoge cherry blossom powder, Boluoge beige, Boluoge light gray, Boluoge dousha red, Boluoge smoked purple, Boluoge reddish jade, Boluoge light purple, Boluoge dark green, Boluoge dark coffee, Boluoge army green, Boluoge dark blue, Boluoge sky blue, Boluoge bright yellow, Boluoge coffee"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Kuai Zai Selected",
+        "location": "Guangzhou, Guangdong",
+        "rating": null,
+        "name_original": "快哉严选",
+        "location_original": "广东广州"
+      },
+      "sales_volume": 63,
+      "description": "src=\"https://img.alicdn.com/imgextra/i4/2215938673323/O1CN01mkh1S51aPz7l5sPw5~crop,0,0,750,1500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2215938673323/O1CN01mkh1S51aPz7l5sPw5~crop,0,1500,750,500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2215938673323/O1CN01EKTWOL1aPz7l5rsfo~crop,0,0,750,1500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2215938673323/O1CN01EKTWOL1aPz7l5rsfo~crop,0,1500,750,500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2215938673323/O1CN01DAtSjU1aPz7kRyrP0~crop,0,0,750,1500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2215938673323/O1CN01DAtSjU1aPz7kRyrP0~crop,0,1500,750,500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2215938673323/O1CN01DGYQeT1aPz7o71twq~crop,0,0,750,1500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2215938673323/O1CN01DGYQeT1aPz7o71twq~crop,0,1500,750,489~_!!2215938673323.jpg\"></div></div>",
+      "title_original": "Thin pineapple blanket, flannel blanket, office nap blanket, thickened coral fleece cover blanket, air conditioning blanket, velvet blanket",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2215938673323/O1CN01mkh1S51aPz7l5sPw5~crop,0,0,750,1500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2215938673323/O1CN01mkh1S51aPz7l5sPw5~crop,0,1500,750,500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2215938673323/O1CN01EKTWOL1aPz7l5rsfo~crop,0,0,750,1500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2215938673323/O1CN01EKTWOL1aPz7l5rsfo~crop,0,1500,750,500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2215938673323/O1CN01DAtSjU1aPz7kRyrP0~crop,0,0,750,1500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2215938673323/O1CN01DAtSjU1aPz7kRyrP0~crop,0,1500,750,500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2215938673323/O1CN01DGYQeT1aPz7o71twq~crop,0,0,750,1500~_!!2215938673323.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2215938673323/O1CN01DGYQeT1aPz7o71twq~crop,0,1500,750,489~_!!2215938673323.jpg\"></div></div>",
+      "brand_original": "OTHER",
+      "productId": "842352644739",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T09:30:02.407Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i2/2215938673323/O1CN01I3wu8K1aPz7iUYrJD_!!2215938673323.jpg",
+        "https://img.alicdn.com/imgextra/i3/2215938673323/O1CN01YAZNd81aPz7lhw4rN_!!2215938673323.jpg",
+        "https://img.alicdn.com/imgextra/i1/2215938673323/O1CN017KHAdG1aPz7m6lL1s_!!2215938673323.jpg",
+        "https://img.alicdn.com/imgextra/i2/2215938673323/O1CN01KhzoQ11aPz7kXiGVK_!!2215938673323.jpg"
+      ]
+    },
+    "747544913943": {
+      "title": "Winter thick coral velvet blanket, lamb velvet blanket, office nap, lunch break, single person leg covered blanket",
+      "desc_short": "",
+      "brand": "Early light",
+      "pic_url": "//img.alicdn.com/imgextra/i3/2207888834413/O1CN012y1WYl1iTCx8vVScQ_!!4611686018427387757-2-item_pic.png",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2207888834413/O1CN012y1WYl1iTCx8vVScQ_!!4611686018427387757-2-item_pic.png"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2207888834413/O1CN01VQ3crB1iTCwxq3QzD_!!2207888834413.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2207888834413/O1CN019bT8aD1iTCjietDQA_!!2207888834413.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2207888834413/O1CN01WpsgHI1iTCjzFTo7r_!!0-item_pic.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2207888834413/O1CN01wUFGkS1iTCkVMA7If_!!2207888834413.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:28515485174",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN01QXZGrZ1iTCjZU7p5E_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:28515485175",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN01X8wXAs1iTCjWooOzW_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:13908618824",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01FycVnB1iTCk2gdMWY_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:28515485176",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN01d6n6hI1iTCjy77DIZ_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:28704749299",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN014AD8aw1iTCjhdfQqo_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:28704749300",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN019bT8aD1iTCjietDQA_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:28704749301",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN01WQvxp71iTCk7WlIkY_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:28704749302",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN01RpFJ771iTCk5awfRL_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:29797011284",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN01wUFGkS1iTCkVMA7If_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:29797011285",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN0156rrpE1iTCkaRZ7Uq_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:39101367258",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN01YGr9SO1iTCuHKnZwL_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:39101367259",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01ZmGQrS1iTCuHd4PFB_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:2418966117",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01DsYJm81iTCwj7UhvT_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:381362083",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01kKiG8v1iTCxsnrehJ_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:415376468",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01GkVe2b1iTCxtnsd0H_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:1432106375",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01pBtujn1iTCxtlpG45_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:701654455",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN014MCD0l1iTCxt6qFvE_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:42814903386",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN017owPdV1iTCxoQwdI4_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:42814903387",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01M9rCPf1iTCxtZiqIn_!!2207888834413.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "style",
+          "value": "Minimalist and modern",
+          "name_original": "style",
+          "value_original": "Minimalist and modern"
+        },
+        {
+          "name": "Carpet material",
+          "value": "100% polyester fiber",
+          "name_original": "Carpet material",
+          "value_original": "100% polyester fiber"
+        },
+        {
+          "name": "Applicable scenarios",
+          "value": "Office, bedroom, living room, classroom",
+          "name_original": "Applicable scenarios",
+          "value_original": "Office, bedroom, living room, classroom"
+        },
+        {
+          "name": "Material composition",
+          "value": "Polyester fiber 100%",
+          "name_original": "Material composition",
+          "value_original": "Polyester fiber 100%"
+        },
+        {
+          "name": "Usage scenarios",
+          "value": "Office area, dormitory, bedroom",
+          "name_original": "Usage scenarios",
+          "value_original": "Office area, dormitory, bedroom"
+        },
+        {
+          "name": "Shrinkage rate",
+          "value": "2%-3%",
+          "name_original": "Shrinkage rate",
+          "value_original": "2%-3%"
+        },
+        {
+          "name": "Applicable season",
+          "value": "autumn",
+          "name_original": "Applicable season",
+          "value_original": "autumn"
+        },
+        {
+          "name": "thickness",
+          "value": "2cm",
+          "name_original": "thickness",
+          "value_original": "2cm"
+        },
+        {
+          "name": "Blanket type",
+          "value": "Tarfan blanket",
+          "name_original": "Blanket type",
+          "value_original": "Tarfan blanket"
+        },
+        {
+          "name": "Edge modeling",
+          "value": "right angle",
+          "name_original": "Edge modeling",
+          "value_original": "right angle"
+        },
+        {
+          "name": "breathability",
+          "value": "Highly breathable",
+          "name_original": "breathability",
+          "value_original": "Highly breathable"
+        },
+        {
+          "name": "Color fastness",
+          "value": "4-5",
+          "name_original": "Color fastness",
+          "value_original": "4-5"
+        },
+        {
+          "name": "knitting process",
+          "value": "knitting",
+          "name_original": "knitting process",
+          "value_original": "knitting"
+        },
+        {
+          "name": "color classification",
+          "value": "Morandi Grey Blue+Mi White Morandi Grey Blue+Gray Blue Morandi Light Grey+Mi White Morandi Light Grey+Mi White Morandi Dark Grey+Mi White Morandi Dark Grey+Dark Grey Morandi Tibetan Green+Mi White Morandi Tibetan Green+Tibetan Green Morandi Grey Pink+Mi White Morandi Grey Pink+Grey Pink Ice American+Mi White Ice American+Ice American Milk Coffee Color+Milk Coffee Color Watermelon Red+Mi White Watermelon Red+Watermelon Red Taro Purple+Mi White Taro Purple+Taro Purple Morandi Military Green+Mi White Morandi Military Green+Military Green",
+          "name_original": "color classification",
+          "value_original": "Morandi Grey Blue+Mi White Morandi Grey Blue+Gray Blue Morandi Light Grey+Mi White Morandi Light Grey+Mi White Morandi Dark Grey+Mi White Morandi Dark Grey+Dark Grey Morandi Tibetan Green+Mi White Morandi Tibetan Green+Tibetan Green Morandi Grey Pink+Mi White Morandi Grey Pink+Grey Pink Ice American+Mi White Ice American+Ice American Milk Coffee Color+Milk Coffee Color Watermelon Red+Mi White Watermelon Red+Watermelon Red Taro Purple+Mi White Taro Purple+Taro Purple Morandi Military Green+Mi White Morandi Military Green+Military Green"
+        },
+        {
+          "name": "brand",
+          "value": "Initial awn",
+          "name_original": "brand",
+          "value_original": "Initial awn"
+        },
+        {
+          "name": "province",
+          "value": "Jiangsu Province",
+          "name_original": "province",
+          "value_original": "Jiangsu Province"
+        },
+        {
+          "name": "Prefecture and city",
+          "value": "Suzhou City",
+          "name_original": "Prefecture and city",
+          "value_original": "Suzhou City"
+        },
+        {
+          "name": "Article number",
+          "value": "cmscmt001",
+          "name_original": "Article number",
+          "value_original": "cmscmt001"
+        },
+        {
+          "name": "Machine washable",
+          "value": "Support chiller washing",
+          "name_original": "Machine washable",
+          "value_original": "Support chiller washing"
+        },
+        {
+          "name": "function",
+          "value": "warm",
+          "name_original": "function",
+          "value_original": "warm"
+        },
+        {
+          "name": "Origin",
+          "value": "Chinese Mainland",
+          "name_original": "Origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "thermal insulation performance",
+          "value": "high",
+          "name_original": "thermal insulation performance",
+          "value_original": "high"
+        },
+        {
+          "name": "Warmth level",
+          "value": "Four Seasons Universal",
+          "name_original": "Warmth level",
+          "value_original": "Four Seasons Universal"
+        },
+        {
+          "name": "Product level",
+          "value": "Premium products",
+          "name_original": "Product level",
+          "value_original": "Premium products"
+        },
+        {
+          "name": "size",
+          "value": "Double layer thickened 80 * 100 single lid knee with free storage bag Double layer thickened 100 * 120 with free storage bag Double layer thickened 100 * 160 with free storage bag Double layer thickened 120 * 200 with free storage bag Double layer thickened 150 * 200 with free storage bag Double layer thickened 180 * 200 with free storage bag Double layer thickened 200 * 230 with free storage bag",
+          "name_original": "size",
+          "value_original": "Double layer thickened 80 * 100 single lid knee with free storage bag Double layer thickened 100 * 120 with free storage bag Double layer thickened 100 * 160 with free storage bag Double layer thickened 120 * 200 with free storage bag Double layer thickened 150 * 200 with free storage bag Double layer thickened 180 * 200 with free storage bag Double layer thickened 200 * 230 with free storage bag"
+        },
+        {
+          "name": "pattern",
+          "value": "Solid color",
+          "name_original": "pattern",
+          "value_original": "Solid color"
+        },
+        {
+          "name": "Applicable population",
+          "value": "Universal adult, child, and elderly",
+          "name_original": "Applicable population",
+          "value_original": "Universal adult, child, and elderly"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Chumang flagship store",
+        "location": "Suzhou, Jiangsu",
+        "rating": null,
+        "name_original": "初芒旗舰店",
+        "location_original": "江苏苏州"
+      },
+      "sales_volume": 2000,
+      "description": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01NRDoRp1iTCR9QUQLz_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01IlRo3N1iTCR7vu9rV_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01f92c0N1iTCREcn4xu_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01tGrIod1iTCwxq804M~crop,0,0,750,1500~_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01tGrIod1iTCwxq804M~crop,0,1500,750,362~_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01YJhGDF1iTCvysZgzz_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2207888834413/O1CN01VQ3crB1iTCwxq3QzD_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01lVxglE1iTCvzIdXWb_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01QXZGrZ1iTCjZU7p5E_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01eAOUsq1iTCw03SX5D_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2207888834413/O1CN01uKKoTL1iTCvzHtdRE_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2207888834413/O1CN01dapN5M1iTCvyzxTd4_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01J5yhl41iTCjUIOQSx_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2207888834413/O1CN01MQRCkH1iTCw07ZKql_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01kjjygC1iTCjkddqsc_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2207888834413/O1CN01w3UdLq1iTCvySpHr3_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2207888834413/O1CN01V3403K1iTCvzMBINx_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01o6R1ph1iTCvzkRmLF_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN0156rrpE1iTCkaRZ7Uq_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01QZh26I1iTCjZqbsCO_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01WmAzHQ1iTCjUIQRFD_!!2207888834413.jpg\"></div></div>",
+      "title_original": "Winter thick coral velvet blanket, lamb velvet blanket, office nap, lunch break, single person leg covered blanket",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01NRDoRp1iTCR9QUQLz_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01IlRo3N1iTCR7vu9rV_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01f92c0N1iTCREcn4xu_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01tGrIod1iTCwxq804M~crop,0,0,750,1500~_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01tGrIod1iTCwxq804M~crop,0,1500,750,362~_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01YJhGDF1iTCvysZgzz_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2207888834413/O1CN01VQ3crB1iTCwxq3QzD_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01lVxglE1iTCvzIdXWb_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01QXZGrZ1iTCjZU7p5E_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01eAOUsq1iTCw03SX5D_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2207888834413/O1CN01uKKoTL1iTCvzHtdRE_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2207888834413/O1CN01dapN5M1iTCvyzxTd4_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01J5yhl41iTCjUIOQSx_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2207888834413/O1CN01MQRCkH1iTCw07ZKql_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01kjjygC1iTCjkddqsc_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2207888834413/O1CN01w3UdLq1iTCvySpHr3_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2207888834413/O1CN01V3403K1iTCvzMBINx_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01o6R1ph1iTCvzkRmLF_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN0156rrpE1iTCkaRZ7Uq_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01QZh26I1iTCjZqbsCO_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01WmAzHQ1iTCjUIQRFD_!!2207888834413.jpg\"></div></div>",
+      "brand_original": "初芒",
+      "productId": "747544913943",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T09:54:00.226Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i3/2207888834413/O1CN012y1WYl1iTCx8vVScQ_!!4611686018427387757-2-item_pic.png",
+        "https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01VQ3crB1iTCwxq3QzD_!!2207888834413.jpg",
+        "https://img.alicdn.com/imgextra/i3/2207888834413/O1CN019bT8aD1iTCjietDQA_!!2207888834413.jpg",
+        "https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01WpsgHI1iTCjzFTo7r_!!0-item_pic.jpg"
+      ]
+    },
+    "530309923481": {
+      "title": "Blanket gift box set gift small blanket double-layer winter single office coral fleece nap blanket",
+      "desc_short": "",
+      "brand": "Chu Mang",
+      "pic_url": "//img.alicdn.com/imgextra/i3/1720708004/TB2D9J_q5lnpuFjSZFgXXbi7FXa_!!1720708004.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i3/1720708004/TB2D9J_q5lnpuFjSZFgXXbi7FXa_!!1720708004.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/1720708004/O1CN0128zsZlDDYPSPpwM_!!1720708004.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/1720708004/TB2PLWiq90mpuFjSZPiXXbssVXa_!!1720708004.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/1720708004/TB21ZXHomBjpuFjSsplXXa5MVXa_!!1720708004.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/1720708004/TB24AdCohdkpuFjy0FbXXaNnpXa_!!1720708004.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:2575073355",
+            "url": "http://img.alicdn.com/imgextra/i2/1720708004/O1CN0128zsZlDDYPSPpwM_!!1720708004.jpg"
+          },
+          {
+            "properties": "1627207:1579651601",
+            "url": "http://img.alicdn.com/imgextra/i4/1720708004/TB21y5XnpXXXXaCXpXXXXXXXXXX_!!1720708004.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "style",
+          "value": "Simple and modern",
+          "name_original": "style",
+          "value_original": "Simple and modern"
+        },
+        {
+          "name": "Brand",
+          "value": "Chu Mang",
+          "name_original": "Brand",
+          "value_original": "Chu Mang"
+        },
+        {
+          "name": "Carpet material",
+          "value": "Coral fleece, polyester fiber",
+          "name_original": "Carpet material",
+          "value_original": "Coral fleece, polyester fiber"
+        },
+        {
+          "name": "province",
+          "value": "Jiangsu Province",
+          "name_original": "province",
+          "value_original": "Jiangsu Province"
+        },
+        {
+          "name": "region",
+          "value": "suzhou",
+          "name_original": "region",
+          "value_original": "suzhou"
+        },
+        {
+          "name": "Usage scenario",
+          "value": "Administrative area",
+          "name_original": "Usage scenario",
+          "value_original": "Administrative area"
+        },
+        {
+          "name": "shrinkage",
+          "value": "2%-3%",
+          "name_original": "shrinkage",
+          "value_original": "2%-3%"
+        },
+        {
+          "name": "Chinese Mainland",
+          "value": "Blanket Type",
+          "name_original": "Appropriate Season",
+          "value_original": "winter"
+        },
+        {
+          "name": "Other/Other",
+          "value": "product grade",
+          "name_original": "Item number",
+          "value_original": "91116110105"
+        },
+        {
+          "name": "Superior products",
+          "value": "size",
+          "name_original": "Function",
+          "value_original": "Other/Other"
+        },
+        {
+          "name": "127 * 178cm double-layer (gift box), 127 * 178cm double-layer (simple packaging)",
+          "value": "Color fastness",
+          "name_original": "country of origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "4",
+          "value": "pattern",
+          "name_original": "Blanket Type",
+          "value_original": "Other/Other"
+        },
+        {
+          "name": "Geometric Patterns",
+          "value": "Color classification",
+          "name_original": "product grade",
+          "value_original": "Superior products"
+        },
+        {
+          "name": "Gray background stars (double layered), owls (double layered)",
+          "value": "127 * 178cm double-layer (gift box), 127 * 178cm double-layer (simple packaging)",
+          "name_original": "size",
+          "value_original": "127 * 178cm double-layer (gift box), 127 * 178cm double-layer (simple packaging)"
+        },
+        {
+          "name": "Color fastness",
+          "value": "4",
+          "name_original": "Color fastness",
+          "value_original": "4"
+        },
+        {
+          "name": "pattern",
+          "value": "Geometric Patterns",
+          "name_original": "pattern",
+          "value_original": "Geometric Patterns"
+        },
+        {
+          "name": "Color classification",
+          "value": "Gray background stars (double layered), owls (double layered)",
+          "name_original": "Color classification",
+          "value_original": "Gray background stars (double layered), owls (double layered)"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Chu Mang",
+        "location": "Suzhou, Jiangsu",
+        "rating": null,
+        "name_original": "初芒",
+        "location_original": "江苏苏州"
+      },
+      "sales_volume": 24,
+      "description": "src=\"https://img.alicdn.com/imgextra/i1/1720708004/O1CN01Y3x5UT28zsgfMZWnF_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/1720708004/O1CN01TrY9Ma28ztAb4S8Zi_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/1720708004/O1CN01F93wgm28ztAc1H2Bf_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/1720708004/O1CN01lNATmf28ztAdHbYTJ_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/O1CN01CjhrOV28ztAdHdlhb_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/1720708004/O1CN01gaFo2R28zsgmRZXCu_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/1720708004/O1CN01RZCa1D28zsgf5gQdk_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/TB2wlV8q5RnpuFjSZFCXXX2DXXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2zu5PpHBmpuFjSZFAXXaQ0pXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/1720708004/TB2ym98pHBmpuFjSZFuXXaG_XXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2nqhwnbFlpuFjy0FgXXbRBVXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB21mnni0hvOuFjSZFBXXcZgFXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2S4pAeFXXXXcMXXXXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/1720708004/TB21y5XnpXXXXaCXpXXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB23jdDgXXXXXXMXpXXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/1720708004/O1CN0128zsZlDDYPSPpwM_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/TB2crN7npXXXXbLXpXXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2mNGwbFHzQeBjSZFzXXa__FXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2XvJTq.hnpuFjSZFpXXcpuXXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/TB2_YVzogNlpuFjy0FfXXX3CpXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/T2pZJyXsxXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/O1CN01p9yjRI28zsgg4hag9_!!1720708004.jpg\"></div></div>",
+      "title_original": "Blanket gift box set gift small blanket double-layer winter single office coral fleece nap blanket",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/O1CN01Y3x5UT28zsgfMZWnF_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/1720708004/O1CN01TrY9Ma28ztAb4S8Zi_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/1720708004/O1CN01F93wgm28ztAc1H2Bf_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/1720708004/O1CN01lNATmf28ztAdHbYTJ_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/O1CN01CjhrOV28ztAdHdlhb_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/1720708004/O1CN01gaFo2R28zsgmRZXCu_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/1720708004/O1CN01RZCa1D28zsgf5gQdk_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/TB2wlV8q5RnpuFjSZFCXXX2DXXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2zu5PpHBmpuFjSZFAXXaQ0pXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/1720708004/TB2ym98pHBmpuFjSZFuXXaG_XXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2nqhwnbFlpuFjy0FgXXbRBVXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB21mnni0hvOuFjSZFBXXcZgFXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2S4pAeFXXXXcMXXXXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/1720708004/TB21y5XnpXXXXaCXpXXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB23jdDgXXXXXXMXpXXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/1720708004/O1CN0128zsZlDDYPSPpwM_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/TB2crN7npXXXXbLXpXXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2mNGwbFHzQeBjSZFzXXa__FXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/TB2XvJTq.hnpuFjSZFpXXcpuXXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/TB2_YVzogNlpuFjy0FfXXX3CpXa_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/1720708004/T2pZJyXsxXXXXXXXXX_!!1720708004.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/1720708004/O1CN01p9yjRI28zsgg4hag9_!!1720708004.jpg\"></div></div>",
+      "brand_original": "初芒",
+      "productId": "530309923481",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T09:54:05.254Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i3/1720708004/TB2D9J_q5lnpuFjSZFgXXbi7FXa_!!1720708004.jpg",
+        "https://img.alicdn.com/imgextra/i2/1720708004/O1CN0128zsZlDDYPSPpwM_!!1720708004.jpg",
+        "https://img.alicdn.com/imgextra/i3/1720708004/TB2PLWiq90mpuFjSZPiXXbssVXa_!!1720708004.jpg",
+        "https://img.alicdn.com/imgextra/i3/1720708004/TB21ZXHomBjpuFjSsplXXa5MVXa_!!1720708004.jpg"
+      ]
+    },
+    "822965104852": {
+      "title": "Coarse needle knitted cationic double-layer composite lamb wool composite thickened warm blanket",
+      "desc_short": "",
+      "brand": "Other Home",
+      "pic_url": "//img.alicdn.com/imgextra/i1/12080749/O1CN01r3uTWo1HP5d7J0703_!!12080749.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i1/12080749/O1CN01r3uTWo1HP5d7J0703_!!12080749.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/12080749/O1CN010RPlaR1HP5dHAylbN_!!12080749.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/12080749/O1CN01F9oKjt1HP5d7J1Jra_!!12080749.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/12080749/O1CN01mm4dbq1HP5dCwEIkn_!!12080749.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/12080749/O1CN01B8dwzV1HP5dILusVA_!!12080749.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:33562139048",
+            "url": "http://img.alicdn.com/imgextra/i4/12080749/O1CN01fmxSEr1HP5dGzPIHm_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:33562139049",
+            "url": "http://img.alicdn.com/imgextra/i2/12080749/O1CN01oHeEuH1HP5dBpNLvb_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:33695172820",
+            "url": "http://img.alicdn.com/imgextra/i3/12080749/O1CN01cE2Bpy1HP5dSlmhZ7_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:33695172821",
+            "url": "http://img.alicdn.com/imgextra/i4/12080749/O1CN01iTnmai1HP5dS0IO87_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:33695172822",
+            "url": "http://img.alicdn.com/imgextra/i3/12080749/O1CN01nQGRxf1HP5dOntnAA_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:33695172823",
+            "url": "http://img.alicdn.com/imgextra/i1/12080749/O1CN01YGp5xh1HP5dQmtXbu_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:33695172824",
+            "url": "http://img.alicdn.com/imgextra/i2/12080749/O1CN01aQ4dbu1HP5dJDhB2f_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:33695172825",
+            "url": "http://img.alicdn.com/imgextra/i4/12080749/O1CN01jKOJb71HP5dQB3ePV_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35511927994",
+            "url": "http://img.alicdn.com/imgextra/i2/12080749/O1CN01ZHO0cY1HP5fW9yvU7_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35511927995",
+            "url": "http://img.alicdn.com/imgextra/i4/12080749/O1CN01IjGjRg1HP5fTdUEMH_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35511927997",
+            "url": "http://img.alicdn.com/imgextra/i3/12080749/O1CN01ZXUNx11HP5fVUJIYD_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35511927998",
+            "url": "http://img.alicdn.com/imgextra/i1/12080749/O1CN01g5GIAr1HP5fTQOIwv_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35511927999",
+            "url": "http://img.alicdn.com/imgextra/i3/12080749/O1CN01zS2nbn1HP5fUjqq95_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35511928000",
+            "url": "http://img.alicdn.com/imgextra/i4/12080749/O1CN01Lc5OqG1HP5fUtVsRP_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35512069001",
+            "url": "http://img.alicdn.com/imgextra/i1/12080749/O1CN01GMIR5Q1HP5fWtg8P1_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35512069002",
+            "url": "http://img.alicdn.com/imgextra/i2/12080749/O1CN018MGeBc1HP5fSinKsk_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35511927996",
+            "url": "http://img.alicdn.com/imgextra/i3/12080749/O1CN01pnlt4M1HP5fSiilwA_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35512722263",
+            "url": "http://img.alicdn.com/imgextra/i2/12080749/O1CN01Y6DK1g1HP5fVNAMD4_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:35513218498",
+            "url": "http://img.alicdn.com/imgextra/i1/12080749/O1CN019hteH71HP5fW021Nc_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:33562139050",
+            "url": "http://img.alicdn.com/imgextra/i4/12080749/O1CN01ezxrj31HP5dFj9HVV_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:40891143012",
+            "url": "http://img.alicdn.com/imgextra/i2/12080749/O1CN01DyJub31HP5kUuuyMe_!!12080749.jpg"
+          },
+          {
+            "properties": "1627207:41387097229",
+            "url": "http://img.alicdn.com/imgextra/i2/12080749/O1CN01dP4Tlp1HP5l4lkAEQ_!!12080749.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "brand",
+          "value": "Other Home",
+          "name_original": "brand",
+          "value_original": "Other Home"
+        },
+        {
+          "name": "country of origin",
+          "value": "Chinese Mainland",
+          "name_original": "country of origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "size",
+          "value": ". 5 meters * meters",
+          "name_original": "size",
+          "value_original": ". 5 meters * meters"
+        },
+        {
+          "name": "Color classification",
+          "value": "knitted composite lamb wool thickened blanket, black linen gray coarse needle knitted composite lamb wool thickened blanket, fresh green cation/fresh green coarse needle knitted composite lamb wool thickened blanket, pickle green cation/pickle green coarse needle knitted composite lamb wool thickened blanket, dark gray cation/black coarse needle knitted composite lamb wool thickened blanket, grass green cation/black coarse needle knitted composite lamb wool thickened blanket Composite lamb wool thickened blanket, gray blue cationic/grey blue coarse needle knitted composite lamb wool thickened blanket, Haze Blue Cation/Tibetan Blue Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Medium Hemp Gray Cation/Rice White Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Rice Gray Cation/Beige Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Tibetan Blue Cation/Tibetan Blue Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Green Hemp Gray Cation/Grass Green Coarse Needle Knitted Composite Lamb Wool, 1.4 * 2-meter Deep Hemp Gray Plain Knitted Composite Milk White Lamb Wool 1.2kg, Hemp Gray Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Oat Coarse Needle Knitted Composite Beige Lamb Wool Thickened Blanket, Khaki Coarse Needle Knitted Composite Beige Lamb Wool Thickened Blanket",
+          "name_original": "Color classification",
+          "value_original": "Navy blue coarse needle knitted composite lamb wool thickened blanket, fog blue coarse needle knitted composite lamb wool thickened blanket, navy blue+black navy blue coarse needle knitted composite lamb wool thickened blanket, beige coarse needle knitted composite lamb wool thickened blanket, wine red coarse needle knitted composite lamb wool thickened blanket, pickle green coarse needle knitted composite lamb wool thickened blanket, light ink blue coarse needle knitted composite lamb wool thickened blanket, black linen gray coarse needle knitted composite lamb wool thickened blanket, fresh green cation/fresh green coarse needle knitted composite lamb wool thickened blanket, pickle green cation/pickle green coarse needle knitted composite lamb wool thickened blanket, dark gray cation/black coarse needle knitted composite lamb wool thickened blanket, grass green cation/black coarse needle knitted composite lamb wool thickened blanket Composite lamb wool thickened blanket, grey blue cationic/grey blue coarse needle knitted composite lamb wool thickened blanket, Haze Blue Cation/Tibetan Blue Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Medium Hemp Grey Cation/Rice White Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Rice Grey Cation/Beige Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Tibetan Blue Cation/Tibetan Blue Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Green Hemp Grey Cation/Grass Green Coarse Needle Knitted Composite Lamb Wool, 1.4 * 2-meter Deep Hemp Grey Plain Knitted Composite Milk White Lamb Wool 1.2kg, Hemp Grey Coarse Needle Knitted Composite Lamb Wool Thickened Blanket, Oat Coarse Needle Knitted Composite Beige Lamb Wool Thickened Blanket, Khaki Coarse Needle Knitted Composite Beige Lamb Wool Thickened Blanket"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "May Foreign Trade Products Direct Sales Store",
+        "location": "Suzhou, Jiangsu",
+        "rating": null,
+        "name_original": "五月外贸产品直销店",
+        "location_original": "江苏苏州"
+      },
+      "sales_volume": 52,
+      "description": "src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01Ge6Xg71HP5dFj2QxJ_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN0166VVh81HP5dGzKOcP_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01Tvtm8O1HP5dEmvynS_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01BcbQHr1HP5dEySF1n_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01LhY41F1HP5dBpKfIi_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01BRgCGp1HP5dFj1tg8_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/12080749/O1CN01giwkuL1HP5dEEcdQ7_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01YBR3jp1HP5dBpKfIx_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01tfl9lx1HP5dBpLCZt_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01kIrulw1HP5d7JN8Zq_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01p45xcD1HP5dG67sLY_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/12080749/O1CN01Lp5TNd1HP5dIMG5ot_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01yIuoFk1HP5dFj4JLc_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01jtfovU1HP5d7JNwTj_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01GHEN9t1HP5dEms5di_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01xWFfbH1HP5dGzKWwQ_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01tRu7rv1HP5dQnmSMZ_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/12080749/O1CN01v6Tdih1HP5dJEb27p_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/12080749/O1CN01CJrDeO1HP5dT08dtL_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01EAejUo1HP5dJEcmF2_!!12080749.jpg\"></div></div>",
+      "title_original": "Coarse needle knitted cationic double-layer composite lamb wool composite thickened warm blanket",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01Ge6Xg71HP5dFj2QxJ_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN0166VVh81HP5dGzKOcP_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01Tvtm8O1HP5dEmvynS_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01BcbQHr1HP5dEySF1n_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01LhY41F1HP5dBpKfIi_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01BRgCGp1HP5dFj1tg8_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/12080749/O1CN01giwkuL1HP5dEEcdQ7_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01YBR3jp1HP5dBpKfIx_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01tfl9lx1HP5dBpLCZt_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01kIrulw1HP5d7JN8Zq_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01p45xcD1HP5dG67sLY_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/12080749/O1CN01Lp5TNd1HP5dIMG5ot_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01yIuoFk1HP5dFj4JLc_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/12080749/O1CN01jtfovU1HP5d7JNwTj_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01GHEN9t1HP5dEms5di_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/12080749/O1CN01xWFfbH1HP5dGzKWwQ_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01tRu7rv1HP5dQnmSMZ_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/12080749/O1CN01v6Tdih1HP5dJEb27p_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/12080749/O1CN01CJrDeO1HP5dT08dtL_!!12080749.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/12080749/O1CN01EAejUo1HP5dJEcmF2_!!12080749.jpg\"></div></div>",
+      "brand_original": "其他家",
+      "productId": "822965104852",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T09:54:09.742Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i1/12080749/O1CN01r3uTWo1HP5d7J0703_!!12080749.jpg",
+        "https://img.alicdn.com/imgextra/i4/12080749/O1CN010RPlaR1HP5dHAylbN_!!12080749.jpg",
+        "https://img.alicdn.com/imgextra/i1/12080749/O1CN01F9oKjt1HP5d7J1Jra_!!12080749.jpg",
+        "https://img.alicdn.com/imgextra/i2/12080749/O1CN01mm4dbq1HP5dCwEIkn_!!12080749.jpg"
+      ]
+    },
+    "652837285644": {
+      "title": "Autumn and Winter Double layer Sofa Blanket Quilt Double sided Imitation Lamb Fleece Blanket Float Window Bed Tail Carpet Thickened Napping Cover Carpet",
+      "desc_short": "",
+      "brand": "USILK/优春青青",
+      "pic_url": "//img.alicdn.com/imgextra/i1/67945554/O1CN01Brz7OR1qtml7OZZyT_!!67945554.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i1/67945554/O1CN01Brz7OR1qtml7OZZyT_!!67945554.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/67945554/O1CN01pOzTpS1qtml9KKWnw_!!67945554.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/67945554/O1CN01sTw0uA1qtmSbaE8PR_!!67945554.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/67945554/O1CN01jdWGbx1qtmlBbx3ve_!!67945554.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/67945554/O1CN01t7ApYZ1qtmRwktPVz_!!67945554.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:35278542784",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01xeIDhr1qtmeoikLU9_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:35278542785",
+            "url": "http://img.alicdn.com/imgextra/i1/67945554/O1CN01Brz7OR1qtml7OZZyT_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:35278542788",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01pOzTpS1qtml9KKWnw_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:35278542789",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01DWerqm1qtml9Dddmv_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:35278542790",
+            "url": "http://img.alicdn.com/imgextra/i2/67945554/O1CN01DWerqm1qtml9Dddmv_!!67945554.jpg"
+          },
+          {
+            "properties": "1627207:35278542782",
+            "url": "http://img.alicdn.com/imgextra/i3/67945554/O1CN01Pa1eqc1qtmXwWFEwE_!!67945554.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "style",
+          "value": "Simple and modern",
+          "name_original": "style",
+          "value_original": "Simple and modern"
+        },
+        {
+          "name": "Brand",
+          "value": "USILK/Ultra Pure Qingqing",
+          "name_original": "Brand",
+          "value_original": "USILK/Ultra Pure Qingqing"
+        },
+        {
+          "name": "Carpet material",
+          "value": "Polyester fiber, flannel",
+          "name_original": "Carpet material",
+          "value_original": "Polyester fiber, flannel"
+        },
+        {
+          "name": "Usage scenario",
+          "value": "Administrative area",
+          "name_original": "Usage scenario",
+          "value_original": "Administrative area"
+        },
+        {
+          "name": "Appropriate Season",
+          "value": "winter",
+          "name_original": "Appropriate Season",
+          "value_original": "winter"
+        },
+        {
+          "name": "Function",
+          "value": "Partition insulation",
+          "name_original": "Function",
+          "value_original": "Partition insulation"
+        },
+        {
+          "name": "country of origin",
+          "value": "Chinese Mainland",
+          "name_original": "country of origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "thermal insulation performance",
+          "value": "high",
+          "name_original": "thermal insulation performance",
+          "value_original": "high"
+        },
+        {
+          "name": "",
+          "value": "size",
+          "name_original": "Warmth level",
+          "value_original": "Thickening"
+        },
+        {
+          "name": "127x152cm",
+          "value": "pattern",
+          "name_original": "Blanket Type",
+          "value_original": "Other/Other"
+        },
+        {
+          "name": "Geometric Patterns",
+          "value": "For the crowd",
+          "name_original": "size",
+          "value_original": "127x152cm"
+        },
+        {
+          "name": "general",
+          "value": "Color classification",
+          "name_original": "pattern",
+          "value_original": "Geometric Patterns"
+        },
+        {
+          "name": "velvet blue grid, 2.2x2.4 meters double-sided velvet blue grid, double-sided gray (thin version)",
+          "value": "general",
+          "name_original": "For the crowd",
+          "value_original": "general"
+        },
+        {
+          "name": "Color classification",
+          "value": "1.3x1.7 meters double-sided velvet gray letters, 1.3x1.7 meters double-sided velvet powder letters, 1.4x2 meters double-sided velvet sesame gray, 2.2x1.6 meters double-sided velvet blue grid, 2.2x2.4 meters double-sided velvet blue grid, double-sided gray (thin version)",
+          "name_original": "Color classification",
+          "value_original": "1.3x1.7 meters double-sided velvet gray letters, 1.3x1.7 meters double-sided velvet powder letters, 1.4x2 meters double-sided velvet sesame gray, 2.2x1.6 meters double-sided velvet blue grid, 2.2x2.4 meters double-sided velvet blue grid, double-sided gray (thin version)"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Wangji Department Store onegehome",
+        "location": "Zhejiang Jinhua",
+        "rating": null,
+        "name_original": "旺基百货onegehome",
+        "location_original": "浙江金华"
+      },
+      "sales_volume": 24,
+      "description": "100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01bkVaO91qtmq8SNQHz_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/67945554/O1CN01QvCYQB1qtmqAJbyVw_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/67945554/O1CN01XC9TAH1qtmqAZAC2x_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/67945554/O1CN014UneAs1qtmq9mgrPs_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/67945554/O1CN01YFv8u21qtmqAZ97Za_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/67945554/O1CN01SnDGUW1qtmqAZ9Bix_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01DWerqm1qtml9Dddmv_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01pOzTpS1qtml9KKWnw_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01xeIDhr1qtmeoikLU9_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/67945554/O1CN01Brz7OR1qtml7OZZyT_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/67945554/O1CN01jdWGbx1qtmlBbx3ve_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01WvdmbD1qtmkvhPMbg_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01lppREX1qtmSd7J5E2_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01HUXbX51qtmSd7J5Ak_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN011MCgVx1qtmShCFtPI_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01BrDdJZ1qtmScC5ISx_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01ZeMgX71qtmSiuhPWz_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01sTw0uA1qtmSbaE8PR_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01ghvsa81qtmSbcIZII_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN010L9hiW1qtmSSb54Jk_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01x4vrtw1qtmSXJF4Hl_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01YAeJWz1qtmS1QVEQB_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN016WVFuj1qtmRv87oM5_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01OIjiai1qtmRnf7S1f_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN018oJ9XS1qtmRu5ab9B_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01SPMrWK1qtmRwktsVP_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01oNlrQK1qtmRvqrjqQ_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN018oYknK1qtmRgxS21q_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01Vja0ey1qtmRpoQAfk_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01MGvL8m1qtmRscm1m5_!!67945554.jpg\"></div></div>",
+      "title_original": "Autumn and Winter Double layer Sofa Blanket Quilt Double sided Imitation Lamb Fleece Blanket Float Window Bed Tail Carpet Thickened Napping Cover Carpet",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01bkVaO91qtmq8SNQHz_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/67945554/O1CN01QvCYQB1qtmqAJbyVw_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/67945554/O1CN01XC9TAH1qtmqAZAC2x_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/67945554/O1CN014UneAs1qtmq9mgrPs_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/67945554/O1CN01YFv8u21qtmqAZ97Za_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/67945554/O1CN01SnDGUW1qtmqAZ9Bix_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01DWerqm1qtml9Dddmv_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01pOzTpS1qtml9KKWnw_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01xeIDhr1qtmeoikLU9_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/67945554/O1CN01Brz7OR1qtml7OZZyT_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/67945554/O1CN01jdWGbx1qtmlBbx3ve_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/67945554/O1CN01WvdmbD1qtmkvhPMbg_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01lppREX1qtmSd7J5E2_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01HUXbX51qtmSd7J5Ak_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN011MCgVx1qtmShCFtPI_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01BrDdJZ1qtmScC5ISx_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01ZeMgX71qtmSiuhPWz_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01sTw0uA1qtmSbaE8PR_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01ghvsa81qtmSbcIZII_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN010L9hiW1qtmSSb54Jk_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01x4vrtw1qtmSXJF4Hl_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01YAeJWz1qtmS1QVEQB_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN016WVFuj1qtmRv87oM5_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/67945554/O1CN01OIjiai1qtmRnf7S1f_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN018oJ9XS1qtmRu5ab9B_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01SPMrWK1qtmRwktsVP_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN01oNlrQK1qtmRvqrjqQ_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/67945554/O1CN018oYknK1qtmRgxS21q_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/67945554/O1CN01Vja0ey1qtmRpoQAfk_!!67945554.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/67945554/O1CN01MGvL8m1qtmRscm1m5_!!67945554.jpg\"></div></div>",
+      "brand_original": "USILK/优纯青青",
+      "productId": "652837285644",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T10:00:38.789Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i1/67945554/O1CN01Brz7OR1qtml7OZZyT_!!67945554.jpg",
+        "https://img.alicdn.com/imgextra/i2/67945554/O1CN01pOzTpS1qtml9KKWnw_!!67945554.jpg",
+        "https://img.alicdn.com/imgextra/i2/67945554/O1CN01sTw0uA1qtmSbaE8PR_!!67945554.jpg",
+        "https://img.alicdn.com/imgextra/i4/67945554/O1CN01jdWGbx1qtmlBbx3ve_!!67945554.jpg"
+      ]
+    },
+    "852864486588": {
+      "title": "Solid color wool warm Bed sheet blanket sofa cover blankets",
+      "desc_short": "",
+      "brand": "No brand/no registered trademark",
+      "pic_url": "//img.alicdn.com/imgextra/i3/2586268013/O1CN018PMTrt2940gbbYmaj_!!2586268013.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2586268013/O1CN018PMTrt2940gbbYmaj_!!2586268013.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2586268013/O1CN01fLji4K2940gWvEKPv_!!2586268013.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2586268013/O1CN01QAny1d2940gWEWure_!!2586268013.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2586268013/O1CN018WIkRz2940gTLEASP_!!2586268013.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2586268013/O1CN010iJUR42940gZDlzSC_!!2586268013.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:7698564",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01hDreqH2940gVQD9lk_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:383012402",
+            "url": "http://img.alicdn.com/imgextra/i4/2586268013/O1CN018DVmuN2940gVQFAXQ_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:3232480",
+            "url": "http://img.alicdn.com/imgextra/i2/2586268013/O1CN014Qlg412940gVrlXs2_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:129819",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01ppyJKl2940gUiMHzZ_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28331",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01HtS7BH2940gUp7o9X_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:3594022",
+            "url": "http://img.alicdn.com/imgextra/i4/2586268013/O1CN01vxJn2d2940gUpAI21_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28332",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01RAnMCc2940gUiNd8R_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:3232478",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01tzbIem2940gUp9YHZ_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28340",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01Lvg0C92940gScWBY6_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28329",
+            "url": "http://img.alicdn.com/imgextra/i3/2586268013/O1CN013xSihA2940gVroA0i_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:4266701",
+            "url": "http://img.alicdn.com/imgextra/i2/2586268013/O1CN01mUYIxb2940gVHReEy_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:3232484",
+            "url": "http://img.alicdn.com/imgextra/i3/2586268013/O1CN01xluo4c2940gVBj78r_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:16044494",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN012E2BdZ2940gTLDEIE_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28327",
+            "url": "http://img.alicdn.com/imgextra/i2/2586268013/O1CN01tiSj0K2940gScXBvg_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:449032358",
+            "url": "http://img.alicdn.com/imgextra/i4/2586268013/O1CN01D0kmNQ2940gXZuY0H_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:4512280",
+            "url": "http://img.alicdn.com/imgextra/i2/2586268013/O1CN013jTFXW2940gUpBA5g_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:80557",
+            "url": "http://img.alicdn.com/imgextra/i3/2586268013/O1CN0185AMll2940gUiNQfP_!!2586268013.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "Brand",
+          "value": "No brand/no registered trademark",
+          "name_original": "Brand",
+          "value_original": "No brand/no registered trademark"
+        },
+        {
+          "name": "style",
+          "value": "Simplicity",
+          "name_original": "style",
+          "value_original": "Simplicity"
+        },
+        {
+          "name": "Item number",
+          "value": "other",
+          "name_original": "Item number",
+          "value_original": "other"
+        },
+        {
+          "name": "Appropriate Season",
+          "value": "All-season use",
+          "name_original": "Appropriate Season",
+          "value_original": "All-season use"
+        },
+        {
+          "name": "Function",
+          "value": "keep warm",
+          "name_original": "Function",
+          "value_original": "keep warm"
+        },
+        {
+          "name": "Carpet material",
+          "value": "polyester",
+          "name_original": "Carpet material",
+          "value_original": "polyester"
+        },
+        {
+          "name": "Blanket Type",
+          "value": "Coral fleece blanket",
+          "name_original": "Blanket Type",
+          "value_original": "Coral fleece blanket"
+        },
+        {
+          "name": "size",
+          "value": "45*65cm,70*100cm,100*150cm,120*200cm,150*200cm,180*200cm,200*230cm",
+          "name_original": "size",
+          "value_original": "45*65cm,70*100cm,100*150cm,120*200cm,150*200cm,180*200cm,200*230cm"
+        },
+        {
+          "name": "pattern",
+          "value": "Solid color",
+          "name_original": "pattern",
+          "value_original": "Solid color"
+        },
+        {
+          "name": "Color fastness",
+          "value": "4",
+          "name_original": "Color fastness",
+          "value_original": "4"
+        },
+        {
+          "name": "Usage scenario",
+          "value": "bedroom",
+          "name_original": "Usage scenario",
+          "value_original": "bedroom"
+        },
+        {
+          "name": "Color classification",
+          "value": "Khaki, off white, dark green, dark gray, purple, pink, burgundy, light gray, dark blue, sky blue, coffee, rose red, grass green, shallow water blue, bright yellow, smoky blue, dark coffee",
+          "name_original": "Color classification",
+          "value_original": "Khaki, off white, dark green, dark gray, purple, pink, burgundy, light gray, dark blue, sky blue, coffee, rose red, grass green, shallow water blue, bright yellow, smoky blue, dark coffee"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "European and American Fashion clothes",
+        "location": "Guangzhou, Guangdong",
+        "rating": null,
+        "name_original": "欧美Fashion clothes",
+        "location_original": "广东广州"
+      },
+      "sales_volume": 100,
+      "description": "src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01XroP8w2940gUpBUvw_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN013Dbduj2940gVHRiPz_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN011uixy42940gOG9X5e_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01OmgwNG2940gVBkOBc_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Hra4nO2940gWEZrtX_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01jYsVty2940gXZuogu_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01I5dsLs2940gY4TYO0_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01dDNWd22940gX247Ys_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN0104ch2p2940gVQFdiP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01BMbZF82940gVHTzmq_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01VQ44Qs2940gWEaXTB_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Ce2fFp2940gVHRuul_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01tZ8Y092940gWF1CBP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01rtEJ5A2940gWEZrtY_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01lm2w6M2940gWwHtBx_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01EEkBre2940gVroEDL_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01BYhKge2940gXZxdJJ_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Ny51322940gUiPqQY_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01gbCskj2940gOG77OD_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01w9mZe32940gWEajwp_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01lpboUS2940gOG8rVP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01EYJeDb2940gXZw9om_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN015T0tpD2940gXZwDxg_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01Ck50pX2940gOG7SAq_!!2586268013.jpg\"></div></div>",
+      "title_original": "Solid color wool warm Bed sheet blanket sofa cover blankets",
+      "description_original": "<div style=\"width: 750.0px;height: 17438.0px;overflow: hidden;\"><div style=\"width: 750.0px;height: 17438.0px;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01XroP8w2940gUpBUvw_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN013Dbduj2940gVHRiPz_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN011uixy42940gOG9X5e_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01OmgwNG2940gVBkOBc_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Hra4nO2940gWEZrtX_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01jYsVty2940gXZuogu_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01I5dsLs2940gY4TYO0_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01dDNWd22940gX247Ys_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN0104ch2p2940gVQFdiP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01BMbZF82940gVHTzmq_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01VQ44Qs2940gWEaXTB_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Ce2fFp2940gVHRuul_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01tZ8Y092940gWF1CBP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01rtEJ5A2940gWEZrtY_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01lm2w6M2940gWwHtBx_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01EEkBre2940gVroEDL_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01BYhKge2940gXZxdJJ_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Ny51322940gUiPqQY_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01gbCskj2940gOG77OD_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01w9mZe32940gWEajwp_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01lpboUS2940gOG8rVP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01EYJeDb2940gXZw9om_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN015T0tpD2940gXZwDxg_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01Ck50pX2940gOG7SAq_!!2586268013.jpg\"></div></div>",
+      "brand_original": "无品牌/无注册商标",
+      "productId": "852864486588",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T10:00:54.320Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i3/2586268013/O1CN018PMTrt2940gbbYmaj_!!2586268013.jpg",
+        "https://img.alicdn.com/imgextra/i3/2586268013/O1CN01fLji4K2940gWvEKPv_!!2586268013.jpg",
+        "https://img.alicdn.com/imgextra/i4/2586268013/O1CN01QAny1d2940gWEWure_!!2586268013.jpg",
+        "https://img.alicdn.com/imgextra/i2/2586268013/O1CN018WIkRz2940gTLEASP_!!2586268013.jpg"
+      ]
+    },
+    "825534931627": {
+      "title": "Member store purchases panda anti-static blanket. The plush blanket is machine washable, easy to maintain, and has a soft, delicate, and comfortable touch",
+      "desc_short": "",
+      "brand": "No brand/no registered trademark",
+      "pic_url": "//img.alicdn.com/imgextra/i4/456264452/O1CN01UnJnDk1il4OIk6S07_!!456264452.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i4/456264452/O1CN01UnJnDk1il4OIk6S07_!!456264452.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/456264452/O1CN012GFerc1il4OJa9Pw1_!!456264452.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/456264452/O1CN01alFkZ11il4OER0kRl_!!456264452.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/456264452/O1CN01t5zJa41il4OJT152k_!!456264452.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/456264452/O1CN01IiLZm21il4OJkJwta_!!456264452.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": []
+      },
+      "props": [
+        {
+          "name": "Brand",
+          "value": "No brand/no registered trademark",
+          "name_original": "Brand",
+          "value_original": "No brand/no registered trademark"
+        },
+        {
+          "name": "Function",
+          "value": "keep warm",
+          "name_original": "Function",
+          "value_original": "keep warm"
+        },
+        {
+          "name": "pattern",
+          "value": "Plants and Flowers",
+          "name_original": "pattern",
+          "value_original": "Plants and Flowers"
+        },
+        {
+          "name": "size",
+          "value": "152x183",
+          "name_original": "size",
+          "value_original": "152x183"
+        },
+        {
+          "name": "Appropriate Season",
+          "value": "winter",
+          "name_original": "Appropriate Season",
+          "value_original": "winter"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "MM purchasing discount store",
+        "location": "Hangzhou, Zhejiang",
+        "rating": null,
+        "name_original": "MM代购折扣店",
+        "location_original": "浙江杭州"
+      },
+      "sales_volume": 2,
+      "description": "src=\"https://img.alicdn.com/imgextra/i4/456264452/O1CN01cK5BCY1il4OKAjiIg_!!456264452.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/456264452/O1CN01KNSBFq1il4OKTFFdf_!!456264452.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/456264452/O1CN01uTZQpy1il4OKaF0cA_!!456264452.jpg\"></div></div>",
+      "title_original": "Member store purchases panda anti-static blanket. The plush blanket is machine washable, easy to maintain, and has a soft, delicate, and comfortable touch",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/456264452/O1CN01cK5BCY1il4OKAjiIg_!!456264452.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/456264452/O1CN01KNSBFq1il4OKTFFdf_!!456264452.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/456264452/O1CN01uTZQpy1il4OKaF0cA_!!456264452.jpg\"></div></div>",
+      "brand_original": "无品牌/无注册商标",
+      "productId": "825534931627",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T10:07:28.038Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i4/456264452/O1CN01UnJnDk1il4OIk6S07_!!456264452.jpg",
+        "https://img.alicdn.com/imgextra/i2/456264452/O1CN012GFerc1il4OJa9Pw1_!!456264452.jpg",
+        "https://img.alicdn.com/imgextra/i2/456264452/O1CN01alFkZ11il4OER0kRl_!!456264452.jpg",
+        "https://img.alicdn.com/imgextra/i2/456264452/O1CN01t5zJa41il4OJT152k_!!456264452.jpg"
+      ]
+    },
+    "825532754040": {
+      "title": "Amazon Solid Color Blankets, Flannel Blankets, Coral Velvet Blankets, Falei Velvet Gift Blankets, Air Conditioning Blankets, Group Purchase",
+      "desc_short": "",
+      "brand": "Other homes",
+      "pic_url": "//img.alicdn.com/imgextra/i1/2654502783/O1CN01xx6efo1WQfEUSrFji_!!2654502783.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2654502783/O1CN01xx6efo1WQfEUSrFji_!!2654502783.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2654502783/O1CN01ZwriLO1WQfESeYTdq_!!2654502783.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2654502783/O1CN016qf7H11WQfESeZcLL_!!2654502783.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2654502783/O1CN01Amjuwk1WQfEWqE4qq_!!2654502783.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2654502783/O1CN01m9eEmc1WQfESeZYBg_!!2654502783.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:28337",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN010S8LtD1WQfEVNgcUz_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28327",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN01JsogAU1WQfEU16KtV_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:30156",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN01QkIvVs1WQfEVNebmc_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28866",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN015akwuZ1WQfEVNgxHn_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:5167321",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01KmHy0i1WQfEWcSnZ6_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:3232478",
+            "url": "http://img.alicdn.com/imgextra/i3/2654502783/O1CN01w4aYBV1WQfEUgZFzl_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28320",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01HRNfrw1WQfEN4N01m_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:129819",
+            "url": "http://img.alicdn.com/imgextra/i3/2654502783/O1CN01rPMeFN1WQfESK3ow9_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28332",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN013kH3mP1WQfEUSpNKD_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:4104877",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN01tp84kv1WQfESK5UsE_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28331",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01Ir5N8N1WQfEVjx2ar_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28341",
+            "url": "http://img.alicdn.com/imgextra/i3/2654502783/O1CN01yBnFU41WQfEUSr7PX_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:4464174",
+            "url": "http://img.alicdn.com/imgextra/i3/2654502783/O1CN016qf7H11WQfESeZcLL_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:43608",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN01ltwvNF1WQfEVjxJEH_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:7737315",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN01zYznHa1WQfEXOgprI_!!2654502783.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "brand",
+          "value": "Other homes",
+          "name_original": "brand",
+          "value_original": "Other homes"
+        },
+        {
+          "name": "style",
+          "value": "Minimalist and modern",
+          "name_original": "style",
+          "value_original": "Minimalist and modern"
+        },
+        {
+          "name": "Carpet material",
+          "value": "dacron",
+          "name_original": "Carpet material",
+          "value_original": "dacron"
+        },
+        {
+          "name": "province",
+          "value": "Jiangsu Province",
+          "name_original": "province",
+          "value_original": "Jiangsu Province"
+        },
+        {
+          "name": "Prefecture and city",
+          "value": "Suzhou City",
+          "name_original": "Prefecture and city",
+          "value_original": "Suzhou City"
+        },
+        {
+          "name": "Shrinkage rate",
+          "value": "3%-5%",
+          "name_original": "Shrinkage rate",
+          "value_original": "3%-5%"
+        },
+        {
+          "name": "Usage scenarios",
+          "value": "currency",
+          "name_original": "Usage scenarios",
+          "value_original": "currency"
+        },
+        {
+          "name": "Article number",
+          "value": "Single layer flannel blanket",
+          "name_original": "Article number",
+          "value_original": "Single layer flannel blanket"
+        },
+        {
+          "name": "Origin",
+          "value": "Chinese Mainland",
+          "name_original": "Origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "function",
+          "value": "warm",
+          "name_original": "function",
+          "value_original": "warm"
+        },
+        {
+          "name": "Blanket type",
+          "value": "Flannel blanket",
+          "name_original": "Blanket type",
+          "value_original": "Flannel blanket"
+        },
+        {
+          "name": "size",
+          "value": "200cmx230cm,100cmX150cm,70cmX100cm,127cmX152cm,150cmX200cm",
+          "name_original": "size",
+          "value_original": "200cmx230cm,100cmX150cm,70cmX100cm,127cmX152cm,150cmX200cm"
+        },
+        {
+          "name": "pattern",
+          "value": "Solid color",
+          "name_original": "pattern",
+          "value_original": "Solid color"
+        },
+        {
+          "name": "Color fastness",
+          "value": "3-4",
+          "name_original": "Color fastness",
+          "value_original": "3-4"
+        },
+        {
+          "name": "color classification",
+          "value": "Purple red, khaki, lotus root, dark gray, burgundy, light blue, light purple, light green, light gray, black, navy blue, white, coffee, peacock green, gray blue",
+          "name_original": "color classification",
+          "value_original": "Purple red, khaki, lotus root, dark gray, burgundy, light blue, light purple, light green, light gray, black, navy blue, white, coffee, peacock green, gray blue"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Nanjing Mushad International Trading Co., Ltd.",
+        "location": "Nanjing, Jiangsu",
+        "rating": null,
+        "name_original": "南京慕莎德国际贸易有限公司",
+        "location_original": "江苏南京"
+      },
+      "sales_volume": 100,
+      "description": "<div style=\"width: 790.0px;\">\n<div class=\"rich-text-component\" style=\"width: 395.0px;padding: 10.0px;word-break: break-all;white-space: break-spaces;zoom: 2;font-size: 0.0px;box-sizing: border-box;\">\n<p>商品描述</p>\n\n<p>亚马逊，速卖通爆款毛毯</p>\n\n<p>Features:</p>\n\n<p>100% Brand new and high quality.</p>\n\n<p>Micro plush microfiber for comfortable, durable warmth on cold nights.</p>\n\n<p>Super soft micro plush throw blanket can prevent electrostatic.</p>\n\n<p>Easy to clean, machine washable, do not bleach. Inhibit bacterial.</p>\n\n<p>Specification:</p>\n\n<p>Condition:100% brand new</p>\n\n<p>Color: 10 optional colors</p>\n\n<p>&nbsp;</p>\n\n<p>Notes:</p>\n\n<p>Due to the light and screen setting difference, the item&#39;s color may be slightly different from the pictures.</p>\n\n<p>Please allow slight dimension difference due to different manual measurement</p>\n\n<p>&nbsp;</p>\n\n<p>+[掌柜说-宝贝信息]</p>\n\n<p>&nbsp;</p>\n\n<p>先跟各位买家普及一个常识，克重不是重量，克重是描述产品厚度的一个参数，克重的单位是g/㎡，克重越高，毛毯越厚，毛毯最薄的克重是160gsm，280gsm是中等厚度，350gsm是加厚款的克重</p>\n\n<p>重量（kg）=毛毯长（m）x毛毯宽（m）x克重/1000</p>\n\n<p>70x100cm 重量0.25kg （0.5斤）</p>\n\n<p>127x152cm 重量0.6kg（1.2斤）</p>\n\n<p>150x200cm 重量0.95kg（1.9斤）</p>\n\n<p>180x200cm重量1.15kg（2.3斤）</p>\n\n<p>200x230cm重量1.45kg（2.9斤）</p>\n\n<p>230x260cm重量1.8kg（3.6斤）</p>\n\n<p>70x100cm小毛毯包装是卷起来白色腰封是默认的包装，如果需要蝴蝶结可以联系客户说直接扎蝴蝶结的，如下图所示，</p>\n</div>\n<img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01vbm6kn1WQfEUgZFzz_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_1\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01tqOnrG1WQfESK41PP_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_2\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01adDJVB1WQfETv4KwM_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_3\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01ljkMNd1WQfEVqzp7c_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_4\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01rDB6DS1WQfEVqzxSM_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_5\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01x25CAY1WQfEWcW19H_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_6\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01oJWE1j1WQfESK5QiK_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_7\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01oh37T71WQfEVjwdfT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_8\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01WNG9Yg1WQfEXxoCty_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_9\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01NHWizI1WQfETv6544_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_10\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01WcpgIq1WQfESK6298_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_11\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01iWvBYv1WQfESeY0XS_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_12\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01GsuGXL1WQfEWcTbSO_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_13\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01gjwnlM1WQfEXOg1xc_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_14\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01bRBhSM1WQfEU17Xk4_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_15\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN017v5MB81WQfEVjx6lY_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_16\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN019mpVjm1WQfEVjvEKj_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_17\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01UY0lNS1WQfESK2TlW_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_18\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN016DyyGs1WQfEVr2Ize_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_19\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01t847sK1WQfEN4LvWT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_20\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01qJcVMt1WQfEXOiJLA_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_21\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01PjvGYc1WQfEUSraWK_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_22\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01KbRWp41WQfEXxmKWZ_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_23\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN016aBhDQ1WQfESeXfjz_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_24\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01KocR181WQfEVr0pVo_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_25\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01vidtxI1WQfEXOetFl_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_26\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01Yqx3pt1WQfEUdZMgh_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_27\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01R3HWhG1WQfEXOh6Tj_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_28\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01O779u71WQfEVjtp1A_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_29\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01mC9jgs1WQfESK4DtI_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_30\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01yQiqyG1WQfEN4MC8L_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_31\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01xdr9aN1WQfEU180rD_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_32\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN014K6wys1WQfEUgajRT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_33\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01JPpnay1WQfEXOfYoz_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_34\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01TA8Pyk1WQfEU16TCv_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_35\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01AQxoEd1WQfEUSodby_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_36\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN0184gP0B1WQfEUgbbWE_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_37\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01TMKqV81WQfEVjupPT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_38\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Bsj8l01WQfEUdZUzK_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_39\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01RZ8Si81WQfEXOep5l_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_40\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01b6eSFI1WQfEN4MnYx_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_41\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01kYixto1WQfEUgaOgT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_42\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01lf1TII1WQfESK6MwW_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_43\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01bwGQKn1WQfEUSoyPH_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_44\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN013f9JWO1WQfEU17oNF_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_45\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01dMkB4D1WQfESK4pLJ_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_46\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Bky4hD1WQfEVr0d2w_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_47\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01jAUyzp1WQfESK2oYi_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_48\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN018Vkzzm1WQfESK3Pzv_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_49\"></div>",
+      "title_original": "Amazon Solid Color Blankets, Flannel Blankets, Coral Velvet Blankets, Falei Velvet Gift Blankets, Air Conditioning Blankets, Group Purchase",
+      "description_original": "<div style=\"width: 790.0px;\">\n<div class=\"rich-text-component\" style=\"width: 395.0px;padding: 10.0px;word-break: break-all;white-space: break-spaces;zoom: 2;font-size: 0.0px;box-sizing: border-box;\">\n<p>商品描述</p>\n\n<p>亚马逊，速卖通爆款毛毯</p>\n\n<p>Features:</p>\n\n<p>100% Brand new and high quality.</p>\n\n<p>Micro plush microfiber for comfortable, durable warmth on cold nights.</p>\n\n<p>Super soft micro plush throw blanket can prevent electrostatic.</p>\n\n<p>Easy to clean, machine washable, do not bleach. Inhibit bacterial.</p>\n\n<p>Specification:</p>\n\n<p>Condition:100% brand new</p>\n\n<p>Color: 10 optional colors</p>\n\n<p>&nbsp;</p>\n\n<p>Notes:</p>\n\n<p>Due to the light and screen setting difference, the item&#39;s color may be slightly different from the pictures.</p>\n\n<p>Please allow slight dimension difference due to different manual measurement</p>\n\n<p>&nbsp;</p>\n\n<p>+[掌柜说-宝贝信息]</p>\n\n<p>&nbsp;</p>\n\n<p>先跟各位买家普及一个常识，克重不是重量，克重是描述产品厚度的一个参数，克重的单位是g/㎡，克重越高，毛毯越厚，毛毯最薄的克重是160gsm，280gsm是中等厚度，350gsm是加厚款的克重</p>\n\n<p>重量（kg）=毛毯长（m）x毛毯宽（m）x克重/1000</p>\n\n<p>70x100cm 重量0.25kg （0.5斤）</p>\n\n<p>127x152cm 重量0.6kg（1.2斤）</p>\n\n<p>150x200cm 重量0.95kg（1.9斤）</p>\n\n<p>180x200cm重量1.15kg（2.3斤）</p>\n\n<p>200x230cm重量1.45kg（2.9斤）</p>\n\n<p>230x260cm重量1.8kg（3.6斤）</p>\n\n<p>70x100cm小毛毯包装是卷起来白色腰封是默认的包装，如果需要蝴蝶结可以联系客户说直接扎蝴蝶结的，如下图所示，</p>\n</div>\n<img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01vbm6kn1WQfEUgZFzz_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_1\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01tqOnrG1WQfESK41PP_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_2\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01adDJVB1WQfETv4KwM_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_3\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01ljkMNd1WQfEVqzp7c_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_4\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01rDB6DS1WQfEVqzxSM_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_5\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01x25CAY1WQfEWcW19H_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_6\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01oJWE1j1WQfESK5QiK_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_7\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01oh37T71WQfEVjwdfT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_8\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01WNG9Yg1WQfEXxoCty_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_9\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01NHWizI1WQfETv6544_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_10\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01WcpgIq1WQfESK6298_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_11\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01iWvBYv1WQfESeY0XS_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_12\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01GsuGXL1WQfEWcTbSO_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_13\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01gjwnlM1WQfEXOg1xc_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_14\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01bRBhSM1WQfEU17Xk4_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_15\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN017v5MB81WQfEVjx6lY_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_16\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN019mpVjm1WQfEVjvEKj_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_17\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01UY0lNS1WQfESK2TlW_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_18\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN016DyyGs1WQfEVr2Ize_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_19\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01t847sK1WQfEN4LvWT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_20\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01qJcVMt1WQfEXOiJLA_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_21\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01PjvGYc1WQfEUSraWK_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_22\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01KbRWp41WQfEXxmKWZ_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_23\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN016aBhDQ1WQfESeXfjz_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_24\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01KocR181WQfEVr0pVo_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_25\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01vidtxI1WQfEXOetFl_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_26\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01Yqx3pt1WQfEUdZMgh_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_27\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01R3HWhG1WQfEXOh6Tj_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_28\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01O779u71WQfEVjtp1A_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_29\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01mC9jgs1WQfESK4DtI_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_30\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01yQiqyG1WQfEN4MC8L_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_31\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01xdr9aN1WQfEU180rD_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_32\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN014K6wys1WQfEUgajRT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_33\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01JPpnay1WQfEXOfYoz_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_34\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01TA8Pyk1WQfEU16TCv_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_35\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01AQxoEd1WQfEUSodby_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_36\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN0184gP0B1WQfEUgbbWE_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_37\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01TMKqV81WQfEVjupPT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_38\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Bsj8l01WQfEUdZUzK_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_39\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01RZ8Si81WQfEXOep5l_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_40\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01b6eSFI1WQfEN4MnYx_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_41\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01kYixto1WQfEUgaOgT_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_42\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01lf1TII1WQfESK6MwW_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_43\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01bwGQKn1WQfEUSoyPH_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_44\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN013f9JWO1WQfEU17oNF_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_45\"> <img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01dMkB4D1WQfESK4pLJ_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_46\"> <img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Bky4hD1WQfEVr0d2w_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_47\"> <img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01jAUyzp1WQfESK2oYi_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_48\"> <img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN018Vkzzm1WQfESK3Pzv_!!2654502783.jpg\" style=\"display: block;width: 100.0%;height: auto;\" usemap=\"#_sdmap_49\"></div>",
+      "brand_original": "其他家",
+      "productId": "825532754040",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T10:10:31.890Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i1/2654502783/O1CN01xx6efo1WQfEUSrFji_!!2654502783.jpg",
+        "https://img.alicdn.com/imgextra/i4/2654502783/O1CN01ZwriLO1WQfESeYTdq_!!2654502783.jpg"
+      ],
+      "selectedAIImages": [
+        "/ai-images/proposal_1774344591523/825532754040/concept-1.png"
+      ]
+    }
+  },
+  "totalItems": 6,
+  "successfulItems": 9,
+  "status": "draft",
+  "aiEnrichments": {
+    "825532754040": {
+      "original_product": {
+        "title": "Plum Plush Throw Blanket",
+        "description": "Soft, cozy plush blanket in a deep plum color, folded and secured with a simple ribbon.",
+        "specifications": {
+          "dimensions": "30 x 25 x 10 cm (folded)",
+          "weight": "1.2 kg",
+          "materials": "Polyester plush, synthetic ribbon",
+          "other_specs": "N/A"
+        }
+      },
+      "design_alternatives": [
+        {
+          "concept_title": "Luxe Faux Fur Throw",
+          "generated_image_prompt": "A plush throw blanket made from high-quality faux fur in a soft cream color, folded neatly and tied with a wide satin ribbon in a matching cream hue. The ribbon has a simple, elegant debossed logo. The blanket is presented on a minimalist wooden surface, suggesting a sophisticated gift.",
+          "short_description": "Ultra-soft faux fur throw, elegantly packaged for luxurious gifting.",
+          "design_rationale": "Elevates a basic blanket into a premium gift item. The faux fur adds perceived value and tactile appeal, while sophisticated satin ribbon packaging enhances the unboxing experience, making it highly appealing for e-commerce gifting and special occasions.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/825532754040/concept-0.png"
+        },
+        {
+          "concept_title": "Character Hooded Blanket",
+          "generated_image_prompt": "A cozy, soft fleece hooded blanket designed as a cute sleeping fox. The blanket is folded to display the fox's face (with embroidered eyes and nose) on the hood, and two small plush fox ears protrude from the top. The main blanket material is a warm burnt orange, with a cream belly panel. It's rolled and tied with a simple natural twine, presented against a playful, bright background with soft focus elements.",
+          "short_description": "Wearable fleece blanket with an adorable animal hood for kids.",
+          "design_rationale": "Adds a playful, functional element (wearable and hooded) that appeals strongly to children and parents. The character theme makes it highly giftable and visually engaging for e-commerce, offering a clear differentiation from a standard blanket and encouraging imaginative play.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/825532754040/concept-1.png"
+        },
+        {
+          "concept_title": "Modern Waffle Knit Throw",
+          "generated_image_prompt": "A chunky, soft throw blanket with a distinct waffle weave texture, made from a cotton-blend yarn in a muted sage green color. The blanket is casually draped over the arm of a modern minimalist sofa, showcasing its texture and natural weight. It's wrapped with a simple, wide recycled paper band featuring a clean, minimalist graphic design and a small plant motif.",
+          "short_description": "Stylish cotton-blend throw with a cozy waffle texture, perfect for modern homes.",
+          "design_rationale": "Focuses on texture and contemporary aesthetics, appealing to home decor enthusiasts seeking functional yet stylish items. The waffle weave offers a tactile and visual upgrade, making it a chic accent piece that also provides comfort, broadening its market appeal beyond just warmth. The minimalist packaging reinforces its modern, eco-conscious appeal.",
+          "generated_image_url": "/ai-images/proposal_1774344591523/825532754040/concept-2.png"
+        }
+      ],
+      "enriched_at": "2026-03-24T10:12:11.543Z"
+    }
+  }
+}

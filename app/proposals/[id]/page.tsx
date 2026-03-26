@@ -40,6 +40,7 @@ interface Proposal {
   products: ProductDTO[];
   totalItems?: number;
   totalValue?: number;
+  createdBy?: { email: string; name: string } | null;
 }
 
 interface ProductDetails {
@@ -96,7 +97,8 @@ export default function ProposalDetailPage() {
   const [aiEnrichRemarksOpen, setAiEnrichRemarksOpen] = useState<string | null>(null);
   const [aiEnrichRemarks, setAiEnrichRemarks] = useState<Record<string, string>>({});
   const [selectedSecondaryImages, setSelectedSecondaryImages] = useState<Record<string, string[]>>({});
-  
+  const [selectedAIImages, setSelectedAIImages] = useState<Record<string, string[]>>({});
+
   // Proposal data from JSON storage
   const [proposalData, setProposalData] = useState<any>(null);
   const [isLoadingProposalData, setIsLoadingProposalData] = useState(false);
@@ -149,15 +151,16 @@ export default function ProposalDetailPage() {
         // Load item details from storage into productDetails map
         const newDetails = new Map<string, ProductDetails>();
         const newSelectedImages: Record<string, string[]> = {};
+        const newSelectedAIImages: Record<string, string[]> = {};
         
         Object.entries(data.itemDetails || {}).forEach(([key, details]: [string, any]) => {
           // Use the key directly as productId (it's the source_id / num_iid)
           const productId = details.productId || key;
           newDetails.set(productId, details);
           
-          // Load saved secondary image selections
           const product = proposal.products.find(p => p.source_id === productId);
           if (product) {
+            // Load saved secondary image selections
             if (details.selectedSecondaryImages && details.selectedSecondaryImages.length > 0) {
               newSelectedImages[product.id] = details.selectedSecondaryImages;
             } else if (details.item_imgs && details.item_imgs.length > 0) {
@@ -168,12 +171,34 @@ export default function ProposalDetailPage() {
               });
               newSelectedImages[product.id] = imageUrls;
             }
+            // Load saved AI image selections
+            if (details.selectedAIImages && details.selectedAIImages.length > 0) {
+              newSelectedAIImages[product.id] = details.selectedAIImages;
+            }
           }
         });
         
         setProductDetails(newDetails);
         setSelectedSecondaryImages(newSelectedImages);
-        
+        if (Object.keys(newSelectedAIImages).length > 0) {
+          setSelectedAIImages(newSelectedAIImages);
+        }
+
+        // Apply aiEnrichments from server JSON back into products
+        if (data.aiEnrichments && Object.keys(data.aiEnrichments).length > 0) {
+          setProposal(prev => {
+            if (!prev) return prev;
+            const updatedProducts = prev.products.map(p => {
+              const enrichment = data.aiEnrichments[p.source_id];
+              if (enrichment && !p.aiEnrichment) {
+                return { ...p, aiEnrichment: enrichment };
+              }
+              return p;
+            });
+            return { ...prev, products: updatedProducts };
+          });
+        }
+
         console.log(`Loaded ${newDetails.size} product details from storage`);
       } else if (response.status === 404) {
         // No storage file yet - this is normal for older proposals
@@ -307,11 +332,6 @@ export default function ProposalDetailPage() {
       console.log(`[${i + 1}/${productsToFetch.length}] Fetching ${product.source_id}...`);
       
       await fetchProductDetailOnDemand(product.source_id);
-      
-      // Add delay between requests
-      if (i < productsToFetch.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 10000));
-      }
     }
     
     console.log('Finished fetching all product details');
@@ -328,8 +348,9 @@ export default function ProposalDetailPage() {
     }
   }, [proposal?.id]);
 
-  const loadProposal = () => {
+  const loadProposal = async () => {
     try {
+      // Try localStorage first
       const stored = localStorage.getItem('proposals');
       if (stored) {
         const proposals = JSON.parse(stored);
@@ -340,9 +361,54 @@ export default function ProposalDetailPage() {
           setEditedClientName(found.client_name || "");
           setEditedNotes(found.notes || "");
           setEditedStatus(found.status);
-        } else {
-          setProposal(null);
+          setIsLoading(false);
+          return;
         }
+      }
+
+      // Fallback: load from server-side JSON file
+      console.log('Proposal not in localStorage, fetching from server...');
+      const response = await fetch(`/api/proposal-details?proposalId=${params.id}`);
+      if (response.ok) {
+        const data = await response.json();
+
+        // Merge aiEnrichments into products
+        const products = (data.products || []).map((p: any) => {
+          const enrichment = data.aiEnrichments?.[p.source_id];
+          return enrichment ? { ...p, aiEnrichment: enrichment } : p;
+        });
+
+        const serverProposal: Proposal = {
+          id: data.proposalId,
+          name: data.proposalName || 'Untitled',
+          client_name: data.clientName || '',
+          notes: data.notes || '',
+          status: data.status || 'draft',
+          currency: 'CNY',
+          created_at: data.createdAt,
+          updated_at: data.updatedAt,
+          products,
+          totalItems: data.totalItems,
+          totalValue: data.products?.reduce((sum: number, p: any) => sum + (p.price?.current || 0), 0) || 0,
+          createdBy: data.createdBy,
+        };
+
+        setProposal(serverProposal);
+        setEditedName(serverProposal.name);
+        setEditedClientName(serverProposal.client_name || '');
+        setEditedNotes(serverProposal.notes || '');
+        setEditedStatus(serverProposal.status);
+
+        // Cache in localStorage so subsequent loads are instant
+        try {
+          const existing = JSON.parse(localStorage.getItem('proposals') || '[]');
+          if (!existing.find((p: any) => p.id === serverProposal.id)) {
+            existing.unshift(stripBase64Images(serverProposal));
+            localStorage.setItem('proposals', JSON.stringify(existing));
+          }
+        } catch (e) { /* ignore storage errors */ }
+      } else {
+        setProposal(null);
       }
     } catch (error) {
       console.error('Error loading proposal:', error);
@@ -419,6 +485,7 @@ export default function ProposalDetailPage() {
           return {
             ...product,
             selectedSecondaryImages: selectedSecondaryImages[product.id] || [],
+            selectedAIImages: selectedAIImages[product.id] || [],
             // Include cached details if available
             cachedDetails: details ? {
               desc: details.desc,
@@ -479,6 +546,7 @@ export default function ProposalDetailPage() {
           return {
             ...product,
             selectedSecondaryImages: selectedSecondaryImages[product.id] || [],
+            selectedAIImages: selectedAIImages[product.id] || [],
             // Include cached details if available
             cachedDetails: details ? {
               desc: details.desc,
@@ -573,6 +641,35 @@ export default function ProposalDetailPage() {
     }
   };
 
+  const toggleAIImageSelection = async (productId: string, imageUrl: string) => {
+    const currentSelection = selectedAIImages[productId] || [];
+    const newSelection = currentSelection.includes(imageUrl)
+      ? currentSelection.filter((url: string) => url !== imageUrl)
+      : [...currentSelection, imageUrl].slice(0, 4); // Max 4 images
+    
+    setSelectedAIImages(prev => ({
+      ...prev,
+      [productId]: newSelection
+    }));
+
+    // Auto-save to server JSON
+    const product = proposal?.products.find(p => p.id === productId);
+    if (product?.source_id) {
+      try {
+        await fetch('/api/proposal-details', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            proposalId: proposal!.id,
+            allSelectedAIImages: { [product.source_id]: newSelection },
+          }),
+        });
+      } catch (err) {
+        console.error('Failed to save AI image selection:', err);
+      }
+    }
+  };
+
   // Helper function to normalize item_imgs from various API formats
   const normalizeItemImgs = (itemImgs: any): Array<{ url: string }> => {
     if (!itemImgs) return [];
@@ -650,7 +747,7 @@ export default function ProposalDetailPage() {
     }
   };
 
-  // Helper function to strip base64 images before saving to localStorage
+  // Helper function to strip base64 data: URLs before saving to localStorage (keep regular URLs)
   const stripBase64Images = (proposal: Proposal): Proposal => {
     return {
       ...proposal,
@@ -660,7 +757,8 @@ export default function ProposalDetailPage() {
           ...product.aiEnrichment,
           design_alternatives: product.aiEnrichment.design_alternatives.map(alt => ({
             ...alt,
-            generated_image_url: undefined // Remove base64 images to save space
+            // Only strip actual base64 data URLs, keep regular https:// URLs
+            generated_image_url: alt.generated_image_url?.startsWith('data:') ? undefined : alt.generated_image_url
           }))
         } : undefined
       }))
@@ -689,6 +787,8 @@ export default function ProposalDetailPage() {
         body: JSON.stringify({
           imageUrl: product.image_urls[0],
           userNotes: userRemarks,
+          proposalId: params.id,
+          productId: product.source_id || product.id,
         }),
       });
 
@@ -745,7 +845,7 @@ export default function ProposalDetailPage() {
     }
   };
 
-  const removeProduct = (productId: string) => {
+  const removeProduct = async (productId: string) => {
     if (!proposal) return;
 
     const updatedProducts = proposal.products.filter(p => p.id !== productId);
@@ -768,6 +868,15 @@ export default function ProposalDetailPage() {
           setProposal(updatedProposal);
         }
       }
+      // Auto-save product list to server JSON
+      await fetch('/api/proposal-details', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId: proposal.id,
+          updatedProducts,
+        }),
+      });
     } catch (error) {
       console.error('Error updating proposal:', error);
       alert('Failed to remove product');
@@ -969,7 +1078,7 @@ export default function ProposalDetailPage() {
                     size="sm"
                     onClick={() => setIsEditing(true)}
                     className="rounded-full h-9 w-9 p-0"
-                    title="Edit"
+                    title="Edit proposal details"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -1165,6 +1274,65 @@ export default function ProposalDetailPage() {
                               </div>
                             )}
                           </div>
+
+                          {/* AI Generated Image Selection - directly under secondary images */}
+                          {product.aiEnrichment?.design_alternatives && product.aiEnrichment.design_alternatives.some(a => a.generated_image_url) && (
+                            <div className="mt-3 space-y-2">
+                              <h5 className="text-sm font-medium text-purple-700">
+                                Select AI designs for export (up to 3):
+                                <span className="ml-2 text-xs text-gray-500">
+                                  ({selectedAIImages[product.id]?.length || 0}/3 selected)
+                                </span>
+                              </h5>
+                              <div className="flex gap-2 overflow-x-auto pb-1">
+                                {product.aiEnrichment.design_alternatives.map((alt, idx) => {
+                                  if (!alt.generated_image_url) return null;
+                                  const isSelected = selectedAIImages[product.id]?.includes(alt.generated_image_url) || false;
+                                  return (
+                                    <div key={idx} className="relative flex-shrink-0">
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => toggleAIImageSelection(product.id, alt.generated_image_url!)}
+                                        className="absolute top-1 left-1 w-4 h-4 text-purple-600 rounded focus:ring-purple-500 z-10"
+                                      />
+                                      <button
+                                        onClick={() => openImageCarousel(
+                                          product.aiEnrichment!.design_alternatives
+                                            .filter(a => a.generated_image_url)
+                                            .map(a => ({ url: a.generated_image_url! })),
+                                          idx
+                                        )}
+                                        title={alt.concept_title}
+                                        className={`w-16 h-16 rounded overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer ${
+                                          isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300'
+                                        }`}
+                                      >
+                                        <img
+                                          src={alt.generated_image_url}
+                                          alt={alt.concept_title}
+                                          className="w-full h-full object-cover bg-purple-50"
+                                          referrerPolicy="no-referrer"
+                                          onError={(e) => {
+                                            const t = e.currentTarget;
+                                            t.style.display = 'none';
+                                            const parent = t.parentElement;
+                                            if (parent && !parent.querySelector('.img-fallback')) {
+                                              const fb = document.createElement('div');
+                                              fb.className = 'img-fallback w-full h-full flex items-center justify-center bg-purple-100 text-purple-500 text-xs text-center p-1';
+                                              fb.textContent = alt.concept_title;
+                                              parent.appendChild(fb);
+                                            }
+                                          }}
+                                        />
+                                      </button>
+                                      <p className="text-xs text-gray-500 mt-1 text-center w-16 truncate">{alt.concept_title}</p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                           
                           {/* Product Info - Right side */}
                           <div className="space-y-2 text-sm flex-1">
@@ -1303,8 +1471,6 @@ export default function ProposalDetailPage() {
                             )}
                           </Button>
                         </div>
-                      </div>
-                        </div>
 
                         <div className="flex-shrink-0">
                           <Button
@@ -1317,8 +1483,10 @@ export default function ProposalDetailPage() {
                           </Button>
                         </div>
                       </div>
+                    </div>
+                  </div>
                 );
-              })};
+              })}
             </div>
           )}
         </div>

@@ -29,6 +29,28 @@ export async function fetchAndProcessImage(
     return processedImageCache.get(cacheKey)!;
   }
 
+  // Handle base64 data URLs (e.g. from Gemini-generated images)
+  if (url.startsWith('data:')) {
+    try {
+      const base64Data = url.split(',')[1];
+      if (!base64Data) return null;
+      const inputBuffer = Buffer.from(base64Data, 'base64');
+      const processed = sharp(inputBuffer)
+        .resize(maxDimension, maxDimension, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 75, mozjpeg: true });
+      const outputBuffer = await processed.toBuffer();
+      const metadata = await sharp(outputBuffer).metadata();
+      return {
+        base64: `data:image/jpeg;base64,${outputBuffer.toString('base64')}`,
+        width: metadata.width || 300,
+        height: metadata.height || 300,
+      };
+    } catch (error) {
+      console.error('Error processing base64 image:', error);
+      return null;
+    }
+  }
+
   try {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(15000),
@@ -90,6 +112,12 @@ export async function prefetchAllProposalImages(
     const secondaryUrls = getSecondaryImageUrls(product);
     for (const url of secondaryUrls) {
       tasks.push({ url: normalizeUrl(url), maxDim: secondaryMaxDim });
+    }
+
+    // AI-generated images
+    const aiUrls = getAIImageUrls(product);
+    for (const url of aiUrls) {
+      tasks.push({ url: url, maxDim: secondaryMaxDim }); // data: URLs don't need normalizeUrl
     }
   }
 
@@ -184,4 +212,20 @@ export function getSecondaryImageUrls(product: any): string[] {
   }
 
   return [];
+}
+
+/**
+ * Extract selected AI-generated image URLs from a product object.
+ */
+export function getAIImageUrls(product: any): string[] {
+  const selectedAIImages = product.selectedAIImages || [];
+  return selectedAIImages.slice(0, 4);
+}
+
+/**
+ * Normalize URL for cache key - data URLs are used as-is.
+ */
+export function normalizeUrlForCache(url: string): string {
+  if (url.startsWith('data:')) return url.substring(0, 64); // Use prefix as cache key
+  return normalizeUrl(url);
 }
