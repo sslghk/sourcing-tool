@@ -10,6 +10,17 @@ import {
   type ProcessedImage
 } from '../image-utils';
 
+// Helper to get AI image metadata (title, description) from product.aiEnrichment
+function getAIImageMetadata(product: any, imageUrl: string) {
+  const alternatives = product.aiEnrichment?.design_alternatives || [];
+  const match = alternatives.find((alt: any) => alt.generated_image_url === imageUrl);
+  return {
+    title: match?.concept_title || 'AI Design',
+    description: (match?.short_description || '').substring(0, 100),
+    rationale: match?.design_rationale || ''
+  };
+}
+
 // Helper function to generate item number
 function generateItemNumber(createdDate: string, source: string, index: number): string {
   const date = new Date(createdDate);
@@ -104,20 +115,21 @@ export async function POST(request: NextRequest) {
       
       const itemNumber = generateItemNumber(proposal.created_at, product.source, index);
       
-      // Item number in top left
+      // Item number in top left - moved up to avoid overlap
       doc.setFontSize(12);
       doc.setFont('calibri', 'bold');
-      doc.text(itemNumber, margin, margin + 5);
+      doc.text(itemNumber, margin, margin + 2);
       
       // Left section: Images (convert PPTX coordinates to PDF mm)
       // PPTX uses inches, PDF uses mm. Convert: 1 inch = 25.4mm
+      // Matching PPTX 4:3 layout: main image 3.22", startY 0.8"
       const imageStartX = 0.3 * 25.4; // ~7.6mm
-      const imageStartY = 1.0 * 25.4; // ~25.4mm (adjusted to match PPTX)
-      const mainImageSize = 4.0 * 25.4; // 101.6mm (increased to match PPTX)
+      const imageStartY = 1.0 * 25.4; // ~25.4mm (moved down to avoid item number overlap)
+      const mainImageSize = 3.22 * 25.4; // ~81.8mm (matches PPTX)
       
       // Secondary images layout - fit height to match main image
       const maxSecondaryImages = 4;
-      const imageSpacing = 0.12 * 25.4; // ~3mm
+      const imageSpacing = 0.08 * 25.4; // ~2mm (matches PPTX)
       // Calculate secondary image size to fit within main image height
       const secondaryImageSize = (mainImageSize - (maxSecondaryImages - 1) * imageSpacing) / maxSecondaryImages;
       
@@ -139,79 +151,160 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // AI images - horizontal row below main image, same size as secondary
+        // AI images - 4 frames horizontally under main image (enlarged 20%, evenly distributed)
         const aiUrls = getAIImageUrls(product);
         if (aiUrls.length > 0) {
-          const aiImageY = imageStartY + mainImageSize + (0.15 * 25.4);
-          for (let i = 0; i < Math.min(aiUrls.length, 4); i++) {
-            const xPos = imageStartX + i * (secondaryImageSize + imageSpacing);
+          // Title line above AI photos with increased spacing
+          const titleY = imageStartY + mainImageSize + (0.35 * 25.4);
+          doc.setFontSize(11);
+          doc.setFont('calibri', 'bold');
+          doc.setTextColor(30, 41, 59);
+          doc.text('New concepts', imageStartX, titleY);
+          
+          // Frame Y position with spacing below "New concepts"
+          const frameY = titleY + (0.25 * 25.4);
+          // Even distribution across page: from left margin (10mm) to right section (118mm) = 108mm
+          // Width: 55mm each (130% increase from 24mm)
+          // 4 frames × 55mm = 220mm, available width 108mm
+          // This exceeds available space, so frames will extend beyond right section
+          // Calculate spacing to evenly distribute across full page width (190mm)
+          const frameWidth = 55; // ~2.17"
+          const frameHeight = 2.875 * 25.4; // 2.5" + 15% = 2.875"
+          const maxFrames = 4;
+          // Distribute across full page width minus margins (190 - 20 = 170mm)
+          const totalFramesWidth = maxFrames * frameWidth; // 220mm
+          const remainingSpace = (pageWidth - 20) - totalFramesWidth; // ~-30mm (will use negative spacing or overflow)
+          const frameSpacing = remainingSpace > 0 ? remainingSpace / (maxFrames - 1) : 0; // no spacing if too wide
+          const startX = 10; // Start from left margin
+          
+          for (let i = 0; i < Math.min(aiUrls.length, maxFrames); i++) {
+            const frameX = startX + i * (frameWidth + frameSpacing);
+            const metadata = getAIImageMetadata(product, aiUrls[i]);
+            
+            // Frame border (light gray)
+            doc.setDrawColor(226, 232, 240);
+            doc.setFillColor(248, 250, 252);
+            doc.rect(frameX, frameY, frameWidth, frameHeight, 'FD');
+            
+            // Title at top - auto fit font size
+            const titleMaxWidth = frameWidth - 4;
+            let titleFontSize = 10;
+            doc.setFontSize(titleFontSize);
+            doc.setFont('calibri', 'bold');
+            doc.setTextColor(30, 41, 59);
+            let titleLines = doc.splitTextToSize(metadata.title, titleMaxWidth);
+            // Reduce font size if too many lines
+            while (titleLines.length > 2 && titleFontSize > 6) {
+              titleFontSize -= 1;
+              doc.setFontSize(titleFontSize);
+              titleLines = doc.splitTextToSize(metadata.title, titleMaxWidth);
+            }
+            doc.text(titleLines.slice(0, 2), frameX + frameWidth / 2, frameY + 6, { align: 'center' });
+            
+            // Image in middle (fitted to frame)
+            const imgMaxWidth = frameWidth - 4;
+            const imgMaxHeight = 1.8 * 25.4;
+            const imgY = frameY + 10;
             const aiImg = getProcessedImage(imageMap, aiUrls[i], SECONDARY_IMG_MAX);
-            addProcessedImageToPDF(doc, aiImg, xPos, aiImageY, secondaryImageSize, secondaryImageSize);
+            addProcessedImageToPDF(doc, aiImg, frameX + 2, imgY, imgMaxWidth, imgMaxHeight);
+            
+            // Description at bottom - auto fit font size
+            const descMaxWidth = frameWidth - 4;
+            let descFontSize = 10;
+            doc.setFontSize(descFontSize);
+            doc.setFont('calibri', 'normal');
+            doc.setTextColor(100, 116, 139);
+            let descLines = doc.splitTextToSize(metadata.description, descMaxWidth);
+            // Reduce font size if too many lines to fit in frame
+            while (descLines.length > 3 && descFontSize > 6) {
+              descFontSize -= 1;
+              doc.setFontSize(descFontSize);
+              descLines = doc.splitTextToSize(metadata.description, descMaxWidth);
+            }
+            // Text box sized for exactly 3 lines, top-aligned, bottom 3.5mm above frame bottom
+            // jsPDF text y is the baseline of the first line
+            const descLineHeight = descFontSize * 0.45; // line height in mm for current font size
+            const textBoxHeight = 3 * descLineHeight; // height for 3 lines
+            const textBoxBottom = frameY + frameHeight - 3.5; // 3.5mm (10px) above frame bottom
+            const textBoxTop = textBoxBottom - textBoxHeight;
+            const descStartY = textBoxTop + descLineHeight; // first baseline = top + 1 line height
+            doc.text(descLines.slice(0, 3), frameX + frameWidth / 2, descStartY, { align: 'center', lineHeightFactor: 1.2 });
           }
         }
       }
       
       // Right section: Details (positioned to the right of images)
-      // Images end at approximately: 7.6mm + 101.6mm (main) + 5mm (spacing) + ~23mm (secondary) = ~137mm
-      // So text section should start after ~140mm
-      const rightSectionX = 145; // ~5.7 inches, safely to the right of images
+      // Start text aligned with top of main photo
+      const rightSectionX = 118; // ~4.6 inches, matches PPTX positioning
       const rightSectionWidth = pageWidth - rightSectionX - margin; // Use remaining width
-      let currentY = imageStartY; // Align with image start
+      let currentY = imageStartY + 3.5; // Aligned with top of main photo, 1 line lower
       
-      // Product title
-      doc.setFontSize(12); // Changed from 16 to 12
-      doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
-      const titleLines = doc.splitTextToSize(product.title, rightSectionWidth);
-      doc.text(titleLines, rightSectionX, currentY);
-      currentY += 0.8 * 25.4; // Same as PPTX (0.8 inches)
-      
-      // Price
-      doc.setFontSize(12); // Changed from 16 to 12
-      doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
-      doc.setTextColor(14, 165, 233);
-      const priceValue = product.price?.current ?? product.price ?? 'N/A';
-      const priceCurrency = product.price?.currency ?? '';
-      doc.text(`${priceValue} ${priceCurrency}`.trim(), rightSectionX, currentY);
-      currentY += 0.4 * 25.4; // Same as PPTX (0.4 inches)
+      // Product title - auto fit to box size
+      let titleFontSize = 11;
+      doc.setFontSize(titleFontSize);
+      doc.setFont('calibri', 'bold');
+      let titleLines = doc.splitTextToSize(product.title, rightSectionWidth);
+      // Reduce font size if too many lines
+      while (titleLines.length > 3 && titleFontSize > 8) {
+        titleFontSize -= 1;
+        doc.setFontSize(titleFontSize);
+        titleLines = doc.splitTextToSize(product.title, rightSectionWidth);
+      }
+      doc.text(titleLines.slice(0, 3), rightSectionX, currentY);
+      currentY += Math.min(titleLines.length, 3) * 3.5 + 2;
       
       doc.setTextColor(0, 0, 0);
-      doc.setFontSize(10); // Same as PPTX
-      doc.setFont('calibri', 'normal'); // Changed from helvetica to calibri
+      doc.setFontSize(9);
+      doc.setFont('calibri', 'normal');
       
-      // Pricing Information - match PPTX simple text layout
-      doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
-      doc.text('Pricing Information', rightSectionX, currentY);
-      currentY += 0.25 * 25.4; // Same as PPTX (0.25 inches)
-      doc.setFont('calibri', 'normal'); // Changed from helvetica to calibri
+      // Pricing - label and price on same line, aligned left
+      const priceValue = product.price?.current ?? product.price ?? 'N/A';
+      const priceCurrency = product.price?.currency ?? '';
+      const priceText = `${priceValue} ${priceCurrency}`.trim();
+      currentY += 3.5; // single line spacing above Pricing
+      doc.setFont('calibri', 'bold');
+      doc.text('Pricing:', rightSectionX, currentY);
+      doc.setFont('calibri', 'normal');
+      doc.setTextColor(14, 165, 233);
+      doc.text(priceText, rightSectionX + 18, currentY);
+      doc.setTextColor(0, 0, 0);
+      currentY += 0.25 * 25.4;
       
-      // Platform
-      doc.text(`Platform: ${product.source}`, rightSectionX, currentY);
-      currentY += 0.15 * 25.4; // Same as PPTX (0.15 inches)
-      
-      // FOB Price
-      doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
-      doc.text('FOB Price:', rightSectionX, currentY);
-      doc.setFont('calibri', 'normal'); // Changed from helvetica to calibri
-      doc.text(product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', rightSectionX + 35, currentY);
-      currentY += 0.15 * 25.4; // Same as PPTX (0.15 inches)
+      // FOB
+      doc.setFont('calibri', 'bold');
+      doc.text('FOB:', rightSectionX, currentY);
+      doc.setFont('calibri', 'normal');
+      doc.text(product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', rightSectionX + 18, currentY);
+      currentY += 0.15 * 25.4;
       
       // ELC
-      doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
+      doc.setFont('calibri', 'bold');
       doc.text('ELC:', rightSectionX, currentY);
-      doc.setFont('calibri', 'normal'); // Changed from helvetica to calibri
-      doc.text(product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', rightSectionX + 35, currentY);
-      currentY += 0.15 * 25.4; // Same as PPTX (0.15 inches)
+      doc.setFont('calibri', 'normal');
+      doc.text(product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', rightSectionX + 18, currentY);
+      currentY += 0.15 * 25.4;
       
-      // Description - use fresh details, cached details, or product fields
+      // Description - auto fit to box size
       const description = product.cachedDetails?.desc_short || product.description_short || product.description;
       if (description) {
-        doc.setFont('calibri', 'bold'); // Changed from helvetica to calibri
+        doc.setFont('calibri', 'bold');
+        doc.setFontSize(9);
         doc.text('Description:', rightSectionX, currentY);
-        currentY += 0.3 * 25.4; // Same as PPTX (0.3 inches)
-        doc.setFont('calibri', 'normal'); // Changed from helvetica to calibri
-        doc.setFontSize(10); // Changed from 12 to 10
-        const descLines = doc.splitTextToSize(description, rightSectionWidth);
-        const maxLines = Math.floor((pageHeight - currentY - 20) / 4);
+        currentY += 0.28 * 25.4;
+        doc.setFont('calibri', 'normal');
+        
+        // Auto fit description text
+        let descFontSize = 8;
+        const maxDescHeight = pageHeight - currentY - 25;
+        doc.setFontSize(descFontSize);
+        let descLines = doc.splitTextToSize(description.substring(0, 250), rightSectionWidth);
+        // Reduce font size if too many lines
+        while ((descLines.length * 3.5 > maxDescHeight) && descFontSize > 6) {
+          descFontSize -= 1;
+          doc.setFontSize(descFontSize);
+          descLines = doc.splitTextToSize(description.substring(0, 250), rightSectionWidth);
+        }
+        const maxLines = Math.floor(maxDescHeight / 3.5);
         doc.text(descLines.slice(0, maxLines), rightSectionX, currentY);
       }
       

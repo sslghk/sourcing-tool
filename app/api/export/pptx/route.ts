@@ -35,6 +35,17 @@ function addProcessedImageToSlide(
   });
 }
 
+// Helper to get AI image metadata (title, description) from product.aiEnrichment
+function getAIImageMetadata(product: any, imageUrl: string) {
+  const alternatives = product.aiEnrichment?.design_alternatives || [];
+  const match = alternatives.find((alt: any) => alt.generated_image_url === imageUrl);
+  return {
+    title: match?.concept_title || 'AI Design',
+    description: (match?.short_description || '').substring(0, 100),
+    rationale: match?.design_rationale || ''
+  };
+}
+
 // Helper function to generate item number
 function generateItemNumber(createdDate: string, source: string, index: number): string {
   const date = new Date(createdDate);
@@ -91,7 +102,7 @@ export async function POST(request: NextRequest) {
     const imageMap = await prefetchAllProposalImages(proposal, MAIN_IMG_MAX, SECONDARY_IMG_MAX);
 
     const pptx = new PptxGenJS();
-    pptx.layout = 'LAYOUT_WIDE'; // 16:9 landscape
+    pptx.layout = 'LAYOUT_4x3'; // 4:3 standard aspect ratio
     pptx.author = 'Sourcing Assistant';
     pptx.title = proposal.name;
     
@@ -99,12 +110,16 @@ export async function POST(request: NextRequest) {
     const titleSlide = pptx.addSlide();
     titleSlide.background = { color: '0ea5e9' }; // Sky blue
     
+    // 4:3 layout is 10x7.5 inches - center content
+    const titleWidth = 8;
+    const titleX = (10 - titleWidth) / 2; // Center horizontally
+    
     titleSlide.addText(proposal.name, {
-      x: 1,
-      y: 2,
-      w: 11,
+      x: titleX,
+      y: 1.5,
+      w: titleWidth,
       h: 1,
-      fontSize: 44,
+      fontSize: 36,
       bold: true,
       color: 'FFFFFF',
       align: 'center'
@@ -112,42 +127,42 @@ export async function POST(request: NextRequest) {
     
     if (proposal.client_name) {
       titleSlide.addText(`Client: ${proposal.client_name}`, {
-        x: 1,
-        y: 3.2,
-        w: 11,
+        x: titleX,
+        y: 2.8,
+        w: titleWidth,
         h: 0.5,
-        fontSize: 24,
+        fontSize: 20,
         color: 'FFFFFF',
         align: 'center'
       });
     }
     
     titleSlide.addText(`Status: ${(proposal.status || 'draft').toUpperCase()}`, {
-      x: 1,
-      y: 4,
-      w: 11,
+      x: titleX,
+      y: 3.5,
+      w: titleWidth,
       h: 0.4,
-      fontSize: 18,
+      fontSize: 16,
       color: 'FFFFFF',
       align: 'center'
     });
     
     titleSlide.addText(`Created: ${new Date(proposal.created_at).toLocaleDateString()}`, {
-      x: 1,
-      y: 4.5,
-      w: 11,
+      x: titleX,
+      y: 4.0,
+      w: titleWidth,
       h: 0.4,
-      fontSize: 18,
+      fontSize: 16,
       color: 'FFFFFF',
       align: 'center'
     });
     
     titleSlide.addText(`Total Items: ${proposal.products.length}`, {
-      x: 1,
-      y: 5,
-      w: 11,
+      x: titleX,
+      y: 4.5,
+      w: titleWidth,
       h: 0.4,
-      fontSize: 18,
+      fontSize: 16,
       color: 'FFFFFF',
       align: 'center'
     });
@@ -173,18 +188,14 @@ export async function POST(request: NextRequest) {
         color: '1e293b'
       });
       
-      // Left section: Images
-      const mainImageSize = 4.0; // Main image size (increased from 3.5)
+      // Left section: Images - scaled for 4:3 layout (10x7.5 inches) - enlarged 15%
+      const mainImageSize = 3.22; // 2.8 * 1.15 = 3.22 inches (enlarged 15%)
       const imageStartX = 0.3;
-      const imageStartY = 1.0;
+      const imageStartY = 0.8;
       
       // Secondary images layout - fit height to match main image
       const maxSecondaryImages = 4;
-      const imageSpacing = 0.12; // Slightly reduced spacing
-      // Calculate secondary image size to fit within main image height
-      // Total height available = mainImageSize
-      // Space needed for N images + (N-1) gaps
-      // imageSize = (mainImageSize - (N-1) * spacing) / N
+      const imageSpacing = 0.08;
       const secondaryImageSize = (mainImageSize - (maxSecondaryImages - 1) * imageSpacing) / maxSecondaryImages;
       
       // Main image (square container)
@@ -205,69 +216,115 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // AI images - horizontal row below main image, same size as secondary
+        // AI images - 4 frames horizontally under main image (doubled size, evenly distributed)
         const aiUrls = getAIImageUrls(product);
         if (aiUrls.length > 0) {
-          const aiImageY = imageStartY + mainImageSize + 0.15;
-          for (let i = 0; i < Math.min(aiUrls.length, 4); i++) {
-            const xPos = imageStartX + i * (secondaryImageSize + imageSpacing);
+          // Title line above AI photos
+          slide.addText('New concepts', {
+            x: imageStartX,
+            y: imageStartY + mainImageSize + 0.05,
+            w: 4, // Span across left section
+            h: 0.25,
+            fontSize: 11,
+            bold: true,
+            color: '1e293b',
+            align: 'left'
+          });
+          
+          const frameY = imageStartY + mainImageSize + 0.35; // Moved lower to accommodate title
+          const frameWidth = 1.96; // Doubled from 0.98
+          const frameHeight = 2.645; // 2.3 * 1.15 = 2.645 (increased 15%)
+          // Calculate spacing for even distribution across 10" page width
+          // Available: 10 - 0.3 (left margin) - 0.3 (right) = 9.4"
+          // 4 frames × 1.96 = 7.84", remaining 1.56" for 3 gaps = 0.52" each
+          const frameSpacing = 0.52;
+          const maxFrames = 4;
+          
+          for (let i = 0; i < Math.min(aiUrls.length, maxFrames); i++) {
+            const frameX = imageStartX + i * (frameWidth + frameSpacing);
+            const metadata = getAIImageMetadata(product, aiUrls[i]);
+            
+            // Frame background (light gray border effect)
+            slide.addShape('rect' as any, {
+              x: frameX,
+              y: frameY,
+              w: frameWidth,
+              h: frameHeight,
+              fill: { color: 'F8FAFC' },
+              line: { color: 'E2E8F0', width: 1 }
+            });
+            
+            // Title at top - 10px font
+            slide.addText(metadata.title, {
+              x: frameX + 0.05,
+              y: frameY + 0.05,
+              w: frameWidth - 0.1,
+              h: 0.35,
+              fontSize: 10,
+              bold: true,
+              color: '1e293b',
+              align: 'center',
+              wrap: true
+            });
+            
+            // Image in middle (fitted to frame)
+            const imgMaxWidth = frameWidth - 0.15;
+            const imgMaxHeight = 1.5;
+            const imgY = frameY + 0.42;
             const aiImg = getProcessedImage(imageMap, aiUrls[i], SECONDARY_IMG_MAX);
-            addProcessedImageToSlide(slide, aiImg, xPos, aiImageY, secondaryImageSize, secondaryImageSize);
+            addProcessedImageToSlide(slide, aiImg, frameX + 0.075, imgY, imgMaxWidth, imgMaxHeight);
+            
+            // Description - bottom of text box is 0.1" (10px) above frame bottom
+            slide.addText(metadata.description, {
+              x: frameX + 0.05,
+              y: frameY + frameHeight - 0.6,
+              w: frameWidth - 0.1,
+              h: 0.5,
+              fontSize: 10,
+              color: '64748B',
+              align: 'center',
+              wrap: true,
+              shrinkText: true
+            });
           }
         }
       }
       
-      // Right section: Details - positioned to the right of images
-      // Images end at approximately: imageStartX (0.3) + mainImageSize (4.0) + spacing (0.2) + secondaryImageSize (~0.94)
-      // So right section should start after ~5.5 inches
-      const rightSectionX = 5.8; // Moved right to avoid overlap with images
-      const rightSectionWidth = 7.0; // Slightly reduced width
-      let currentY = 1.0; // Aligned with image startY
+      // Right section: Details - adjusted for enlarged images
+      // Images end at approximately: 0.3 + 3.22 (main) + 0.15 (spacing) + ~0.76 (secondary) = ~4.4 inches
+      const rightSectionX = 4.6; // Position after enlarged images
+      const rightSectionWidth = 5.1; // Fits within 10 inch width
+      let currentY = 0.8; // Aligned with image startY
       
-      // Product title
+      // Product title - reduced to 11px, auto shrink to fit
       slide.addText(product.title, {
         x: rightSectionX,
         y: currentY,
         w: rightSectionWidth,
-        h: 0.6,
-        fontSize: 16,
+        h: 0.5,
+        fontSize: 11,
         bold: true,
         color: '1e293b',
-        wrap: true
+        wrap: true,
+        shrinkText: true
       });
-      currentY += 0.8;
+      currentY += 0.6;
       
-      // Price
+      // Pricing Information - compact layout (price shown next to Pricing label)
       const priceValue = product.price?.current ?? product.price ?? 'N/A';
       const priceCurrency = product.price?.currency ?? '';
-      slide.addText(`${priceValue} ${priceCurrency}`.trim(), {
-        x: rightSectionX,
-        y: currentY,
-        w: rightSectionWidth,
-        h: 0.4,
-        fontSize: 16,
-        color: '0ea5e9',
-        bold: true
-      });
-      currentY += 0.4;
-      
-      // Pricing Information
       const pricingData: any[] = [
         [
-          { text: 'Pricing Information', options: { bold: true, fontSize: 11, color: '1e293b' } },
-          { text: '', options: {} }
+          { text: 'Pricing:', options: { bold: true, fontSize: 9, color: '1e293b' } },
+          { text: `${priceValue} ${priceCurrency}`.trim(), options: { fontSize: 9, color: '0ea5e9', bold: true } }
         ],
         [
-          { text: 'Platform:', options: { bold: true } },
-          { text: product.source ?? 'N/A', options: {} }
+          { text: 'FOB:', options: { bold: true, fontSize: 9 } },
+          { text: product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', options: { fontSize: 9 } }
         ],
         [
-          { text: 'FOB Price:', options: { bold: true } },
-          { text: product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', options: {} }
-        ],
-        [
-          { text: 'ELC:', options: { bold: true } },
-          { text: product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', options: {} }
+          { text: 'ELC:', options: { bold: true, fontSize: 9 } },
+          { text: product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', options: { fontSize: 9 } }
         ],
       ];
       
@@ -275,46 +332,48 @@ export async function POST(request: NextRequest) {
         x: rightSectionX,
         y: currentY,
         w: rightSectionWidth,
-        fontSize: 10,
+        fontSize: 9,
         border: { pt: 0 },
-        margin: 0.05,
-        colW: [2, 5.5]
+        margin: 0.03,
+        colW: [1.2, 4]
       });
-      currentY += 0.6;
+      currentY += 0.5;
       
-      // Description - use fresh details, cached details, or product fields
+      // Description - shortened for 4:3 layout
       const description = detailsToUse?.desc_short || product.description_short || product.description;
       if (description) {
         slide.addText('Description:', {
           x: rightSectionX,
           y: currentY,
           w: rightSectionWidth,
-          h: 0.3,
-          fontSize: 12,
+          h: 0.22,
+          fontSize: 9,
           bold: true,
           color: '1e293b'
         });
-        currentY += 0.4;
+        currentY += 0.28;
         
-        slide.addText(description.substring(0, 500), {
+        // Shortened description for 4:3 layout, auto shrink to fit
+        slide.addText(description.substring(0, 250), {
           x: rightSectionX,
           y: currentY,
           w: rightSectionWidth,
-          h: 2.5,
-          fontSize: 10,
+          h: 1.8,
+          fontSize: 8,
           color: '475569',
           wrap: true,
-          valign: 'top'
+          valign: 'top',
+          shrinkText: true
         });
       }
       
-      // Footer with page number (bottom of slide)
+      // Footer with page number (bottom of slide for 4:3)
       slide.addText(`Page ${index + 2} of ${proposal.products.length + 1}`, {
         x: 0,
         y: 7.2,
-        w: 13,
-        h: 0.3,
-        fontSize: 10,
+        w: 10,
+        h: 0.25,
+        fontSize: 9,
         color: '999999',
         align: 'center'
       });

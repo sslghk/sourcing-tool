@@ -1242,12 +1242,9 @@ export default function ProposalDetailPage() {
 
                 return (
                   <div
-                    key={product.id}
-                    draggable
-                    onDragStart={() => handleDragStart(index)}
+                    key={`${product.id}-${index}`}
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDrop={(e) => handleDrop(e, index)}
-                    onDragEnd={handleDragEnd}
                     className={`transition-colors ${
                       dragOverIndex === index && dragIndexRef.current !== index
                         ? 'border-t-2 border-sky-400 bg-sky-50'
@@ -1256,7 +1253,12 @@ export default function ProposalDetailPage() {
                   >
                     <div className="p-6 hover:bg-gray-50 transition-colors">
                       <div className="flex gap-6">
-                        <div className="flex-shrink-0 flex items-center pr-1 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500">
+                        <div
+                          draggable
+                          onDragStart={() => handleDragStart(index)}
+                          onDragEnd={handleDragEnd}
+                          className="flex-shrink-0 flex items-center pr-1 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500"
+                        >
                           <GripVertical className="h-5 w-5" />
                         </div>
                         <div className="flex-shrink-0">
@@ -1514,16 +1516,17 @@ export default function ProposalDetailPage() {
                           </div>
                         </div>
                         
-                        {/* AI Enrichment Context - Pill-shaped textbox below */}
-                        <div className="flex items-center gap-2">
-                          <Input
+                        {/* AI Enrichment Context - Textarea below */}
+                        <div className="flex items-start gap-2">
+                          <Textarea
                             value={aiEnrichRemarks[product.id] || ''}
                             onChange={(e) => setAiEnrichRemarks(prev => ({
                               ...prev,
                               [product.id]: e.target.value
                             }))}
                             placeholder="Guide AI designs (e.g., eco-friendly, modern)"
-                            className="flex-1 text-xs bg-white border border-purple-200 rounded-full px-4 h-9 focus:ring-2 focus:ring-purple-300 focus:border-transparent transition-all placeholder:text-gray-400"
+                            rows={3}
+                            className="flex-1 text-xs bg-white border border-purple-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-300 focus:border-transparent transition-all placeholder:text-gray-400 resize-none"
                           />
                           <Button
                             size="sm"
