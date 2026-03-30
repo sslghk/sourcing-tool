@@ -42,7 +42,7 @@ export default function ProposalsPage() {
   const [clientName, setClientName] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [filterMode, setFilterMode] = useState<'my' | 'all'>('my');
+  const [filterMode, setFilterMode] = useState<'my' | 'all'>('all');
   const [sortField, setSortField] = useState<'name' | 'date'>('date');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   

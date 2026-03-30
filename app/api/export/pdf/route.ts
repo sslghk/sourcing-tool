@@ -113,6 +113,18 @@ export async function POST(request: NextRequest) {
       doc.addPage();
       doc.setTextColor(0, 0, 0);
       
+      // Header - Creative Concepts reference
+      doc.setFontSize(10);
+      doc.setFont('calibri', 'normal');
+      doc.setTextColor(100, 116, 139);
+      doc.text('Creative Concepts for Vegetable Plush Toys - Ref. 1688/Taobao', pageWidth / 2, 5, { align: 'center' });
+      
+      // Footer - Proposal reference number
+      doc.setFontSize(9);
+      doc.text('PLN-250302-Alice', pageWidth / 2, pageHeight - 8, { align: 'center' });
+      
+      doc.setTextColor(0, 0, 0);
+      
       const itemNumber = generateItemNumber(proposal.created_at, product.source, index);
       
       // Item number in top left - moved up to avoid overlap
@@ -154,15 +166,9 @@ export async function POST(request: NextRequest) {
         // AI images - 4 frames horizontally under main image (enlarged 20%, evenly distributed)
         const aiUrls = getAIImageUrls(product);
         if (aiUrls.length > 0) {
-          // Title line above AI photos with increased spacing
-          const titleY = imageStartY + mainImageSize + (0.35 * 25.4);
-          doc.setFontSize(11);
-          doc.setFont('calibri', 'bold');
-          doc.setTextColor(30, 41, 59);
-          doc.text('New concepts', imageStartX, titleY);
+          // Position for concept labels and frames
+          const labelY = imageStartY + mainImageSize + (0.25 * 25.4); // Add 1 line spacing above concepts
           
-          // Frame Y position with spacing below "New concepts"
-          const frameY = titleY + (0.25 * 25.4);
           // Even distribution across page: from left margin (10mm) to right section (118mm) = 108mm
           // Width: 55mm each (130% increase from 24mm)
           // 4 frames × 55mm = 220mm, available width 108mm
@@ -180,6 +186,15 @@ export async function POST(request: NextRequest) {
           for (let i = 0; i < Math.min(aiUrls.length, maxFrames); i++) {
             const frameX = startX + i * (frameWidth + frameSpacing);
             const metadata = getAIImageMetadata(product, aiUrls[i]);
+            
+            // Concept label above each frame - centered horizontally
+            doc.setFontSize(11);
+            doc.setFont('calibri', 'bold');
+            doc.setTextColor(30, 41, 59);
+            doc.text(`Concept ${i + 1}`, frameX + frameWidth / 2, labelY, { align: 'center' });
+            
+            // Frame Y position with 0.5 line spacing below concept label
+            const frameY = labelY + (0.1 * 25.4);
             
             // Frame border (light gray)
             doc.setDrawColor(226, 232, 240);
@@ -311,7 +326,7 @@ export async function POST(request: NextRequest) {
       // Footer with page number (bottom of page)
       doc.setFontSize(8);
       doc.setTextColor(150, 150, 150);
-      doc.text(`Page ${index + 2} of ${proposal.products.length + 1}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
+      doc.text(`Page ${index + 2} of ${proposal.products.length + 1}`, margin, pageHeight - 5);
     }
 
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));

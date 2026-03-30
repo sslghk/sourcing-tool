@@ -74,7 +74,7 @@ export default function Home() {
   const [isExistingProposalDialogOpen, setIsExistingProposalDialogOpen] = useState(false);
   const [existingProposals, setExistingProposals] = useState<any[]>([]);
   const [isAddingToExisting, setIsAddingToExisting] = useState(false);
-  const [dialogFilterMode, setDialogFilterMode] = useState<'my' | 'all'>('my');
+  const [dialogFilterMode, setDialogFilterMode] = useState<'my' | 'all'>('all');
   const [dialogSortField, setDialogSortField] = useState<'name' | 'date'>('date');
   const [dialogSortDir, setDialogSortDir] = useState<'asc' | 'desc'>('desc');
   const [appendSuccess, setAppendSuccess] = useState<{ proposalName: string; count: number; duplicates: number } | null>(null);

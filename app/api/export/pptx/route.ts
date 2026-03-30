@@ -172,6 +172,28 @@ export async function POST(request: NextRequest) {
       const product = proposal.products[index];
       const slide = pptx.addSlide();
       
+      // Header - Creative Concepts reference
+      slide.addText('Creative Concepts for Vegetable Plush Toys - Ref. 1688/Taobao', {
+        x: 0,
+        y: 0.1,
+        w: 10,
+        h: 0.25,
+        fontSize: 10,
+        color: '64748B',
+        align: 'center'
+      });
+      
+      // Footer - Proposal reference number
+      slide.addText('PLN-250302-Alice', {
+        x: 0,
+        y: 7.4,
+        w: 10,
+        h: 0.2,
+        fontSize: 9,
+        color: '64748B',
+        align: 'center'
+      });
+      
       // Use cached product details for faster export
       const detailsToUse = product.cachedDetails || {};
       
@@ -191,7 +213,7 @@ export async function POST(request: NextRequest) {
       // Left section: Images - scaled for 4:3 layout (10x7.5 inches) - enlarged 15%
       const mainImageSize = 3.22; // 2.8 * 1.15 = 3.22 inches (enlarged 15%)
       const imageStartX = 0.3;
-      const imageStartY = 0.8;
+      const imageStartY = 1.0; // Add 1 line spacing above main photo
       
       // Secondary images layout - fit height to match main image
       const maxSecondaryImages = 4;
@@ -219,19 +241,7 @@ export async function POST(request: NextRequest) {
         // AI images - 4 frames horizontally under main image (doubled size, evenly distributed)
         const aiUrls = getAIImageUrls(product);
         if (aiUrls.length > 0) {
-          // Title line above AI photos
-          slide.addText('New concepts', {
-            x: imageStartX,
-            y: imageStartY + mainImageSize + 0.05,
-            w: 4, // Span across left section
-            h: 0.25,
-            fontSize: 11,
-            bold: true,
-            color: '1e293b',
-            align: 'left'
-          });
-          
-          const frameY = imageStartY + mainImageSize + 0.35; // Moved lower to accommodate title
+          const frameY = imageStartY + mainImageSize + 0.2; // Add 1 line spacing above concept labels
           const frameWidth = 1.96; // Doubled from 0.98
           const frameHeight = 2.645; // 2.3 * 1.15 = 2.645 (increased 15%)
           // Calculate spacing for even distribution across 10" page width
@@ -244,10 +254,25 @@ export async function POST(request: NextRequest) {
             const frameX = imageStartX + i * (frameWidth + frameSpacing);
             const metadata = getAIImageMetadata(product, aiUrls[i]);
             
+            // Concept label above each frame - centered horizontally
+            slide.addText(`Concept ${i + 1}`, {
+              x: frameX,
+              y: frameY,
+              w: frameWidth,
+              h: 0.2,
+              fontSize: 11,
+              bold: true,
+              color: '1e293b',
+              align: 'center'
+            });
+            
+            // Frame starts below concept label
+            const aiFrameY = frameY + 0.22;
+            
             // Frame background (light gray border effect)
             slide.addShape('rect' as any, {
               x: frameX,
-              y: frameY,
+              y: aiFrameY,
               w: frameWidth,
               h: frameHeight,
               fill: { color: 'F8FAFC' },
@@ -257,7 +282,7 @@ export async function POST(request: NextRequest) {
             // Title at top - 10px font
             slide.addText(metadata.title, {
               x: frameX + 0.05,
-              y: frameY + 0.05,
+              y: aiFrameY + 0.05,
               w: frameWidth - 0.1,
               h: 0.35,
               fontSize: 10,
@@ -270,14 +295,14 @@ export async function POST(request: NextRequest) {
             // Image in middle (fitted to frame)
             const imgMaxWidth = frameWidth - 0.15;
             const imgMaxHeight = 1.5;
-            const imgY = frameY + 0.42;
+            const imgY = aiFrameY + 0.42;
             const aiImg = getProcessedImage(imageMap, aiUrls[i], SECONDARY_IMG_MAX);
             addProcessedImageToSlide(slide, aiImg, frameX + 0.075, imgY, imgMaxWidth, imgMaxHeight);
             
             // Description - bottom of text box is 0.1" (10px) above frame bottom
             slide.addText(metadata.description, {
               x: frameX + 0.05,
-              y: frameY + frameHeight - 0.6,
+              y: aiFrameY + frameHeight - 0.6,
               w: frameWidth - 0.1,
               h: 0.5,
               fontSize: 10,
@@ -294,7 +319,7 @@ export async function POST(request: NextRequest) {
       // Images end at approximately: 0.3 + 3.22 (main) + 0.15 (spacing) + ~0.76 (secondary) = ~4.4 inches
       const rightSectionX = 4.6; // Position after enlarged images
       const rightSectionWidth = 5.1; // Fits within 10 inch width
-      let currentY = 0.8; // Aligned with image startY
+      let currentY = 1.0; // Aligned with image startY (with 1 line spacing)
       
       // Product title - reduced to 11px, auto shrink to fit
       slide.addText(product.title, {
@@ -369,9 +394,9 @@ export async function POST(request: NextRequest) {
       
       // Footer with page number (bottom of slide for 4:3)
       slide.addText(`Page ${index + 2} of ${proposal.products.length + 1}`, {
-        x: 0,
+        x: 4,
         y: 7.2,
-        w: 10,
+        w: 2,
         h: 0.25,
         fontSize: 9,
         color: '999999',
