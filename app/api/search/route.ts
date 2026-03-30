@@ -16,7 +16,7 @@ const searchSchema = z.object({
 });
 
 const SERVICE_URLS: Record<Platform, string> = {
-  taobao: process.env.TAOBAO_SERVICE_URL || 'http://localhost:8001',
+  taobao: process.env.TAOBAO_SERVICE_URL || 'http://localhost:8000',
   '1688': 'http://localhost:8002', // Not implemented yet
   temu: 'http://localhost:8003', // Not implemented yet
   amazon: 'http://localhost:8004', // Not implemented yet
@@ -46,6 +46,11 @@ export async function POST(request: NextRequest) {
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           const errorMessage = errorData.detail || `${platform} service returned ${response.status}`;
+          
+          // Check for authentication errors (403)
+          if (response.status === 403 || errorMessage.includes('authentication failed') || errorMessage.includes('Forbidden')) {
+            throw new Error(`OneBound API authentication failed. Please check your API key and secret in the .env file.`);
+          }
           
           // Check for quota exceeded error
           if (errorMessage.includes('已超量') || errorMessage.includes('quota') || errorMessage.includes('exceeded')) {

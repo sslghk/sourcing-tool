@@ -1,0 +1,779 @@
+{
+  "proposalId": "proposal_1774346441567",
+  "proposalName": "test 2",
+  "clientName": "",
+  "notes": "",
+  "createdBy": {
+    "email": "admin@example.com",
+    "name": "Admin User"
+  },
+  "createdAt": "2026-03-24T10:00:41.580Z",
+  "updatedAt": "2026-03-24T10:01:01.585Z",
+  "products": [
+    {
+      "id": "taobao_849728711064",
+      "source_id": "849728711064",
+      "source": "taobao",
+      "title": "Cross border blankets Amazon double-layer blankets Sherpa lambskin blankets Thickened double-layer flannel blankets in stock",
+      "price": {
+        "current": 26.82,
+        "currency": "CNY",
+        "original": 26.82
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01633ebK1WQfG00PobS_!!2654502783.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=849728711064",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_617823780084",
+      "source_id": "617823780084",
+      "source": "taobao",
+      "title": "Chumang blanket, office nap blanket, thin blanket, noon break, coral milk velvet, all season universal air conditioning cover blanket",
+      "price": {
+        "current": 19.46,
+        "currency": "CNY",
+        "original": 19.46
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01tPEf4Y1iTCXPetfX7_!!2207888834413.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=617823780084",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_852864486588",
+      "source_id": "852864486588",
+      "source": "taobao",
+      "title": "Solid color wool warm Bed sheet blanket sofa cover blankets",
+      "price": {
+        "current": 13.18,
+        "currency": "CNY",
+        "original": 13.18
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN013xSihA2940gVroA0i_!!2586268013.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=852864486588",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    }
+  ],
+  "itemDetails": {
+    "849728711064": {
+      "title": "Cross border blankets Amazon double-layer blankets Sherpa lambskin blankets Thickened double-layer flannel blankets in stock",
+      "desc_short": "",
+      "brand": "Other homes",
+      "pic_url": "//img.alicdn.com/imgextra/i4/2654502783/O1CN01Db3CRb1WQfG00R5bi_!!2654502783.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2654502783/O1CN01Db3CRb1WQfG00R5bi_!!2654502783.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2654502783/O1CN01NO9vx01WQfG0Pz4Tc_!!2654502783.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2654502783/O1CN01TLcbAc1WQfG1Ri4YS_!!2654502783.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2654502783/O1CN01M3rEwr1WQfFyjY0Um_!!2654502783.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2654502783/O1CN0120mhzj1WQfFxl7hPc_!!2654502783.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:5167321",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN01sGmOQX1WQfG1SqQox_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:3232478",
+            "url": "http://img.alicdn.com/imgextra/i3/2654502783/O1CN01nV80DN1WQfFyUoImu_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28321",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN01WqF93u1WQfG15WooJ_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28332",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN01Db3CRb1WQfG00R5bi_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28331",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN01QCSCtp1WQfFtPzzDw_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28341",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN01aYDLKd1WQfG00S1oo_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:4464174",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01ZfDjRa1WQfG15X1Hp_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:30158",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN01uZOSrh1WQfG0VTdhz_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28329",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN0155RVVC1WQfG2ppt1A_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:3232483",
+            "url": "http://img.alicdn.com/imgextra/i3/2654502783/O1CN01jAPFBi1WQfG0VUufh_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28327",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01haXoPf1WQfFxl8R7i_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:30156",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01Pw3D1r1WQfFxl65dW_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28866",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01VTmsIn1WQfG3LWVqI_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28320",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01d0oAKX1WQfG2BNGgs_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:129819",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN01PPFcMe1WQfG3LXaKa_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:4104877",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN01LoQbRq1WQfFyjXCaZ_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28340",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN01XyUzsW1WQfG1Snwws_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:3455405",
+            "url": "http://img.alicdn.com/imgextra/i4/2654502783/O1CN01633ebK1WQfG00PobS_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:28323",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01MIsU4U1WQfG3LXWAJ_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:3350475",
+            "url": "http://img.alicdn.com/imgextra/i3/2654502783/O1CN01XAqqAv1WQfG0VTm0v_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:132169",
+            "url": "http://img.alicdn.com/imgextra/i1/2654502783/O1CN01JoowvW1WQfFtQ2fZc_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:83583724",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN012G3ZXH1WQfFyUnlVR_!!2654502783.jpg"
+          },
+          {
+            "properties": "1627207:59581348",
+            "url": "http://img.alicdn.com/imgextra/i2/2654502783/O1CN01l7GRgh1WQfG1RisSV_!!2654502783.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "brand",
+          "value": "Other homes",
+          "name_original": "brand",
+          "value_original": "Other homes"
+        },
+        {
+          "name": "Article number",
+          "value": "Plain double-layer lamb wool blanket main style",
+          "name_original": "Article number",
+          "value_original": "Plain double-layer lamb wool blanket main style"
+        },
+        {
+          "name": "Applicable season",
+          "value": "winter",
+          "name_original": "Applicable season",
+          "value_original": "winter"
+        },
+        {
+          "name": "size",
+          "value": "200cmx230cm,100cmX150cm,230cmX270cm,70cmX100cm,180cmX200cm,127cmX152cm,150cmX200cm,130cmX160cm,230cmX230cm",
+          "name_original": "size",
+          "value_original": "200cmx230cm,100cmX150cm,230cmX270cm,70cmX100cm,180cmX200cm,127cmX152cm,150cmX200cm,130cmX160cm,230cmX230cm"
+        },
+        {
+          "name": "pattern",
+          "value": "Solid color",
+          "name_original": "pattern",
+          "value_original": "Solid color"
+        },
+        {
+          "name": "Color fastness",
+          "value": "3-4",
+          "name_original": "Color fastness",
+          "value_original": "3-4"
+        },
+        {
+          "name": "color classification",
+          "value": "Purple red, khaki, lotus root, dark gray, purple, burgundy, military green, light purple, light brown, light gray, light green, cyan, black, dark blue, navy blue, milky white, white, coffee, pink, burgundy, coffee, khaki camel, bean paste purple",
+          "name_original": "color classification",
+          "value_original": "Purple red, khaki, lotus root, dark gray, purple, burgundy, military green, light purple, light brown, light gray, light green, cyan, black, dark blue, navy blue, milky white, white, coffee, pink, burgundy, coffee, khaki camel, bean paste purple"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Nanjing Mushad International Trading Co., Ltd.",
+        "location": "Shaoxing, Zhejiang",
+        "rating": null,
+        "name_original": "南京慕莎德国际贸易有限公司",
+        "location_original": "浙江绍兴"
+      },
+      "sales_volume": null,
+      "description": "<div class=\"offer-title-wrapper\" style=\"text-align: center;\">\n<div class=\"offer-title-content\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01AQb1kz1WQfG1RjodZ_!!2654502783.jpg\" alt=\"公司历程_副本\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01KykPzR1WQfG2JQHlc_!!2654502783.jpg\" alt=\"公司简介1\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN015ERZlW1WQfFyUndB9_!!2654502783.jpg\" alt=\"苏州北东纺织公司简介\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01xvNshp1WQfFyUk8vx_!!2654502783.jpg\" alt=\"公司板块图片\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01vXtdLJ1WQfG1Rifyp_!!2654502783.jpg\" alt=\"公司认证1\"><br class=\"img-brk\"><br class=\"img-brk\"></div>\n<div class=\"offer-title-content\">商品描述</div>\n</div>\n<div class=\"detail-description-content fd-editor\" style=\"text-align: center;\">\n<div class=\"content-detail\">\n<div> </div>\n<p><span><span>亚马逊，速卖通爆款毛毯</span><br></span></p>\n<p><span><span>Features:</span><span><br></span></span></p>\n<p>    100% Brand new and high quality.<br>    Micro plush microfiber for comfortable, durable warmth on cold nights.<br>    Super soft micro plush throw blanket can prevent electrostatic.<br>    Easy to clean, machine washable, do not bleach. Inhibit bacterial.</p>\n<p> </p>\n<p>    Specification:<br>    Condition:100% brand new<br>    Color: 10 optional colors</p>\n<p> </p>\n<p>    Notes:<br>    Due to the light and screen setting difference, the item&#39;s color may be slightly different from the pictures.<br>    Please allow slight dimension difference due to different manual measurement</p>\n<h3>双层毛毯加厚法兰绒羊羔绒春季毛毯被子礼品毯珊瑚绒毛毯</h3>\n<p>出口订单，简约大方，高品质法兰绒羊羔绒双层毛毯，软软暖暖，亲肤细腻。</p>\n<p>这款毛毯非常厚重，面料包装都非常美，一看就看上了~</p>\n<p> </p>\n<p>【关于面料】</p>\n<p>正面是非常细滑的法兰绒，非常高档，手感很好，</p>\n<p>出口的余单，手感柔软舒适</p>\n<p>反面是羊羔绒，正面是柔软的法兰绒面料，双层压线毛毯，连丝带颜色都是配套的，非常档次高</p>\n<p> </p>\n<p><br>【关于尺寸】</p>\n<p> 70X100cm （0.4KG，0.8斤）</p>\n<p>100X150cm （0.9公斤，1.8斤）</p>\n<p>127X152cm（1公斤，2斤）</p>\n<p> 150X200cm（1.5公斤，3.0斤）</p>\n<p> 180X200cm（1.8公斤，3.6斤）</p>\n<p>200X230cm（2.2公斤，4.4斤） </p>\n<p>支持更多尺寸定制，欢迎咨询客服&hellip;&hellip;</p>\n<p> </p>\n<p align=\"center\">包装为彩卡十字绑带，毛毯很厚实</p>\n<p align=\"center\">正面柔软的法兰绒 反面加厚羊羔绒 非常厚实</p>\n<p align=\"center\"> </p>\n<p align=\"center\"> </p>\n<p align=\"center\">国外卧室毯的标准尺寸 这种尺寸是非常实用的 </p>\n<p align=\"center\">可以做床上的被子，床单等等</p>\n<p align=\"center\"> </p>\n<p align=\"center\"> </p>\n<p>PS：面料小贴士，关于羊羔绒：</p>\n<p>亲们，羊羔绒不是羊羔身上的绒，它的主要材质是优质聚酯纤维，</p>\n<p>因为形似绵羊身上的毛而得名，既有纤维材料的轻柔，</p>\n<p>又有羊毛一样的保暖特性哦~</p>\n<p>双层毛毯，一层法兰绒280克重，一层羊羔绒200克重，70cmX100cm重量0.4kg，127cmX152cm重量1kg，150cmX200cm重量1.5kg，200X230cm重量2.2kg，</p>\n<p>双层真空压缩后单条尺寸，127乘152：26x20x8，150乘200:27x27x8，200乘230：35x35x8厘米</p>\n<p><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01TpKbab1WQfG2pq9ed_!!2654502783.jpg\" alt=\"71THWcYwDML._SL1500__副本热热热\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01dQEWx31WQfG1Rkkrc_!!2654502783.jpg\" alt=\"微信图片_20210116143852\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01lT9I8K1WQfG15VoS9_!!2654502783.jpg\" alt=\"未命名_副本6665\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01I5KSBM1WQfFtQ0zap_!!2654502783.jpg\" alt=\"微信图片_20201221122956\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01ta45yB1WQfG1Rhnty_!!2654502783.jpg\" alt=\"未命名_副本深蓝色双层\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01FNessO1WQfG1SoLui_!!2654502783.jpg\" alt=\"17718447087_2002221794\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01FILY0b1WQfG0VShVh_!!2654502783.jpg\" alt=\"17775910828_2002221794\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN016zRY8Y1WQfFtQ2fZx_!!2654502783.jpg\" alt=\"蓝色3.jpg\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01rw2yEy1WQfG1SqhTA_!!2654502783.jpg\" alt=\"风格的如果.jpg\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01vqj4WK1WQfG0bL9pk_!!2654502783.jpg\" alt=\"银灰色233.jpg\"><br class=\"img-brk\"><br class=\"img-brk\"></p>\n</div>\n</div>\n<p style=\"text-align: center;\"><span>常年现货供应</span><br><span>素色法兰绒+羊羔绒</span><br><span>280克每平方法兰绒+200克每平方羊羔绒</span><br><span>尺寸：130*160CM</span><br><span>单条重量：980克每条</span><br><span>包装高档PVC拉链袋</span><br><span>包装尺寸：31*12*23CM</span><br><br></p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\"><span>高档收纳真空袋+彩卡（单价另外加1元）<br>包装尺寸：33*25*6CM</span></p>\n<p style=\"text-align: center;\"><span>图片在详情页最后一张</span></p>\n<p style=\"text-align: center;\"><br><span>总共有40个颜色可以选择</span></p>\n<p style=\"text-align: center;\"><span>现货颜色有9种，一条起</span></p>\n<p style=\"text-align: center;\"><span>非现货颜色一匹布起（大概50-70条）</span><br><span>下面色卡选颜色</span><br><span>（请联系客服选色）</span></p>\n<p style=\"text-align: center;\"><span><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01InZrOf1WQfG0bKQ7U_!!2654502783.jpg\" alt=\"20201008_132656_047.jpg\"><br></span></p>\n<h3 style=\"text-align: center;\">双层毛毯加厚法兰绒羊羔绒春季毛毯被子礼品毯珊瑚绒毛毯</h3>\n<p style=\"text-align: center;\">出口订单，简约大方，高品质法兰绒羊羔绒双层毛毯，软软暖暖，亲肤细腻。</p>\n<p style=\"text-align: center;\">这款毛毯非常厚重，面料包装都非常美，一看就看上了~</p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\">【关于面料】</p>\n<p style=\"text-align: center;\">正面是非常细滑的法兰绒，非常高档，手感很好，</p>\n<p style=\"text-align: center;\">出口的余单，手感柔软舒适</p>\n<p style=\"text-align: center;\">反面是羊羔绒，正面是柔软的法兰绒面料，双层压线毛毯，连丝带颜色都是配套的，非常档次高</p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\"><br>【关于尺寸】</p>\n<p style=\"text-align: center;\"> 70X100cm （0.4KG，0.8斤）</p>\n<p style=\"text-align: center;\">100X150cm （0.9公斤，1.8斤）</p>\n<p style=\"text-align: center;\">127X152cm（1公斤，2斤）</p>\n<p style=\"text-align: center;\"> 150X200cm（1.5公斤，3.0斤）</p>\n<p style=\"text-align: center;\"> 180X200cm（1.8公斤，3.6斤）</p>\n<p style=\"text-align: center;\">200X230cm（2.3公斤，4.6斤） </p>\n<p style=\"text-align: center;\">支持更多尺寸定制，欢迎咨询客服&hellip;&hellip;</p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\" align=\"center\">包装为彩卡十字绑带，毛毯很厚实</p>\n<p style=\"text-align: center;\" align=\"center\">正面柔软的法兰绒 反面加厚羊羔绒 非常厚实</p>\n<p style=\"text-align: center;\" align=\"center\"> </p>\n<p style=\"text-align: center;\" align=\"center\">国外卧室毯的标准尺寸 这种尺寸是非常实用的 </p>\n<p style=\"text-align: center;\" align=\"center\">可以做床上的被子，床单等等</p>\n<p style=\"text-align: center;\" align=\"center\"> </p>\n<p style=\"text-align: center;\" align=\"center\"> </p>\n<p style=\"text-align: center;\">PS：面料小贴士，关于羊羔绒：</p>\n<p style=\"text-align: center;\">亲们，羊羔绒不是羊羔身上的绒，它的主要材质是优质聚酯纤维，</p>\n<p style=\"text-align: center;\">因为形似绵羊身上的毛而得名，既有纤维材料的轻柔，</p>\n<p style=\"text-align: center;\">又有羊毛一样的保暖特性哦~</p>\n<p style=\"text-align: center;\"><span><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01W7TGqr1WQfG0PynrX_!!2654502783.jpg\" alt=\"20201008_132656_048.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01b8xs5f1WQfG2BLzgF_!!2654502783.jpg\" alt=\"20201008_132656_049.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN019iZp6g1WQfG2BL7e2_!!2654502783.jpg\" alt=\"20201008_132656_050.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01cUJYzi1WQfFxl9F0i_!!2654502783.jpg\" alt=\"20201008_132656_051.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Cursb81WQfG2BMvtU_!!2654502783.jpg\" alt=\"20201008_132656_052.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01mUSA0P1WQfFtQ2T6A_!!2654502783.jpg\" alt=\"20201008_132656_053.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01F3pzNl1WQfG0VSIXc_!!2654502783.jpg\" alt=\"20201008_132656_059.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01xZUFda1WQfFztUQZC_!!2654502783.jpg\" alt=\"20201008_132656_060.jpg\"><br><br><img src=\"https://cbu01.alicdn.com/img/ibank/2020/692/449/21680944296_2002221794.jpg\" alt=\"20201008_132656_061.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01vbJea11WQfFyjWb9L_!!2654502783.jpg\" alt=\"20201008_132656_062.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01v8RYj41WQfFxl7Uxa_!!2654502783.jpg\" alt=\"20201008_132656_063.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01uWEl5v1WQfG2JThr8_!!2654502783.jpg\" alt=\"20201008_132656_064.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01QrtISV1WQfG2JSdJD_!!2654502783.jpg\" alt=\"20201008_132656_065.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN019cewwm1WQfG1RkHlf_!!2654502783.jpg\" alt=\"20201008_132656_066.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01VwIpIb1WQfFtQ3Xd3_!!2654502783.jpg\" alt=\"20201008_132656_067.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01p4phkp1WQfG0bKkuT_!!2654502783.jpg\" alt=\"20201008_132656_068.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01XZmGJc1WQfFyjYH7j_!!2654502783.jpg\" alt=\"20201008_132656_069.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01TaLdhL1WQfG3LXmof_!!2654502783.jpg\" alt=\"20201008_132656_070.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01NcliLY1WQfFztUpTs_!!2654502783.jpg\" alt=\"20201008_132656_071.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN016JthZj1WQfG0bKkuS_!!2654502783.jpg\" alt=\"20201008_132656_072.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01GqaEyg1WQfFtQ0ixj_!!2654502783.jpg\" alt=\"20201008_132656_073.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01SCUies1WQfG3LVZfK_!!2654502783.jpg\" alt=\"20201008_132656_074.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01j2MBRr1WQfG0Q1LpH_!!2654502783.jpg\" alt=\"20201008_132656_075.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01kdqqQz1WQfG0bJsrS_!!2654502783.jpg\" alt=\"20201008_132656_076.jpg\"><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01LpCWii1WQfFyjWjUX_!!2654502783.jpg\" alt=\"350xq_2\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01BNAJWl1WQfFztV1vk_!!2654502783.jpg\" alt=\"350xq_3\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01vbXum91WQfG3LXmoq_!!2654502783.jpg\" alt=\"350xq_4\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01zjAirX1WQfG0bKkub_!!2654502783.jpg\" alt=\"350xq_5\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01YUtAoE1WQfG0bJDHF_!!2654502783.jpg\" alt=\"350xq_6\"><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN019rlWdd1WQfFtQ3PIr_!!2654502783.jpg\" alt=\"350xq_7\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN016PLpvl1WQfFxl92Xx_!!2654502783.jpg\" alt=\"350xq_8\"><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01ViLFfw1WQfG0VTdib_!!2654502783.jpg\" alt=\"350xq_9\"><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01GfFtRy1WQfFxl7hQV_!!2654502783.jpg\" alt=\"350xq_10\"><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01jzaPHG1WQfG2JQp2C_!!2654502783.jpg\" alt=\"350xq_11\"><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN015bV7Gg1WQfG0bL5g1_!!2654502783.jpg\" alt=\"350xq_12\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01LDZ0S21WQfG2JTVND_!!2654502783.jpg\" alt=\"350xq_13\"><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01FleU741WQfG00PocG_!!2654502783.jpg\" alt=\"350xq_14\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01RAy6Ia1WQfG3LXeUl_!!2654502783.jpg\" alt=\"350xq_15\"><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01Phn2dS1WQfFyjY8ng_!!2654502783.jpg\" alt=\"350xq_16\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01tfx2GP1WQfG0Q0gGh_!!2654502783.jpg\" alt=\"350xq_17\"><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Axl4fE1WQfG2poTiN_!!2654502783.jpg\" alt=\"350xq_18\"><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01X2yMXt1WQfFtQ248r_!!2654502783.jpg\" alt=\"350xq_19\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN016GiekL1WQfFztU5lM_!!2654502783.jpg\" alt=\"350xq_20\"><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01pHmOBj1WQfFyUntqL_!!2654502783.jpg\" alt=\"350xq_21\"><br><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01a1qaBG1WQfFxl6xhg_!!2654502783.jpg\" alt=\"20201008_132656_077.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01f4CdIR1WQfG1Sr2Hp_!!2654502783.jpg\" alt=\"20201008_132656_078.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01qmY2IZ1WQfG3LW6us_!!2654502783.jpg\" alt=\"20201008_132656_079.jpg\"><br></span></p>\n<p style=\"text-align: center;\"><span><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN011Pnu541WQfG15XDlY_!!2654502783.jpg\" alt=\"公司历程_副本\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01tuZmmq1WQfG2BMOdk_!!2654502783.jpg\" alt=\"公司简介1\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01GzBleg1WQfFztTHsG_!!2654502783.jpg\" alt=\"苏州北东纺织公司简介\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01evVUOx1WQfG0VSQsL_!!2654502783.jpg\" alt=\"公司板块图片\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01q0P5sX1WQfG3LVZfi_!!2654502783.jpg\" alt=\"公司认证1\"><br class=\"img-brk\"><br class=\"img-brk\"></span></p>\n<p style=\"text-align: center;\">苏州北东纺织，专注于外贸订单法兰绒毛毯的设计、生产、制作、销售，法兰绒面料、珊瑚绒面料、羊羔绒面料，目前常年现货的产品有法兰绒披肩毛毯尺寸为70cmX100cm和100cmX150cm，法兰绒毛毯280g/㎡（280克重每平米）法兰绒面料制作而成，法兰绒毛毯尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，法兰绒面料和羊羔绒面料双层毛毯，两层的毛毯一面为法兰绒、一面为羊羔绒面料，克重为500g/㎡（500克重每平方米），尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，所有的产品，目前一共有十个颜色，分别为白色，粉色，浅蓝，深蓝，紫色，咖啡，酒红，卡其，浅灰，深灰，一年四季都有现货，欢迎大家批发采购，还可以定制品牌logo，礼品毛毯，根据要求定制毛毯，设计毛毯，刺绣logo，电绣logo，数码印花，礼盒定制，礼品袋定制，印刷logo品牌，国内的客户我们曾经给腾讯制作礼品毛毯，还有万达影城刺绣logo毛毯，国外的客户我们承接圆网印花法兰绒面料，法兰绒毛毯，印花毛毯，纯色素色毛毯，外贸毛毯定制设计，打样，都可以。</p>\n<p style=\"text-align: center;\"> </p>\n<div style=\"text-align: center;\">\n<p> </p>\n<p><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01MuRxJl1WQfFztW6Tv_!!2654502783.jpg\" alt=\"TB2iMVQlgn.PuJjSZFkXXc_lpXa_!!\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01ojwNmV1WQfG2BKr0c_!!2654502783.jpg\" alt=\"TB2KUQGfI2vU1JjSZFwXXX2cpXa_!!\"></p>\n<p>南京慕莎德国际贸易有限公司，有自己的工厂，可以承接外贸订单，也可以承接生产订单，我们专注于法兰绒面料，羊羔绒面料，pv绒面料，超柔，仿超柔等聚酯纤维百分百涤纶100%涤纶的面料，我们专业承接外贸订单，还有内销品牌贴牌生产，如果您有法兰绒，羊羔绒产品，可以联系我们报价询价哈~感恩！</p>\n<p>以下色卡是我们公司常年四季有货的法兰绒面料色卡图，如果您需要采购面料，或者定制毛毯，外贸订单制作，都可以联系我们哈，感恩有您~</p>\n<p><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01NSNpWz1WQfFyjY8nn_!!2654502783.jpg\" alt=\"色卡.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01EDfuPC1WQfG1RkLud_!!2654502783.jpg\" alt=\"色卡2.jpg\" width=\"790\" height=\"1053.3333333333335\"></p>\n<p><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01br0Wia1WQfFztVIYf_!!2654502783.jpg\" alt=\"微信图片_20200527154152.jpg\" width=\"790\" height=\"592.5\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01otNUiu1WQfG2JSAE0_!!2654502783.jpg\" alt=\"微信图片_20200531134610.png\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01dDd0hN1WQfFyjWjUt_!!2654502783.jpg\" alt=\"微信图片_20200527153833.jpg\" width=\"790\" height=\"592.5\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01xUwbMk1WQfG1Rl5fM_!!2654502783.jpg\" alt=\"微信图片_20200527153824.jpg\" width=\"790\" height=\"1053.3333333333333\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01MIlfoU1WQfG2JTdiJ_!!2654502783.jpg\" alt=\"微信图片_20200527153800.jpg\" width=\"790\" height=\"1053.3333333333335\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01A7IY1Y1WQfG0bKUI7_!!2654502783.jpg\" alt=\"微信图片_20200527153629.png\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01PUHaKC1WQfFtQ0enY_!!2654502783.jpg\" alt=\"微信图片_20200527153625.png\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN018m72sF1WQfG0bKDf3_!!2654502783.jpg\" alt=\"微信图片_20200527153620.png\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01VHcxMe1WQfFyUkc3q_!!2654502783.jpg\" alt=\"微信图片_20200527153616.jpg\" width=\"790\" height=\"1053.3333333333335\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01v381ht1WQfG1Sqy7H_!!2654502783.jpg\" alt=\"微信图片_20200524182931.png\"><br><br></p>\n<p> 苏州北东纺织有限公司，专注于外贸订单法兰绒毛毯的设计、生产、制作、销售，法兰绒面料、珊瑚绒面料、羊羔绒面料，目前常年现货的产品有法兰绒披肩毛毯尺寸为70cmX100cm和100cmX150cm，法兰绒毛毯280g/㎡（280克重每平米）法兰绒面料制作而成，法兰绒毛毯尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，法兰绒面料和羊羔绒面料双层毛毯，两层的毛毯一面为法兰绒、一面为羊羔绒面料，克重为500g/㎡（500克重每平方米），尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，所有的产品，目前一共有十个颜色，分别为白色，粉色，浅蓝，深蓝，紫色，咖啡，酒红，卡其，浅灰，深灰，一年四季都有现货，欢迎大家批发采购，还可以定制品牌logo，礼品毛毯，根据要求定制毛毯，设计毛毯，刺绣logo，电绣logo，数码印花，礼盒定制，礼品袋定制，印刷logo品牌，国内的客户我们曾经给腾讯制作礼品毛毯，还有万达影城刺绣logo毛毯，国外的客户我们承接圆网印花法兰绒面料，法兰绒毛毯，印花毛毯，纯色素色毛毯，外贸毛毯定制设计，打样，都可以。</p>\n<p><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01nnTTep1WQfFyUmxce_!!2654502783.jpg\" alt=\"QQ图片20180724114819.jpg\" width=\"790\" height=\"523.06640625\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01A2xm2G1WQfFtQ1Wrb_!!2654502783.jpg\" alt=\"工场规模.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01Q4ev6u1WQfG1Rkp2N_!!2654502783.jpg\" alt=\"优势图片.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01plHWxv1WQfG00RMFT_!!2654502783.jpg\" alt=\"3847842853_1956455002.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01vUI3TR1WQfFxl7ELL_!!2654502783.jpg\" alt=\"团队.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01NJQCnV1WQfG00QLs3_!!2654502783.jpg\" alt=\"工厂环境.jpg\"></p>\n<p>苏州北东纺织有限公司主营PV绒、舒棉绒、法兰绒、珊瑚绒、摇粒绒、双面绒等涤纶毛毯。产品畅销国内外市场，出口英国，美国，德国，意大利，欧洲，非洲等多个国家和地区。公司位于中国优质的纺织品原料基地苏州市常熟市，风景秀丽，交通方便，本着&ldquo;客户第一，诚信至上&rdquo;的原则，与多家企业建立了长期的合作关系，承接各种国内外订单。热诚欢迎各界朋友前来参观、考察、洽谈业务。</p>\n<p>1995年，公司引进经编与纬编机器，从事经，纬编的坯布织造，后发展至直接成品面料为主。</p>\n<p>2005年，合作染色整理公司，引进染色&amp;印花及后整理设备，开始从事涤类绒类针织面料的染整及后加工，从此形成从织造，染整，后整理，销售一条龙产业链。</p>\n<p>2008年，新品研发部成立，开始每年的新品开发合作。</p>\n<p>2017年，苏州北东纺织有限公司公司成立，开始全面展开家纺领域。</p>\n<p> </p>\n<p> </p>\n<p>主营业务：</p>\n<p>1、面料----主要以经编+纬编绒类面料为主。经编如：珊瑚绒，法兰绒，PV绒，兔毛绒，舒棉绒等家纺面料为主，纬编如：羊羔绒，长毛绒，落水绒，北极绒等服装面料为主。经纬编车间产能约为：3T/天</p>\n<p> </p>\n<p>2、家纺-----主要以自营面料为主制成的毯子，靠垫，浴袍为主。缝制产能约为：1000-3000PCS/天。</p>\n<p> </p>\n<p>【材质】：100%涤纶材料定做</p>\n<p>【缝纫工艺】：包边/折边 / 锁边 /压花</p>\n<p>【染料】：环保染料，活性印染，色泽鲜明，着色牢符合标准.</p>\n<p>【功能】：床上用品家居用品  汽车用品 寝室用品 办公室用品</p>\n<p>【产品特点】：柔软舒适，色泽鲜明，花色多，着色牢，<br>【保养】：1.可放入洗衣机内清洗,建议使用冷水清洗,温度不超过30度.<br>      2.建议在阳光充足的地方晾干<br>      3.不推荐使用干洗,化学物质可能影响产品质量.<br>      4.如长时间不使用,请放置于干燥卫生的地方.</p>\n<p>【适用人群】 ：男女老少，全家使用，也适用于办公室人群,春秋天气可搭在腿上,会感到非常温暖哦.</p>\n<p>{用途 } ：1；夏天当凉被 冬天当床单，春夏秋冬，既可爱又保暖的绒毯会为你和你的孩子渡过温暖每一天</p>\n<p>       2；可盖可铺,很柔软，舒适，手感柔顺，盖起来既轻又温暖．夏天可以当作盖被，秋冬天可以当作床单，直接与肌肤接触感觉很温暖．很舒服，也可在沙发上看电视</p>\n<p>{面料特点 }：质地细腻，手感柔软,不掉毛，不起球。不掉色。对皮肤无刺激，不过敏。外形美观，颜色丰富。</p>\n</div>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\">苏州北东纺织，专注于外贸订单法兰绒毛毯的设计、生产、制作、销售，法兰绒面料、珊瑚绒面料、羊羔绒面料，目前常年现货的产品有法兰绒披肩毛毯尺寸为70cmX100cm和100cmX150cm，法兰绒毛毯280g/㎡（280克重每平米）法兰绒面料制作而成，法兰绒毛毯尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，法兰绒面料和羊羔绒面料双层毛毯，两层的毛毯一面为法兰绒、一面为羊羔绒面料，克重为500g/㎡（500克重每平方米），尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，所有的产品，目前一共有十个颜色，分别为白色，粉色，浅蓝，深蓝，紫色，咖啡，酒红，卡其，浅灰，深灰，一年四季都有现货，欢迎大家批发采购，还可以定制品牌logo，礼品毛毯，根据要求定制毛毯，设计毛毯，刺绣logo，电绣logo，数码印花，礼盒定制，礼品袋定制，印刷logo品牌，国内的客户我们曾经给腾讯制作礼品毛毯，还有万达影城刺绣logo毛毯，国外的客户我们承接圆网印花法兰绒面料，法兰绒毛毯，印花毛毯，纯色素色毛毯，外贸毛毯定制设计，打样，都可以。</p>\n<p style=\"text-align: center;\"><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN018AVOyJ1WQfFtQ30Mh_!!2654502783.jpg\" alt=\"公司历程_副本\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN015zPcaW1WQfG1RlI7j_!!2654502783.jpg\" alt=\"公司简介1\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01cRGZlv1WQfG2JTREa_!!2654502783.jpg\" alt=\"苏州北东纺织公司简介\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01t6w4v71WQfFxl9Arf_!!2654502783.jpg\" alt=\"公司板块图片\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01HFQiIC1WQfFtQ1fB5_!!2654502783.jpg\" alt=\"公司认证1\"><br class=\"img-brk\"><br class=\"img-brk\"></p>\n<p style=\"text-align: center;\"> </p>",
+      "title_original": "Cross border blankets Amazon double-layer blankets Sherpa lambskin blankets Thickened double-layer flannel blankets in stock",
+      "description_original": "<div class=\"offer-title-wrapper\" style=\"text-align: center;\">\n<div class=\"offer-title-content\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01AQb1kz1WQfG1RjodZ_!!2654502783.jpg\" alt=\"公司历程_副本\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01KykPzR1WQfG2JQHlc_!!2654502783.jpg\" alt=\"公司简介1\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN015ERZlW1WQfFyUndB9_!!2654502783.jpg\" alt=\"苏州北东纺织公司简介\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01xvNshp1WQfFyUk8vx_!!2654502783.jpg\" alt=\"公司板块图片\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01vXtdLJ1WQfG1Rifyp_!!2654502783.jpg\" alt=\"公司认证1\"><br class=\"img-brk\"><br class=\"img-brk\"></div>\n<div class=\"offer-title-content\">商品描述</div>\n</div>\n<div class=\"detail-description-content fd-editor\" style=\"text-align: center;\">\n<div class=\"content-detail\">\n<div> </div>\n<p><span><span>亚马逊，速卖通爆款毛毯</span><br></span></p>\n<p><span><span>Features:</span><span><br></span></span></p>\n<p>    100% Brand new and high quality.<br>    Micro plush microfiber for comfortable, durable warmth on cold nights.<br>    Super soft micro plush throw blanket can prevent electrostatic.<br>    Easy to clean, machine washable, do not bleach. Inhibit bacterial.</p>\n<p> </p>\n<p>    Specification:<br>    Condition:100% brand new<br>    Color: 10 optional colors</p>\n<p> </p>\n<p>    Notes:<br>    Due to the light and screen setting difference, the item&#39;s color may be slightly different from the pictures.<br>    Please allow slight dimension difference due to different manual measurement</p>\n<h3>双层毛毯加厚法兰绒羊羔绒春季毛毯被子礼品毯珊瑚绒毛毯</h3>\n<p>出口订单，简约大方，高品质法兰绒羊羔绒双层毛毯，软软暖暖，亲肤细腻。</p>\n<p>这款毛毯非常厚重，面料包装都非常美，一看就看上了~</p>\n<p> </p>\n<p>【关于面料】</p>\n<p>正面是非常细滑的法兰绒，非常高档，手感很好，</p>\n<p>出口的余单，手感柔软舒适</p>\n<p>反面是羊羔绒，正面是柔软的法兰绒面料，双层压线毛毯，连丝带颜色都是配套的，非常档次高</p>\n<p> </p>\n<p><br>【关于尺寸】</p>\n<p> 70X100cm （0.4KG，0.8斤）</p>\n<p>100X150cm （0.9公斤，1.8斤）</p>\n<p>127X152cm（1公斤，2斤）</p>\n<p> 150X200cm（1.5公斤，3.0斤）</p>\n<p> 180X200cm（1.8公斤，3.6斤）</p>\n<p>200X230cm（2.2公斤，4.4斤） </p>\n<p>支持更多尺寸定制，欢迎咨询客服&hellip;&hellip;</p>\n<p> </p>\n<p align=\"center\">包装为彩卡十字绑带，毛毯很厚实</p>\n<p align=\"center\">正面柔软的法兰绒 反面加厚羊羔绒 非常厚实</p>\n<p align=\"center\"> </p>\n<p align=\"center\"> </p>\n<p align=\"center\">国外卧室毯的标准尺寸 这种尺寸是非常实用的 </p>\n<p align=\"center\">可以做床上的被子，床单等等</p>\n<p align=\"center\"> </p>\n<p align=\"center\"> </p>\n<p>PS：面料小贴士，关于羊羔绒：</p>\n<p>亲们，羊羔绒不是羊羔身上的绒，它的主要材质是优质聚酯纤维，</p>\n<p>因为形似绵羊身上的毛而得名，既有纤维材料的轻柔，</p>\n<p>又有羊毛一样的保暖特性哦~</p>\n<p>双层毛毯，一层法兰绒280克重，一层羊羔绒200克重，70cmX100cm重量0.4kg，127cmX152cm重量1kg，150cmX200cm重量1.5kg，200X230cm重量2.2kg，</p>\n<p>双层真空压缩后单条尺寸，127乘152：26x20x8，150乘200:27x27x8，200乘230：35x35x8厘米</p>\n<p><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01TpKbab1WQfG2pq9ed_!!2654502783.jpg\" alt=\"71THWcYwDML._SL1500__副本热热热\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01dQEWx31WQfG1Rkkrc_!!2654502783.jpg\" alt=\"微信图片_20210116143852\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01lT9I8K1WQfG15VoS9_!!2654502783.jpg\" alt=\"未命名_副本6665\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01I5KSBM1WQfFtQ0zap_!!2654502783.jpg\" alt=\"微信图片_20201221122956\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01ta45yB1WQfG1Rhnty_!!2654502783.jpg\" alt=\"未命名_副本深蓝色双层\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01FNessO1WQfG1SoLui_!!2654502783.jpg\" alt=\"17718447087_2002221794\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01FILY0b1WQfG0VShVh_!!2654502783.jpg\" alt=\"17775910828_2002221794\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN016zRY8Y1WQfFtQ2fZx_!!2654502783.jpg\" alt=\"蓝色3.jpg\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01rw2yEy1WQfG1SqhTA_!!2654502783.jpg\" alt=\"风格的如果.jpg\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01vqj4WK1WQfG0bL9pk_!!2654502783.jpg\" alt=\"银灰色233.jpg\"><br class=\"img-brk\"><br class=\"img-brk\"></p>\n</div>\n</div>\n<p style=\"text-align: center;\"><span>常年现货供应</span><br><span>素色法兰绒+羊羔绒</span><br><span>280克每平方法兰绒+200克每平方羊羔绒</span><br><span>尺寸：130*160CM</span><br><span>单条重量：980克每条</span><br><span>包装高档PVC拉链袋</span><br><span>包装尺寸：31*12*23CM</span><br><br></p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\"><span>高档收纳真空袋+彩卡（单价另外加1元）<br>包装尺寸：33*25*6CM</span></p>\n<p style=\"text-align: center;\"><span>图片在详情页最后一张</span></p>\n<p style=\"text-align: center;\"><br><span>总共有40个颜色可以选择</span></p>\n<p style=\"text-align: center;\"><span>现货颜色有9种，一条起</span></p>\n<p style=\"text-align: center;\"><span>非现货颜色一匹布起（大概50-70条）</span><br><span>下面色卡选颜色</span><br><span>（请联系客服选色）</span></p>\n<p style=\"text-align: center;\"><span><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01InZrOf1WQfG0bKQ7U_!!2654502783.jpg\" alt=\"20201008_132656_047.jpg\"><br></span></p>\n<h3 style=\"text-align: center;\">双层毛毯加厚法兰绒羊羔绒春季毛毯被子礼品毯珊瑚绒毛毯</h3>\n<p style=\"text-align: center;\">出口订单，简约大方，高品质法兰绒羊羔绒双层毛毯，软软暖暖，亲肤细腻。</p>\n<p style=\"text-align: center;\">这款毛毯非常厚重，面料包装都非常美，一看就看上了~</p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\">【关于面料】</p>\n<p style=\"text-align: center;\">正面是非常细滑的法兰绒，非常高档，手感很好，</p>\n<p style=\"text-align: center;\">出口的余单，手感柔软舒适</p>\n<p style=\"text-align: center;\">反面是羊羔绒，正面是柔软的法兰绒面料，双层压线毛毯，连丝带颜色都是配套的，非常档次高</p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\"><br>【关于尺寸】</p>\n<p style=\"text-align: center;\"> 70X100cm （0.4KG，0.8斤）</p>\n<p style=\"text-align: center;\">100X150cm （0.9公斤，1.8斤）</p>\n<p style=\"text-align: center;\">127X152cm（1公斤，2斤）</p>\n<p style=\"text-align: center;\"> 150X200cm（1.5公斤，3.0斤）</p>\n<p style=\"text-align: center;\"> 180X200cm（1.8公斤，3.6斤）</p>\n<p style=\"text-align: center;\">200X230cm（2.3公斤，4.6斤） </p>\n<p style=\"text-align: center;\">支持更多尺寸定制，欢迎咨询客服&hellip;&hellip;</p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\" align=\"center\">包装为彩卡十字绑带，毛毯很厚实</p>\n<p style=\"text-align: center;\" align=\"center\">正面柔软的法兰绒 反面加厚羊羔绒 非常厚实</p>\n<p style=\"text-align: center;\" align=\"center\"> </p>\n<p style=\"text-align: center;\" align=\"center\">国外卧室毯的标准尺寸 这种尺寸是非常实用的 </p>\n<p style=\"text-align: center;\" align=\"center\">可以做床上的被子，床单等等</p>\n<p style=\"text-align: center;\" align=\"center\"> </p>\n<p style=\"text-align: center;\" align=\"center\"> </p>\n<p style=\"text-align: center;\">PS：面料小贴士，关于羊羔绒：</p>\n<p style=\"text-align: center;\">亲们，羊羔绒不是羊羔身上的绒，它的主要材质是优质聚酯纤维，</p>\n<p style=\"text-align: center;\">因为形似绵羊身上的毛而得名，既有纤维材料的轻柔，</p>\n<p style=\"text-align: center;\">又有羊毛一样的保暖特性哦~</p>\n<p style=\"text-align: center;\"><span><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01W7TGqr1WQfG0PynrX_!!2654502783.jpg\" alt=\"20201008_132656_048.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01b8xs5f1WQfG2BLzgF_!!2654502783.jpg\" alt=\"20201008_132656_049.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN019iZp6g1WQfG2BL7e2_!!2654502783.jpg\" alt=\"20201008_132656_050.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01cUJYzi1WQfFxl9F0i_!!2654502783.jpg\" alt=\"20201008_132656_051.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Cursb81WQfG2BMvtU_!!2654502783.jpg\" alt=\"20201008_132656_052.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01mUSA0P1WQfFtQ2T6A_!!2654502783.jpg\" alt=\"20201008_132656_053.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01F3pzNl1WQfG0VSIXc_!!2654502783.jpg\" alt=\"20201008_132656_059.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01xZUFda1WQfFztUQZC_!!2654502783.jpg\" alt=\"20201008_132656_060.jpg\"><br><br><img src=\"https://cbu01.alicdn.com/img/ibank/2020/692/449/21680944296_2002221794.jpg\" alt=\"20201008_132656_061.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01vbJea11WQfFyjWb9L_!!2654502783.jpg\" alt=\"20201008_132656_062.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01v8RYj41WQfFxl7Uxa_!!2654502783.jpg\" alt=\"20201008_132656_063.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01uWEl5v1WQfG2JThr8_!!2654502783.jpg\" alt=\"20201008_132656_064.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01QrtISV1WQfG2JSdJD_!!2654502783.jpg\" alt=\"20201008_132656_065.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN019cewwm1WQfG1RkHlf_!!2654502783.jpg\" alt=\"20201008_132656_066.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01VwIpIb1WQfFtQ3Xd3_!!2654502783.jpg\" alt=\"20201008_132656_067.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01p4phkp1WQfG0bKkuT_!!2654502783.jpg\" alt=\"20201008_132656_068.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01XZmGJc1WQfFyjYH7j_!!2654502783.jpg\" alt=\"20201008_132656_069.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01TaLdhL1WQfG3LXmof_!!2654502783.jpg\" alt=\"20201008_132656_070.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01NcliLY1WQfFztUpTs_!!2654502783.jpg\" alt=\"20201008_132656_071.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN016JthZj1WQfG0bKkuS_!!2654502783.jpg\" alt=\"20201008_132656_072.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01GqaEyg1WQfFtQ0ixj_!!2654502783.jpg\" alt=\"20201008_132656_073.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01SCUies1WQfG3LVZfK_!!2654502783.jpg\" alt=\"20201008_132656_074.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01j2MBRr1WQfG0Q1LpH_!!2654502783.jpg\" alt=\"20201008_132656_075.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01kdqqQz1WQfG0bJsrS_!!2654502783.jpg\" alt=\"20201008_132656_076.jpg\"><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01LpCWii1WQfFyjWjUX_!!2654502783.jpg\" alt=\"350xq_2\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01BNAJWl1WQfFztV1vk_!!2654502783.jpg\" alt=\"350xq_3\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01vbXum91WQfG3LXmoq_!!2654502783.jpg\" alt=\"350xq_4\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01zjAirX1WQfG0bKkub_!!2654502783.jpg\" alt=\"350xq_5\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01YUtAoE1WQfG0bJDHF_!!2654502783.jpg\" alt=\"350xq_6\"><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN019rlWdd1WQfFtQ3PIr_!!2654502783.jpg\" alt=\"350xq_7\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN016PLpvl1WQfFxl92Xx_!!2654502783.jpg\" alt=\"350xq_8\"><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01ViLFfw1WQfG0VTdib_!!2654502783.jpg\" alt=\"350xq_9\"><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01GfFtRy1WQfFxl7hQV_!!2654502783.jpg\" alt=\"350xq_10\"><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01jzaPHG1WQfG2JQp2C_!!2654502783.jpg\" alt=\"350xq_11\"><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN015bV7Gg1WQfG0bL5g1_!!2654502783.jpg\" alt=\"350xq_12\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01LDZ0S21WQfG2JTVND_!!2654502783.jpg\" alt=\"350xq_13\"><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01FleU741WQfG00PocG_!!2654502783.jpg\" alt=\"350xq_14\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01RAy6Ia1WQfG3LXeUl_!!2654502783.jpg\" alt=\"350xq_15\"><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01Phn2dS1WQfFyjY8ng_!!2654502783.jpg\" alt=\"350xq_16\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01tfx2GP1WQfG0Q0gGh_!!2654502783.jpg\" alt=\"350xq_17\"><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Axl4fE1WQfG2poTiN_!!2654502783.jpg\" alt=\"350xq_18\"><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01X2yMXt1WQfFtQ248r_!!2654502783.jpg\" alt=\"350xq_19\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN016GiekL1WQfFztU5lM_!!2654502783.jpg\" alt=\"350xq_20\"><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01pHmOBj1WQfFyUntqL_!!2654502783.jpg\" alt=\"350xq_21\"><br><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01a1qaBG1WQfFxl6xhg_!!2654502783.jpg\" alt=\"20201008_132656_077.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01f4CdIR1WQfG1Sr2Hp_!!2654502783.jpg\" alt=\"20201008_132656_078.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01qmY2IZ1WQfG3LW6us_!!2654502783.jpg\" alt=\"20201008_132656_079.jpg\"><br></span></p>\n<p style=\"text-align: center;\"><span><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN011Pnu541WQfG15XDlY_!!2654502783.jpg\" alt=\"公司历程_副本\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01tuZmmq1WQfG2BMOdk_!!2654502783.jpg\" alt=\"公司简介1\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01GzBleg1WQfFztTHsG_!!2654502783.jpg\" alt=\"苏州北东纺织公司简介\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01evVUOx1WQfG0VSQsL_!!2654502783.jpg\" alt=\"公司板块图片\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01q0P5sX1WQfG3LVZfi_!!2654502783.jpg\" alt=\"公司认证1\"><br class=\"img-brk\"><br class=\"img-brk\"></span></p>\n<p style=\"text-align: center;\">苏州北东纺织，专注于外贸订单法兰绒毛毯的设计、生产、制作、销售，法兰绒面料、珊瑚绒面料、羊羔绒面料，目前常年现货的产品有法兰绒披肩毛毯尺寸为70cmX100cm和100cmX150cm，法兰绒毛毯280g/㎡（280克重每平米）法兰绒面料制作而成，法兰绒毛毯尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，法兰绒面料和羊羔绒面料双层毛毯，两层的毛毯一面为法兰绒、一面为羊羔绒面料，克重为500g/㎡（500克重每平方米），尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，所有的产品，目前一共有十个颜色，分别为白色，粉色，浅蓝，深蓝，紫色，咖啡，酒红，卡其，浅灰，深灰，一年四季都有现货，欢迎大家批发采购，还可以定制品牌logo，礼品毛毯，根据要求定制毛毯，设计毛毯，刺绣logo，电绣logo，数码印花，礼盒定制，礼品袋定制，印刷logo品牌，国内的客户我们曾经给腾讯制作礼品毛毯，还有万达影城刺绣logo毛毯，国外的客户我们承接圆网印花法兰绒面料，法兰绒毛毯，印花毛毯，纯色素色毛毯，外贸毛毯定制设计，打样，都可以。</p>\n<p style=\"text-align: center;\"> </p>\n<div style=\"text-align: center;\">\n<p> </p>\n<p><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01MuRxJl1WQfFztW6Tv_!!2654502783.jpg\" alt=\"TB2iMVQlgn.PuJjSZFkXXc_lpXa_!!\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01ojwNmV1WQfG2BKr0c_!!2654502783.jpg\" alt=\"TB2KUQGfI2vU1JjSZFwXXX2cpXa_!!\"></p>\n<p>南京慕莎德国际贸易有限公司，有自己的工厂，可以承接外贸订单，也可以承接生产订单，我们专注于法兰绒面料，羊羔绒面料，pv绒面料，超柔，仿超柔等聚酯纤维百分百涤纶100%涤纶的面料，我们专业承接外贸订单，还有内销品牌贴牌生产，如果您有法兰绒，羊羔绒产品，可以联系我们报价询价哈~感恩！</p>\n<p>以下色卡是我们公司常年四季有货的法兰绒面料色卡图，如果您需要采购面料，或者定制毛毯，外贸订单制作，都可以联系我们哈，感恩有您~</p>\n<p><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01NSNpWz1WQfFyjY8nn_!!2654502783.jpg\" alt=\"色卡.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01EDfuPC1WQfG1RkLud_!!2654502783.jpg\" alt=\"色卡2.jpg\" width=\"790\" height=\"1053.3333333333335\"></p>\n<p><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01br0Wia1WQfFztVIYf_!!2654502783.jpg\" alt=\"微信图片_20200527154152.jpg\" width=\"790\" height=\"592.5\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01otNUiu1WQfG2JSAE0_!!2654502783.jpg\" alt=\"微信图片_20200531134610.png\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01dDd0hN1WQfFyjWjUt_!!2654502783.jpg\" alt=\"微信图片_20200527153833.jpg\" width=\"790\" height=\"592.5\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01xUwbMk1WQfG1Rl5fM_!!2654502783.jpg\" alt=\"微信图片_20200527153824.jpg\" width=\"790\" height=\"1053.3333333333333\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01MIlfoU1WQfG2JTdiJ_!!2654502783.jpg\" alt=\"微信图片_20200527153800.jpg\" width=\"790\" height=\"1053.3333333333335\"><br><br><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN01A7IY1Y1WQfG0bKUI7_!!2654502783.jpg\" alt=\"微信图片_20200527153629.png\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01PUHaKC1WQfFtQ0enY_!!2654502783.jpg\" alt=\"微信图片_20200527153625.png\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN018m72sF1WQfG0bKDf3_!!2654502783.jpg\" alt=\"微信图片_20200527153620.png\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01VHcxMe1WQfFyUkc3q_!!2654502783.jpg\" alt=\"微信图片_20200527153616.jpg\" width=\"790\" height=\"1053.3333333333335\"><br><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01v381ht1WQfG1Sqy7H_!!2654502783.jpg\" alt=\"微信图片_20200524182931.png\"><br><br></p>\n<p> 苏州北东纺织有限公司，专注于外贸订单法兰绒毛毯的设计、生产、制作、销售，法兰绒面料、珊瑚绒面料、羊羔绒面料，目前常年现货的产品有法兰绒披肩毛毯尺寸为70cmX100cm和100cmX150cm，法兰绒毛毯280g/㎡（280克重每平米）法兰绒面料制作而成，法兰绒毛毯尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，法兰绒面料和羊羔绒面料双层毛毯，两层的毛毯一面为法兰绒、一面为羊羔绒面料，克重为500g/㎡（500克重每平方米），尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，所有的产品，目前一共有十个颜色，分别为白色，粉色，浅蓝，深蓝，紫色，咖啡，酒红，卡其，浅灰，深灰，一年四季都有现货，欢迎大家批发采购，还可以定制品牌logo，礼品毛毯，根据要求定制毛毯，设计毛毯，刺绣logo，电绣logo，数码印花，礼盒定制，礼品袋定制，印刷logo品牌，国内的客户我们曾经给腾讯制作礼品毛毯，还有万达影城刺绣logo毛毯，国外的客户我们承接圆网印花法兰绒面料，法兰绒毛毯，印花毛毯，纯色素色毛毯，外贸毛毯定制设计，打样，都可以。</p>\n<p><br><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01nnTTep1WQfFyUmxce_!!2654502783.jpg\" alt=\"QQ图片20180724114819.jpg\" width=\"790\" height=\"523.06640625\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01A2xm2G1WQfFtQ1Wrb_!!2654502783.jpg\" alt=\"工场规模.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01Q4ev6u1WQfG1Rkp2N_!!2654502783.jpg\" alt=\"优势图片.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN01plHWxv1WQfG00RMFT_!!2654502783.jpg\" alt=\"3847842853_1956455002.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01vUI3TR1WQfFxl7ELL_!!2654502783.jpg\" alt=\"团队.jpg\"><br><br><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01NJQCnV1WQfG00QLs3_!!2654502783.jpg\" alt=\"工厂环境.jpg\"></p>\n<p>苏州北东纺织有限公司主营PV绒、舒棉绒、法兰绒、珊瑚绒、摇粒绒、双面绒等涤纶毛毯。产品畅销国内外市场，出口英国，美国，德国，意大利，欧洲，非洲等多个国家和地区。公司位于中国优质的纺织品原料基地苏州市常熟市，风景秀丽，交通方便，本着&ldquo;客户第一，诚信至上&rdquo;的原则，与多家企业建立了长期的合作关系，承接各种国内外订单。热诚欢迎各界朋友前来参观、考察、洽谈业务。</p>\n<p>1995年，公司引进经编与纬编机器，从事经，纬编的坯布织造，后发展至直接成品面料为主。</p>\n<p>2005年，合作染色整理公司，引进染色&amp;印花及后整理设备，开始从事涤类绒类针织面料的染整及后加工，从此形成从织造，染整，后整理，销售一条龙产业链。</p>\n<p>2008年，新品研发部成立，开始每年的新品开发合作。</p>\n<p>2017年，苏州北东纺织有限公司公司成立，开始全面展开家纺领域。</p>\n<p> </p>\n<p> </p>\n<p>主营业务：</p>\n<p>1、面料----主要以经编+纬编绒类面料为主。经编如：珊瑚绒，法兰绒，PV绒，兔毛绒，舒棉绒等家纺面料为主，纬编如：羊羔绒，长毛绒，落水绒，北极绒等服装面料为主。经纬编车间产能约为：3T/天</p>\n<p> </p>\n<p>2、家纺-----主要以自营面料为主制成的毯子，靠垫，浴袍为主。缝制产能约为：1000-3000PCS/天。</p>\n<p> </p>\n<p>【材质】：100%涤纶材料定做</p>\n<p>【缝纫工艺】：包边/折边 / 锁边 /压花</p>\n<p>【染料】：环保染料，活性印染，色泽鲜明，着色牢符合标准.</p>\n<p>【功能】：床上用品家居用品  汽车用品 寝室用品 办公室用品</p>\n<p>【产品特点】：柔软舒适，色泽鲜明，花色多，着色牢，<br>【保养】：1.可放入洗衣机内清洗,建议使用冷水清洗,温度不超过30度.<br>      2.建议在阳光充足的地方晾干<br>      3.不推荐使用干洗,化学物质可能影响产品质量.<br>      4.如长时间不使用,请放置于干燥卫生的地方.</p>\n<p>【适用人群】 ：男女老少，全家使用，也适用于办公室人群,春秋天气可搭在腿上,会感到非常温暖哦.</p>\n<p>{用途 } ：1；夏天当凉被 冬天当床单，春夏秋冬，既可爱又保暖的绒毯会为你和你的孩子渡过温暖每一天</p>\n<p>       2；可盖可铺,很柔软，舒适，手感柔顺，盖起来既轻又温暖．夏天可以当作盖被，秋冬天可以当作床单，直接与肌肤接触感觉很温暖．很舒服，也可在沙发上看电视</p>\n<p>{面料特点 }：质地细腻，手感柔软,不掉毛，不起球。不掉色。对皮肤无刺激，不过敏。外形美观，颜色丰富。</p>\n</div>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\"> </p>\n<p style=\"text-align: center;\">苏州北东纺织，专注于外贸订单法兰绒毛毯的设计、生产、制作、销售，法兰绒面料、珊瑚绒面料、羊羔绒面料，目前常年现货的产品有法兰绒披肩毛毯尺寸为70cmX100cm和100cmX150cm，法兰绒毛毯280g/㎡（280克重每平米）法兰绒面料制作而成，法兰绒毛毯尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，法兰绒面料和羊羔绒面料双层毛毯，两层的毛毯一面为法兰绒、一面为羊羔绒面料，克重为500g/㎡（500克重每平方米），尺寸有70cmX100cm，100cmX150cm，127cmX178cm，150cmX200cm，180cmX200cm，200cmX230cm，六个尺寸，所有的产品，目前一共有十个颜色，分别为白色，粉色，浅蓝，深蓝，紫色，咖啡，酒红，卡其，浅灰，深灰，一年四季都有现货，欢迎大家批发采购，还可以定制品牌logo，礼品毛毯，根据要求定制毛毯，设计毛毯，刺绣logo，电绣logo，数码印花，礼盒定制，礼品袋定制，印刷logo品牌，国内的客户我们曾经给腾讯制作礼品毛毯，还有万达影城刺绣logo毛毯，国外的客户我们承接圆网印花法兰绒面料，法兰绒毛毯，印花毛毯，纯色素色毛毯，外贸毛毯定制设计，打样，都可以。</p>\n<p style=\"text-align: center;\"><img src=\"https://img.alicdn.com/imgextra/i3/2654502783/O1CN018AVOyJ1WQfFtQ30Mh_!!2654502783.jpg\" alt=\"公司历程_副本\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i2/2654502783/O1CN015zPcaW1WQfG1RlI7j_!!2654502783.jpg\" alt=\"公司简介1\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i4/2654502783/O1CN01cRGZlv1WQfG2JTREa_!!2654502783.jpg\" alt=\"苏州北东纺织公司简介\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01t6w4v71WQfFxl9Arf_!!2654502783.jpg\" alt=\"公司板块图片\"><br class=\"img-brk\"><br class=\"img-brk\"><img src=\"https://img.alicdn.com/imgextra/i1/2654502783/O1CN01HFQiIC1WQfFtQ1fB5_!!2654502783.jpg\" alt=\"公司认证1\"><br class=\"img-brk\"><br class=\"img-brk\"></p>\n<p style=\"text-align: center;\"> </p>",
+      "brand_original": "其他家",
+      "productId": "849728711064",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T10:00:51.634Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i4/2654502783/O1CN01Db3CRb1WQfG00R5bi_!!2654502783.jpg",
+        "https://img.alicdn.com/imgextra/i1/2654502783/O1CN01NO9vx01WQfG0Pz4Tc_!!2654502783.jpg",
+        "https://img.alicdn.com/imgextra/i4/2654502783/O1CN01TLcbAc1WQfG1Ri4YS_!!2654502783.jpg",
+        "https://img.alicdn.com/imgextra/i3/2654502783/O1CN01M3rEwr1WQfFyjY0Um_!!2654502783.jpg"
+      ]
+    },
+    "617823780084": {
+      "title": "Chumang blanket, office nap blanket, thin blanket, noon break, coral milk velvet, all season universal air conditioning cover blanket",
+      "desc_short": "",
+      "brand": "Early light",
+      "pic_url": "//img.alicdn.com/imgextra/i1/2207888834413/O1CN012AuKUr1iTCx7zAwpp_!!2207888834413.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2207888834413/O1CN012AuKUr1iTCx7zAwpp_!!2207888834413.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2207888834413/O1CN01P1aZvm1iTCR88j36j_!!2207888834413.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2207888834413/O1CN01ThO0WH1iTCjbwIrqw_!!2207888834413.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2207888834413/O1CN01sBNOw81iTCjh9lkqz_!!2207888834413.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2207888834413/O1CN01Jsq8mK1iTCRCVHTVg_!!2207888834413.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:28332",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN01Rj9gPX1iTCWFHZPyk_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:34903234",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01yQ9i7i1iTCWLDTYxF_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:6174193",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN01gH7am81iTCk1ziNYT_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:21957125",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN01sOGRZJ1iTCWNYOnCY_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:1353654451",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN01sYyu8A1iTCWJjw9JO_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:31316246",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN015KJIPi1iTCt82MmTd_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:728338624",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01AkAHb71iTCszO4SNz_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:1758836279",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01xpYWl91iTCuApE3Cd_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:597358391",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN01kqsci31iTCtKz1vxR_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:34101448",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN010rB2rd1iTCWFHdNeS_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:28866",
+            "url": "http://img.alicdn.com/imgextra/i4/2207888834413/O1CN013YPMS81iTCWJjusAH_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:46098655",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN01nZ9lXT1iTCWFHYwsk_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:3232478",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01MC61Ud1iTCWJjrv5z_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:5686282",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01B3S24X1iTCW5NLp4P_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:385630235",
+            "url": "http://img.alicdn.com/imgextra/i1/2207888834413/O1CN018ZfRgm1iTCfXJP74V_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:4266701",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01JGD9Yz1iTCWC1znva_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:13357871589",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01ruzw5x1iTCXOvjQJM_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:11483029527",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01AWjzZt1iTCYUMUsiy_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:424536616",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01pasWXi1iTCXb5mwS3_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:615260859",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01JpHXNQ1iTCWLDZ03O_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:13357871590",
+            "url": "http://img.alicdn.com/imgextra/i2/2207888834413/O1CN01jLWpI21iTCWHXhQJC_!!2207888834413.jpg"
+          },
+          {
+            "properties": "1627207:13357871591",
+            "url": "http://img.alicdn.com/imgextra/i3/2207888834413/O1CN01tPEf4Y1iTCXPetfX7_!!2207888834413.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "style",
+          "value": "Simple and modern",
+          "name_original": "style",
+          "value_original": "Simple and modern"
+        },
+        {
+          "name": "Carpet material",
+          "value": "Flannel",
+          "name_original": "Carpet material",
+          "value_original": "Flannel"
+        },
+        {
+          "name": "Applicable scenario",
+          "value": "Office, living room, classroom, bedroom",
+          "name_original": "Applicable scenario",
+          "value_original": "Office, living room, classroom, bedroom"
+        },
+        {
+          "name": "Material composition",
+          "value": "Polyester 100%",
+          "name_original": "Material composition",
+          "value_original": "Polyester 100%"
+        },
+        {
+          "name": "Usage scenarios",
+          "value": "Administrative Area",
+          "name_original": "Usage scenarios",
+          "value_original": "Administrative Area"
+        },
+        {
+          "name": "shrinkage",
+          "value": "2%-3%",
+          "name_original": "shrinkage",
+          "value_original": "2%-3%"
+        },
+        {
+          "name": "Applicable season",
+          "value": "autumn",
+          "name_original": "Applicable season",
+          "value_original": "autumn"
+        },
+        {
+          "name": "safety category",
+          "value": "Class A",
+          "name_original": "safety category",
+          "value_original": "Class A"
+        },
+        {
+          "name": "thickness",
+          "value": "1cm",
+          "name_original": "thickness",
+          "value_original": "1cm"
+        },
+        {
+          "name": "Blanket type",
+          "value": "Milk plush blanket",
+          "name_original": "Blanket type",
+          "value_original": "Milk plush blanket"
+        },
+        {
+          "name": "Edge modeling",
+          "value": "right angle",
+          "name_original": "Edge modeling",
+          "value_original": "right angle"
+        },
+        {
+          "name": "breathability",
+          "value": "high breathability",
+          "name_original": "breathability",
+          "value_original": "high breathability"
+        },
+        {
+          "name": "Colour fastness",
+          "value": "4",
+          "name_original": "Colour fastness",
+          "value_original": "4"
+        },
+        {
+          "name": "knitting process",
+          "value": "knitting",
+          "name_original": "knitting process",
+          "value_original": "knitting"
+        },
+        {
+          "name": "Color classification",
+          "value": "Dark gray, light gray, gray star, apple pink, gray green, Nordic owl, sausage dog, light gray, red panda, excavator shovel, ice shovel, American style sedimentation, blue, purple, cloud flower, navy blue, taro purple, light khaki, dark night green, beige, double-layer thick sedimentation, blue, double-layer thick taro purple, double-layer thick, light gray, double-layer thick, navy blue, double-layer thick, Nordic owl, double-layer thick, gray star",
+          "name_original": "Color classification",
+          "value_original": "Dark gray, light gray, gray star, apple pink, gray green, Nordic owl, sausage dog, light gray, red panda, excavator shovel, ice shovel, American style sedimentation, blue, purple, cloud flower, navy blue, taro purple, light khaki, dark night green, beige, double-layer thick sedimentation, blue, double-layer thick taro purple, double-layer thick, light gray, double-layer thick, navy blue, double-layer thick, Nordic owl, double-layer thick, gray star"
+        },
+        {
+          "name": "brand",
+          "value": "Initial awn",
+          "name_original": "brand",
+          "value_original": "Initial awn"
+        },
+        {
+          "name": "province",
+          "value": "Jiangsu Province",
+          "name_original": "province",
+          "value_original": "Jiangsu Province"
+        },
+        {
+          "name": "Prefecture and city",
+          "value": "Suzhou",
+          "name_original": "Prefecture and city",
+          "value_original": "Suzhou"
+        },
+        {
+          "name": "Article number",
+          "value": "cmmt00007",
+          "name_original": "Article number",
+          "value_original": "cmmt00007"
+        },
+        {
+          "name": "Machine washable",
+          "value": "Support cold water machine wash support machine wash",
+          "name_original": "Machine washable",
+          "value_original": "Support cold water machine wash support machine wash"
+        },
+        {
+          "name": "function",
+          "value": "keep warm",
+          "name_original": "function",
+          "value_original": "keep warm"
+        },
+        {
+          "name": "country of origin",
+          "value": "Chinese Mainland",
+          "name_original": "country of origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "thermal insulation performance",
+          "value": "high",
+          "name_original": "thermal insulation performance",
+          "value_original": "high"
+        },
+        {
+          "name": "Warmth level",
+          "value": "Four Seasons General",
+          "name_original": "Warmth level",
+          "value_original": "Four Seasons General"
+        },
+        {
+          "name": "Product grade",
+          "value": "Superior products",
+          "name_original": "Product grade",
+          "value_original": "Superior products"
+        },
+        {
+          "name": "size",
+          "value": "80cmx100cm (single lid knee) comes with a double-layer thickened storage bag, 80cmx100cm (single lid knee) comes with a 100cmx120cm (small nap or covered leg) comes with a double-layer thickened storage bag, 100cmx120cm (small nap or covered leg) comes with a 100cmx160cm (medium nap) comes with a double-layer thickened storage bag, 100cmx160cm (medium nap) comes with a 127cmx178cm (large nap) comes with a double-layer thickened storage bag, 127cmx178cm (large nap) comes with a 150cmX200cm (single bed) comes with a double-layer thickened storage bag, 150cmX200cm (single bed) comes with a 180cmX200cm (double bed) comes with a storage bag. Double layer thickened bag 180cm 200cmx250cm (double size) with storage bag double layer thickened 200cmx250cm (Double Extra Large) Comes with Storage Bag",
+          "name_original": "size",
+          "value_original": "80cmx100cm (single lid knee) comes with a double-layer thickened storage bag, 80cmx100cm (single lid knee) comes with a 100cmx120cm (small nap or covered leg) comes with a double-layer thickened storage bag, 100cmx120cm (small nap or covered leg) comes with a 100cmx160cm (medium nap) comes with a double-layer thickened storage bag, 100cmx160cm (medium nap) comes with a 127cmx178cm (large nap) comes with a double-layer thickened storage bag, 127cmx178cm (large nap) comes with a 150cmX200cm (single bed) comes with a double-layer thickened storage bag, 150cmX200cm (single bed) comes with a 180cmX200cm (double bed) comes with a storage bag. Double layer thickened bag 180cmX200cm (double bed) with storage bag 200cmx230cm (double size) with storage bag double layer thickened 200cmx230cm (double size) with storage bag 200cmx250cm (double size) with storage bag double layer thickened 200cmx250cm (double size) with storage bag double layer thickened 200cmx250cm（ Double Extra Large) Comes with Storage Bag"
+        },
+        {
+          "name": "pattern",
+          "value": "Solid color",
+          "name_original": "pattern",
+          "value_original": "Solid color"
+        },
+        {
+          "name": "intended for",
+          "value": "Universal adult children for infants and young children",
+          "name_original": "intended for",
+          "value_original": "Universal adult children for infants and young children"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Chumang flagship store",
+        "location": "Suzhou, Jiangsu",
+        "rating": null,
+        "name_original": "初芒旗舰店",
+        "location_original": "江苏苏州"
+      },
+      "sales_volume": 1000,
+      "description": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01bDi2aI1iTCR88j39D_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01HzEAuZ1iTCRArfRQz_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN016qwSoF1iTCR5Q5rAw_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01icqSKG1iTCRCVGCYo_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01ujrTqb1iTCR5Q5vKg_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01KuVd9f1iTCRA3d5Zk_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01vpDCF91iTCQzlO258_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01nrHxra1iTCR7JEvtu_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01C37iz91iTCRBVDvpj_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01eTThLf1iTCRCD7tbD_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01hPbopu1iTCRA3bkQm_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01CIcJBL1iTCRCVHweO_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01M5l3rm1iTCR9mfDwK_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01rWd8C01iTCXua2ynx_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01dsUeEI1iTCXyW4kAo~crop,0,0,800,1600~_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01dsUeEI1iTCXyW4kAo~crop,0,1600,800,326~_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN016c10Ef1iTCwyskWDg_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01QamTDb1iTCR5Q6f73_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01AkAHb71iTCszO4SNz_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01b9m7bl1iTCwzCCGrg_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01GmyTzp1iTCwz4UiS0_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01NBHaZA1iTCR7JFCY6_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01qW7dGj1iTCR9DBEFH_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01sOGRZJ1iTCWNYOnCY_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01FioE0v1iTCwzCAviL_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01JFmQ381iTCjOX3ohq_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01JGD9Yz1iTCWC1znva_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01B3S24X1iTCW5NLp4P_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01EBZ19h1iTCR7gv6F3_!!2207888834413.jpg\"><img usemap=\"#customizeHyperlinks-57\" style=\"display: block;margin-top: -399.0px;width: 750.0px;height: 399.0px;\" src=\"//gtms01.alicdn.com/tps/i1/TB1AHXiGXXXXXXAXVXX.uTD.FXX-10-10.png\"><map name=\"customizeHyperlinks-57\"><area shape=\"rect\" coords=\"387,2,750,396\" href=\"https://h5.m.taobao.com/awp/core/detail.htm?id=618140495324\"><area shape=\"rect\" coords=\"0,2,384,397\" href=\"https://h5.m.taobao.com/awp/core/detail.htm?id=617955618095\"></map></div></div>",
+      "title_original": "Chumang blanket, office nap blanket, thin blanket, noon break, coral milk velvet, all season universal air conditioning cover blanket",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01bDi2aI1iTCR88j39D_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01HzEAuZ1iTCRArfRQz_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN016qwSoF1iTCR5Q5rAw_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01icqSKG1iTCRCVGCYo_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01ujrTqb1iTCR5Q5vKg_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01KuVd9f1iTCRA3d5Zk_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01vpDCF91iTCQzlO258_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01nrHxra1iTCR7JEvtu_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01C37iz91iTCRBVDvpj_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01eTThLf1iTCRCD7tbD_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01hPbopu1iTCRA3bkQm_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01CIcJBL1iTCRCVHweO_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01M5l3rm1iTCR9mfDwK_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01rWd8C01iTCXua2ynx_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01dsUeEI1iTCXyW4kAo~crop,0,0,800,1600~_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01dsUeEI1iTCXyW4kAo~crop,0,1600,800,326~_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN016c10Ef1iTCwyskWDg_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01QamTDb1iTCR5Q6f73_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01AkAHb71iTCszO4SNz_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2207888834413/O1CN01b9m7bl1iTCwzCCGrg_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01GmyTzp1iTCwz4UiS0_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2207888834413/O1CN01NBHaZA1iTCR7JFCY6_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01qW7dGj1iTCR9DBEFH_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01sOGRZJ1iTCWNYOnCY_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2207888834413/O1CN01FioE0v1iTCwzCAviL_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01JFmQ381iTCjOX3ohq_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01JGD9Yz1iTCWC1znva_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01B3S24X1iTCW5NLp4P_!!2207888834413.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01EBZ19h1iTCR7gv6F3_!!2207888834413.jpg\"><img usemap=\"#customizeHyperlinks-57\" style=\"display: block;margin-top: -399.0px;width: 750.0px;height: 399.0px;\" src=\"//gtms01.alicdn.com/tps/i1/TB1AHXiGXXXXXXAXVXX.uTD.FXX-10-10.png\"><map name=\"customizeHyperlinks-57\"><area shape=\"rect\" coords=\"387,2,750,396\" href=\"https://h5.m.taobao.com/awp/core/detail.htm?id=618140495324\"><area shape=\"rect\" coords=\"0,2,384,397\" href=\"https://h5.m.taobao.com/awp/core/detail.htm?id=617955618095\"></map></div></div>",
+      "brand_original": "初芒",
+      "productId": "617823780084",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T10:01:01.512Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i1/2207888834413/O1CN012AuKUr1iTCx7zAwpp_!!2207888834413.jpg",
+        "https://img.alicdn.com/imgextra/i1/2207888834413/O1CN01P1aZvm1iTCR88j36j_!!2207888834413.jpg",
+        "https://img.alicdn.com/imgextra/i3/2207888834413/O1CN01ThO0WH1iTCjbwIrqw_!!2207888834413.jpg",
+        "https://img.alicdn.com/imgextra/i4/2207888834413/O1CN01sBNOw81iTCjh9lkqz_!!2207888834413.jpg"
+      ]
+    },
+    "852864486588": {
+      "title": "Solid color wool warm Bed sheet blanket sofa cover blankets",
+      "desc_short": "",
+      "brand": "No brand/no registered trademark",
+      "pic_url": "//img.alicdn.com/imgextra/i3/2586268013/O1CN018PMTrt2940gbbYmaj_!!2586268013.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2586268013/O1CN018PMTrt2940gbbYmaj_!!2586268013.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2586268013/O1CN01fLji4K2940gWvEKPv_!!2586268013.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2586268013/O1CN01QAny1d2940gWEWure_!!2586268013.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2586268013/O1CN018WIkRz2940gTLEASP_!!2586268013.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2586268013/O1CN010iJUR42940gZDlzSC_!!2586268013.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:7698564",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01hDreqH2940gVQD9lk_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:383012402",
+            "url": "http://img.alicdn.com/imgextra/i4/2586268013/O1CN018DVmuN2940gVQFAXQ_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:3232480",
+            "url": "http://img.alicdn.com/imgextra/i2/2586268013/O1CN014Qlg412940gVrlXs2_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:129819",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01ppyJKl2940gUiMHzZ_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28331",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01HtS7BH2940gUp7o9X_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:3594022",
+            "url": "http://img.alicdn.com/imgextra/i4/2586268013/O1CN01vxJn2d2940gUpAI21_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28332",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01RAnMCc2940gUiNd8R_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:3232478",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01tzbIem2940gUp9YHZ_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28340",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN01Lvg0C92940gScWBY6_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28329",
+            "url": "http://img.alicdn.com/imgextra/i3/2586268013/O1CN013xSihA2940gVroA0i_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:4266701",
+            "url": "http://img.alicdn.com/imgextra/i2/2586268013/O1CN01mUYIxb2940gVHReEy_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:3232484",
+            "url": "http://img.alicdn.com/imgextra/i3/2586268013/O1CN01xluo4c2940gVBj78r_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:16044494",
+            "url": "http://img.alicdn.com/imgextra/i1/2586268013/O1CN012E2BdZ2940gTLDEIE_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:28327",
+            "url": "http://img.alicdn.com/imgextra/i2/2586268013/O1CN01tiSj0K2940gScXBvg_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:449032358",
+            "url": "http://img.alicdn.com/imgextra/i4/2586268013/O1CN01D0kmNQ2940gXZuY0H_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:4512280",
+            "url": "http://img.alicdn.com/imgextra/i2/2586268013/O1CN013jTFXW2940gUpBA5g_!!2586268013.jpg"
+          },
+          {
+            "properties": "1627207:80557",
+            "url": "http://img.alicdn.com/imgextra/i3/2586268013/O1CN0185AMll2940gUiNQfP_!!2586268013.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "Brand",
+          "value": "No brand/no registered trademark",
+          "name_original": "Brand",
+          "value_original": "No brand/no registered trademark"
+        },
+        {
+          "name": "style",
+          "value": "Simplicity",
+          "name_original": "style",
+          "value_original": "Simplicity"
+        },
+        {
+          "name": "Item number",
+          "value": "other",
+          "name_original": "Item number",
+          "value_original": "other"
+        },
+        {
+          "name": "Appropriate Season",
+          "value": "All-season use",
+          "name_original": "Appropriate Season",
+          "value_original": "All-season use"
+        },
+        {
+          "name": "Function",
+          "value": "keep warm",
+          "name_original": "Function",
+          "value_original": "keep warm"
+        },
+        {
+          "name": "Carpet material",
+          "value": "polyester",
+          "name_original": "Carpet material",
+          "value_original": "polyester"
+        },
+        {
+          "name": "Blanket Type",
+          "value": "Coral fleece blanket",
+          "name_original": "Blanket Type",
+          "value_original": "Coral fleece blanket"
+        },
+        {
+          "name": "size",
+          "value": "45*65cm,70*100cm,100*150cm,120*200cm,150*200cm,180*200cm,200*230cm",
+          "name_original": "size",
+          "value_original": "45*65cm,70*100cm,100*150cm,120*200cm,150*200cm,180*200cm,200*230cm"
+        },
+        {
+          "name": "pattern",
+          "value": "Solid color",
+          "name_original": "pattern",
+          "value_original": "Solid color"
+        },
+        {
+          "name": "Color fastness",
+          "value": "4",
+          "name_original": "Color fastness",
+          "value_original": "4"
+        },
+        {
+          "name": "Usage scenario",
+          "value": "bedroom",
+          "name_original": "Usage scenario",
+          "value_original": "bedroom"
+        },
+        {
+          "name": "Color classification",
+          "value": "Khaki, off white, dark green, dark gray, purple, pink, burgundy, light gray, dark blue, sky blue, coffee, rose red, grass green, shallow water blue, bright yellow, smoky blue, dark coffee",
+          "name_original": "Color classification",
+          "value_original": "Khaki, off white, dark green, dark gray, purple, pink, burgundy, light gray, dark blue, sky blue, coffee, rose red, grass green, shallow water blue, bright yellow, smoky blue, dark coffee"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50001871",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "European and American Fashion clothes",
+        "location": "Guangzhou, Guangdong",
+        "rating": null,
+        "name_original": "欧美Fashion clothes",
+        "location_original": "广东广州"
+      },
+      "sales_volume": 100,
+      "description": "src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01XroP8w2940gUpBUvw_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN013Dbduj2940gVHRiPz_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN011uixy42940gOG9X5e_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01OmgwNG2940gVBkOBc_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Hra4nO2940gWEZrtX_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01jYsVty2940gXZuogu_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01I5dsLs2940gY4TYO0_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01dDNWd22940gX247Ys_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN0104ch2p2940gVQFdiP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01BMbZF82940gVHTzmq_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01VQ44Qs2940gWEaXTB_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Ce2fFp2940gVHRuul_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01tZ8Y092940gWF1CBP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01rtEJ5A2940gWEZrtY_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01lm2w6M2940gWwHtBx_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01EEkBre2940gVroEDL_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01BYhKge2940gXZxdJJ_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Ny51322940gUiPqQY_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01gbCskj2940gOG77OD_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01w9mZe32940gWEajwp_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01lpboUS2940gOG8rVP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01EYJeDb2940gXZw9om_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN015T0tpD2940gXZwDxg_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01Ck50pX2940gOG7SAq_!!2586268013.jpg\"></div></div>",
+      "title_original": "Solid color wool warm Bed sheet blanket sofa cover blankets",
+      "description_original": "<div style=\"width: 750.0px;height: 17438.0px;overflow: hidden;\"><div style=\"width: 750.0px;height: 17438.0px;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01XroP8w2940gUpBUvw_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN013Dbduj2940gVHRiPz_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN011uixy42940gOG9X5e_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01OmgwNG2940gVBkOBc_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Hra4nO2940gWEZrtX_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01jYsVty2940gXZuogu_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01I5dsLs2940gY4TYO0_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01dDNWd22940gX247Ys_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN0104ch2p2940gVQFdiP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2586268013/O1CN01BMbZF82940gVHTzmq_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01VQ44Qs2940gWEaXTB_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Ce2fFp2940gVHRuul_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01tZ8Y092940gWF1CBP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01rtEJ5A2940gWEZrtY_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01lm2w6M2940gWwHtBx_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01EEkBre2940gVroEDL_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01BYhKge2940gXZxdJJ_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2586268013/O1CN01Ny51322940gUiPqQY_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01gbCskj2940gOG77OD_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01w9mZe32940gWEajwp_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01lpboUS2940gOG8rVP_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2586268013/O1CN01EYJeDb2940gXZw9om_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN015T0tpD2940gXZwDxg_!!2586268013.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2586268013/O1CN01Ck50pX2940gOG7SAq_!!2586268013.jpg\"></div></div>",
+      "brand_original": "无品牌/无注册商标",
+      "productId": "852864486588",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T10:01:01.585Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i3/2586268013/O1CN018PMTrt2940gbbYmaj_!!2586268013.jpg",
+        "https://img.alicdn.com/imgextra/i3/2586268013/O1CN01fLji4K2940gWvEKPv_!!2586268013.jpg",
+        "https://img.alicdn.com/imgextra/i4/2586268013/O1CN01QAny1d2940gWEWure_!!2586268013.jpg",
+        "https://img.alicdn.com/imgextra/i2/2586268013/O1CN018WIkRz2940gTLEASP_!!2586268013.jpg"
+      ]
+    }
+  },
+  "totalItems": 3,
+  "successfulItems": 3
+}

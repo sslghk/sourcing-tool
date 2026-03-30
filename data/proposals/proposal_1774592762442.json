@@ -1,0 +1,1384 @@
+{
+  "proposalId": "proposal_1774592762442",
+  "proposalName": "test 2",
+  "clientName": "test 2",
+  "notes": "",
+  "createdBy": {
+    "email": "jacktong@simplesymbol.com",
+    "name": "jacktong"
+  },
+  "createdAt": "2026-03-27T06:26:02.464Z",
+  "updatedAt": "2026-03-27T06:26:28.279Z",
+  "products": [
+    {
+      "id": "taobao_897329037183",
+      "source_id": "897329037183",
+      "source": "taobao",
+      "title": "Creative Fruit and Vegetable Series Plush Toy Doll Cute JC Series Doll Pendant Girl Bag Hanging Accessories",
+      "price": {
+        "current": 1.55,
+        "currency": "CNY",
+        "original": 1.55
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01jDpoYg1uTusffroEO_!!2566766039.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=897329037183",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_846170651376",
+      "source_id": "846170651376",
+      "source": "taobao",
+      "title": "Little bitter melon coriander cartoon plush toy cute little pendant doll vegetable doll keychain doll machine doll",
+      "price": {
+        "current": 2.18,
+        "currency": "CNY",
+        "original": 2.18
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01YEHORX1bnAnM7brCG_!!696393509.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=846170651376",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_848581369102",
+      "source_id": "848581369102",
+      "source": "taobao",
+      "title": "Fruit Plush Toy Pineapple Avocado Doll Machine Doll Cute Gift Bag Keychain Small Pendant",
+      "price": {
+        "current": 1.96,
+        "currency": "CNY",
+        "original": 1.96
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01FU6x7j1bnAnbZGFjc_!!696393509.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=848581369102",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_975037927230",
+      "source_id": "975037927230",
+      "source": "taobao",
+      "title": "Xiaohongshu Creative Fruit Plush Pendant Cute Vegetables Funny Backpack Doll Pendant Keychain",
+      "price": {
+        "current": 2.59,
+        "currency": "CNY",
+        "original": 2.59
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01kFslOg1CzfI9SbkES_!!2218389460152.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=975037927230",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    }
+  ],
+  "itemDetails": {
+    "897329037183": {
+      "title": "Creative Fruit and Vegetable Series Plush Toy Doll Cute JC Series Doll Pendant Girl Bag Hanging Accessories",
+      "desc_short": "",
+      "brand": "Gulitao",
+      "pic_url": "//img.alicdn.com/imgextra/i1/2566766039/O1CN01EvvmDH1uTusee2UeJ_!!2566766039.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2566766039/O1CN01EvvmDH1uTusee2UeJ_!!2566766039.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2566766039/O1CN01EYi8zK1uTusfc1gNw_!!2566766039.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2566766039/O1CN012kptV71uTusfyixRt_!!2566766039.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2566766039/O1CN01l6xqRj1uTusgpxMbU_!!2566766039.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2566766039/O1CN01iJn8JA1uTusdrdVjd_!!2566766039.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:110383",
+            "url": "http://img.alicdn.com/imgextra/i3/2566766039/O1CN012NKtmE1uTusgVKpd9_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:3224490",
+            "url": "http://img.alicdn.com/imgextra/i3/2566766039/O1CN01cVgs871uTusftV2VR_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:4023487",
+            "url": "http://img.alicdn.com/imgextra/i3/2566766039/O1CN01sJeQ9B1uTusffrCmL_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:3314790",
+            "url": "http://img.alicdn.com/imgextra/i2/2566766039/O1CN01ZLN5LE1uTusehmZsm_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:110329",
+            "url": "http://img.alicdn.com/imgextra/i2/2566766039/O1CN01jDpoYg1uTusffroEO_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:110317",
+            "url": "http://img.alicdn.com/imgextra/i4/2566766039/O1CN0166Xx141uTusgVNNki_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:7795311",
+            "url": "http://img.alicdn.com/imgextra/i3/2566766039/O1CN01QP0juM1uTusg2Y4hI_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:106982",
+            "url": "http://img.alicdn.com/imgextra/i4/2566766039/O1CN01cD1VUB1uTusg2YLLK_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:21997743",
+            "url": "http://img.alicdn.com/imgextra/i1/2566766039/O1CN01iJn8JA1uTusdrdVjd_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:110313",
+            "url": "http://img.alicdn.com/imgextra/i2/2566766039/O1CN0162lJ991uTusftXrKE_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:110382",
+            "url": "http://img.alicdn.com/imgextra/i3/2566766039/O1CN01OR8hTo1uTusfrVliF_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:111405",
+            "url": "http://img.alicdn.com/imgextra/i2/2566766039/O1CN01yAPmKd1uTusehrwiM_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:41020030436",
+            "url": "http://img.alicdn.com/imgextra/i1/2566766039/O1CN01JCawuP1uTuwJLJEI4_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:1486788900",
+            "url": "http://img.alicdn.com/imgextra/i4/2566766039/O1CN01LhoEDX1uTusZdtSBx_!!2566766039.jpg"
+          },
+          {
+            "properties": "1627207:107112",
+            "url": "http://img.alicdn.com/imgextra/i3/2566766039/O1CN01ONk3Xb1uTusehst0V_!!2566766039.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "Doll type",
+          "value": "Fruits",
+          "name_original": "Doll type",
+          "value_original": "Fruits"
+        },
+        {
+          "name": "brand",
+          "value": "Gulitao",
+          "name_original": "brand",
+          "value_original": "Gulitao"
+        },
+        {
+          "name": "Sales status",
+          "value": "Spot",
+          "name_original": "Sales status",
+          "value_original": "Spot"
+        },
+        {
+          "name": "Listing time",
+          "value": "Year/Month/March 2025",
+          "name_original": "Listing time",
+          "value_original": "Year/Month/March 2025"
+        },
+        {
+          "name": "Version Type",
+          "value": "Original and genuine",
+          "name_original": "Version Type",
+          "value_original": "Original and genuine"
+        },
+        {
+          "name": "province",
+          "value": "Shandong Province",
+          "name_original": "province",
+          "value_original": "Shandong Province"
+        },
+        {
+          "name": "Prefecture and city",
+          "value": "Linyi City",
+          "name_original": "Prefecture and city",
+          "value_original": "Linyi City"
+        },
+        {
+          "name": "Toy type",
+          "value": "Small pendant",
+          "name_original": "Toy type",
+          "value_original": "Small pendant"
+        },
+        {
+          "name": "Article number",
+          "value": "Vegetable Series",
+          "name_original": "Article number",
+          "value_original": "Vegetable Series"
+        },
+        {
+          "name": "Applicable age",
+          "value": "Over 10 years old",
+          "name_original": "Applicable age",
+          "value_original": "Over 10 years old"
+        },
+        {
+          "name": "Filler",
+          "value": "PP cotton",
+          "name_original": "Filler",
+          "value_original": "PP cotton"
+        },
+        {
+          "name": "Place of Origin",
+          "value": "Chinese Mainland",
+          "name_original": "Place of Origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "Material",
+          "value": "Flannel cloth",
+          "name_original": "Material",
+          "value_original": "Flannel cloth"
+        },
+        {
+          "name": "Applicable gender",
+          "value": "currency",
+          "name_original": "Applicable gender",
+          "value_original": "currency"
+        },
+        {
+          "name": "color classification",
+          "value": "",
+          "name_original": "color classification",
+          "value_original": "Scallion, ginger, garlic, chili, bitter gourd, coriander, bamboo shoots, corn, navy blue flowers, cabbage, scallion, persimmon, scallion, avocado, dragon fruit"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50011975",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Blue Pudding Plush Toy Mall",
+        "location": "Shandong Linyi",
+        "rating": null,
+        "name_original": "蓝布丁毛绒玩具商城",
+        "location_original": "山东临沂"
+      },
+      "sales_volume": 2000,
+      "description": "src=\"https://img.alicdn.com/imgextra/i1/2566766039/O1CN01EvvmDH1uTusee2UeJ_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2566766039/O1CN01EYi8zK1uTusfc1gNw_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2566766039/O1CN01jAdUGN1uTusdvhfZv_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01ONk3Xb1uTusehst0V_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2566766039/O1CN01LhoEDX1uTusZdtSBx_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01QQyMdQ1uTusgjllIo_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2566766039/O1CN01yAPmKd1uTusehrwiM_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01OR8hTo1uTusfrVliF_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2566766039/O1CN0162lJ991uTusftXrKE_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2566766039/O1CN01cD1VUB1uTusg2YLLK_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01QP0juM1uTusg2Y4hI_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2566766039/O1CN0166Xx141uTusgVNNki_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2566766039/O1CN01jDpoYg1uTusffroEO_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2566766039/O1CN01ZLN5LE1uTusehmZsm_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01sJeQ9B1uTusffrCmL_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01cVgs871uTusftV2VR_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN012NKtmE1uTusgVKpd9_!!2566766039.jpg\"></div></div>",
+      "title_original": "Creative Fruit and Vegetable Series Plush Toy Doll Cute JC Series Doll Pendant Girl Bag Hanging Accessories",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2566766039/O1CN01EvvmDH1uTusee2UeJ_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2566766039/O1CN01EYi8zK1uTusfc1gNw_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2566766039/O1CN01jAdUGN1uTusdvhfZv_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01ONk3Xb1uTusehst0V_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2566766039/O1CN01LhoEDX1uTusZdtSBx_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01QQyMdQ1uTusgjllIo_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2566766039/O1CN01yAPmKd1uTusehrwiM_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01OR8hTo1uTusfrVliF_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2566766039/O1CN0162lJ991uTusftXrKE_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2566766039/O1CN01cD1VUB1uTusg2YLLK_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01QP0juM1uTusg2Y4hI_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2566766039/O1CN0166Xx141uTusgVNNki_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2566766039/O1CN01jDpoYg1uTusffroEO_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2566766039/O1CN01ZLN5LE1uTusehmZsm_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01sJeQ9B1uTusffrCmL_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN01cVgs871uTusftV2VR_!!2566766039.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2566766039/O1CN012NKtmE1uTusgVKpd9_!!2566766039.jpg\"></div></div>",
+      "brand_original": "咕立淘",
+      "productId": "897329037183",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-27T06:26:08.030Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i1/2566766039/O1CN01EvvmDH1uTusee2UeJ_!!2566766039.jpg",
+        "https://img.alicdn.com/imgextra/i1/2566766039/O1CN01EYi8zK1uTusfc1gNw_!!2566766039.jpg",
+        "https://img.alicdn.com/imgextra/i1/2566766039/O1CN012kptV71uTusfyixRt_!!2566766039.jpg",
+        "https://img.alicdn.com/imgextra/i3/2566766039/O1CN01l6xqRj1uTusgpxMbU_!!2566766039.jpg"
+      ]
+    },
+    "846170651376": {
+      "title": "Little bitter melon coriander cartoon plush toy cute little pendant doll vegetable doll keychain doll machine doll",
+      "desc_short": "",
+      "brand": "No brand/no registered trademark",
+      "pic_url": "//img.alicdn.com/imgextra/i3/696393509/O1CN01lMQQBa1bnAnREDUFg_!!696393509.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i3/696393509/O1CN01lMQQBa1bnAnREDUFg_!!696393509.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/696393509/O1CN01pi5ntY1bnAnUGxF38_!!696393509.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/696393509/O1CN0173nXeF1bnAnUGxJDF_!!696393509.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/696393509/O1CN01R0RQtj1bnAnSf3Gul_!!696393509.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/696393509/O1CN01SOmAXD1bnAnQU8RZ1_!!696393509.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:34851051961",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01YEHORX1bnAnM7brCG_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34851103506",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN015RMDEY1bnAnVfiKXv_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34851095896",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01UGffnr1bnAnUGxud8_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34851095895",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01cemkng1bnAnM7aaBo_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133367668",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01zNZUn21bnAnTDWV9s_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133406575",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01z8IPNK1bnAnUzjzeA_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133476071",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN013Ppm0r1bnAnTLAFvP_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133425735",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01pNRBxD1bnAnM7dSzj_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133425736",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01A7BfLm1bnAnM7dbKI_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:32737677318",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01UOUjOv1bnAnSlrkK1_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:32737677316",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01uGnFJi1bnAnVAoeCb_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29099826753",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN018sOr2b1bnAnVAnJ2d_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29100004086",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01izb9vV1bnAnQU9W9Y_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:28151780258",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01Q6WLXg1bnAnUH044b_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:28151780259",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01b8a1GK1bnAnSf2Gas_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29100133716",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01sde7eZ1bnAnM7cjH5_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29100205666",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01rKK9mA1bnAnSf2bPE_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29100231328",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01bALzkk1bnAnSf4obm_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133351921",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01iqgby71bnAnTDTt4T_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133469056",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01s6Y4JZ1bnAnREFdNT_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133469057",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN013YcvG31bnAnWDI2Iz_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133327000",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01X2179g1bnAnUzjj3h_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:24133393680",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN018seOMt1bnAnTLCTD7_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:32737677319",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01TOGk6K1bnAnTLEDJ3_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:32737869040",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN015RM4VG1bnAnSf2CTK_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29099820765",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN015XXxAY1bnAnTIMrKv_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29099883950",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01U5hcZ01bnAnQU7yXk_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29099937522",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01Dcp1FI1bnAnM7bzaR_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:28151809194",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01x8150C1bnAnUH0nqJ_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:29100168492",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01HvGaxo1bnAnTINb7G_!!696393509.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "brand",
+          "value": "No brand/no registered trademark",
+          "name_original": "brand",
+          "value_original": "No brand/no registered trademark"
+        },
+        {
+          "name": "Article number",
+          "value": "1314",
+          "name_original": "Article number",
+          "value_original": "1314"
+        },
+        {
+          "name": "Applicable age",
+          "value": "adult",
+          "name_original": "Applicable age",
+          "value_original": "adult"
+        },
+        {
+          "name": "Place of Origin",
+          "value": "Chinese Mainland",
+          "name_original": "Place of Origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "color classification",
+          "value": "head, small chicken broccoli blue flower on the top of the head, corn golden buckle, broccoli golden buckle, bamboo shoot golden buckle, scallion golden buckle, cabbage golden buckle, big mouthed garlic golden buckle, shut up garlic golden buckle, radish golden buckle, pumpkin golden buckle, ginger golden buckle, chili golden buckle, white radish golden buckle",
+          "name_original": "Applicable gender",
+          "value_original": "currency"
+        },
+        {
+          "name": "height",
+          "value": "About 12cm",
+          "name_original": "height",
+          "value_original": "About 12cm"
+        },
+        {
+          "name": "color classification",
+          "value": "Bitter gourd hanging chain, coriander hanging chain, bitter gourd golden buckle, coriander golden buckle, corn ordinary hanging chain, broccoli ordinary hanging chain, bamboo shoot ordinary hanging chain, scallion ordinary hanging chain, cabbage ordinary hanging chain, big mouthed garlic hanging chain, shut up garlic hanging chain, radish hanging chain, pumpkin hanging chain, ginger hanging chain, chili hanging chain, white radish hanging chain, white broccoli blue flower on the top of the head, small chicken broccoli blue flower on the top of the head, corn golden buckle, broccoli golden buckle, bamboo shoot golden buckle, scallion golden buckle, cabbage golden buckle, big mouthed garlic golden buckle, shut up garlic golden buckle, radish golden buckle, pumpkin golden buckle, ginger golden buckle, chili golden buckle, white radish golden buckle",
+          "name_original": "color classification",
+          "value_original": "Bitter gourd hanging chain, coriander hanging chain, bitter gourd golden buckle, coriander golden buckle, corn ordinary hanging chain, broccoli ordinary hanging chain, bamboo shoot ordinary hanging chain, scallion ordinary hanging chain, cabbage ordinary hanging chain, big mouthed garlic hanging chain, shut up garlic hanging chain, radish hanging chain, pumpkin hanging chain, ginger hanging chain, chili hanging chain, white radish hanging chain, white broccoli blue flower on the top of the head, small chicken broccoli blue flower on the top of the head, corn golden buckle, broccoli golden buckle, bamboo shoot golden buckle, scallion golden buckle, cabbage golden buckle, big mouthed garlic golden buckle, shut up garlic golden buckle, radish golden buckle, pumpkin golden buckle, ginger golden buckle, chili golden buckle, white radish golden buckle"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50011975",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Yueyue Toys",
+        "location": "Shandong Weifang",
+        "rating": null,
+        "name_original": "月月玩具",
+        "location_original": "山东潍坊"
+      },
+      "sales_volume": 100,
+      "description": "750.0px;max-height: 34900.0px;overflow: hidden;\"><div> \n\n<img src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN01wBawWG1bnAnSf4HNk_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_0\"> \n\n\n\n\n<img src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01ERHXsj1bnAnTtEFpa_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_1\"> \n\n\n\n\n<img src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01V2eeSD1bnAnREHmQa_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_2\"> \n\n\n\n\n<img src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN019R96Xg1bnAnTtCAxH_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_3\"> \n\n\n\n\n<img src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN01UblBjB1bnAnM7efud_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_4\"> \n\n\n\n\n<img src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN011N7ErB1bnAnVApBXs_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_5\"> \n\n\n\n\n<img src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01mlDpAC1bnAnQUBKQT_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_6\"> \n\n\n\n\n<img src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN018CwNEe1bnAnTIPk9N_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_7\"> \n\n\n</div></div></div></div></div>",
+      "title_original": "Little bitter melon coriander cartoon plush toy cute little pendant doll vegetable doll keychain doll machine doll",
+      "description_original": "<div style=\"width: 750.0px;height: 43548.0px;overflow: hidden;\"><div style=\"width: 750.0px;height: 43548.0px;overflow: hidden;\"><div><div style=\"max-width: 750.0px;max-height: 34900.0px;overflow: hidden;\"><div>\n        \n         <img src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN01wBawWG1bnAnSf4HNk_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_0\">\n        \n        \n    \n        \n         <img src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01ERHXsj1bnAnTtEFpa_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_1\">\n        \n        \n    \n        \n         <img src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01V2eeSD1bnAnREHmQa_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_2\">\n        \n        \n    \n        \n         <img src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN019R96Xg1bnAnTtCAxH_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_3\">\n        \n        \n    \n        \n         <img src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN01UblBjB1bnAnM7efud_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_4\">\n        \n        \n    \n        \n         <img src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN011N7ErB1bnAnVApBXs_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_5\">\n        \n        \n    \n        \n         <img src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01mlDpAC1bnAnQUBKQT_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_6\">\n        \n        \n    \n        \n         <img src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN018CwNEe1bnAnTIPk9N_!!696393509.jpg\" style=\"display: block;width: 100.0%;height: auto;max-width: 750.0px;\" usemap=\"#_sdmap_7\">\n        \n        \n    </div></div></div></div></div>",
+      "brand_original": "无品牌/无注册商标",
+      "productId": "846170651376",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-27T06:26:12.851Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i3/696393509/O1CN01lMQQBa1bnAnREDUFg_!!696393509.jpg",
+        "https://img.alicdn.com/imgextra/i3/696393509/O1CN01pi5ntY1bnAnUGxF38_!!696393509.jpg",
+        "https://img.alicdn.com/imgextra/i2/696393509/O1CN0173nXeF1bnAnUGxJDF_!!696393509.jpg",
+        "https://img.alicdn.com/imgextra/i1/696393509/O1CN01R0RQtj1bnAnSf3Gul_!!696393509.jpg"
+      ]
+    },
+    "848581369102": {
+      "title": "Fruit Plush Toy Pineapple Avocado Doll Machine Doll Cute Gift Bag Keychain Small Pendant",
+      "desc_short": "",
+      "brand": "No brand/no registered trademark",
+      "pic_url": "//img.alicdn.com/imgextra/i4/696393509/O1CN01BnulEM1bnArhxBfxV_!!696393509.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i4/696393509/O1CN01BnulEM1bnArhxBfxV_!!696393509.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/696393509/O1CN01nZKQli1bnArdsBtPN_!!696393509.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/696393509/O1CN01Do25eb1bnAriEvnqb_!!696393509.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/696393509/O1CN01jUOtmt1bnArjnKDOK_!!696393509.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/696393509/O1CN0127q4lo1bnArgebBFV_!!696393509.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:39263000486",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN0167ierk1bnArh7M0Pv_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000487",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01ZzHnV61bnArhyyFon_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000488",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01vwLfe21bnAriZWWQA_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000489",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01RGbmUG1bnArj615zP_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000490",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01jUOtmt1bnArjnKDOK_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000491",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01dyi1Mu1bnAriGRKYr_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000492",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01Do25eb1bnAriEvnqb_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000493",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01GxTHIc1bnArh9oP7l_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000494",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01ENjNts1bnArh9mWkC_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000495",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01Pcd1Gs1bnArj5ywtl_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000496",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN017M2VfF1bnAriGSo1y_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000497",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01AInJbq1bnAriZSEGS_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000498",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN016Cvdf01bnArjVIDoy_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000499",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01gwcYQR1bnArj5R7E9_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000500",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01JHuSVO1bnAriEw4Ty_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000501",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01ZqMxhd1bnAriVb1Dq_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000502",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01bk9xEU1bnArcJW9Om_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000503",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01mDduE01bnArgea2aV_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39263000504",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01XDwaNW1bnArcJUL9s_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964054103",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01FU6x7j1bnAnbZGFjc_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964054104",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01VcA6OU1bnAnc9RPLo_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963951818",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01KQIJ8t1bnAna31CXg_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963775364",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01NduPuL1bnAnd2szGq_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964009590",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN016I5Xwb1bnAnaIFiej_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964031472",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01nGEAXQ1bnAna324aW_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963999498",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01GwOTni1bnAnd2B8wP_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963995687",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01UD530n1bnAnexbsuw_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964090060",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN012IZtiD1bnAnZJJeeI_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964090061",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01e5yGn71bnAnaII8Qt_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:7678146039",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01eDFUwc1bnAnZJI71p_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964046378",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01YABCR51bnAnUwu7Wa_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964024488",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01DkXnEH1bnAndlTJgs_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964092085",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01LbDcJm1bnAnd2AXaG_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963700281",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01Tb0AIJ1bnAnc9RsZZ_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963775365",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01PC51L21bnAnaIJPTx_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963751428",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01fBcK691bnAnc4OJ3N_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963757068",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01eC2Hdx1bnAnbzuVWR_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963714440",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01iSp1LJ1bnAncfvjNc_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963714441",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01zDYV7l1bnAnexeZPW_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963714442",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01nn6Maq1bnAnd2wPUV_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963824150",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01vRBTl31bnAnUwxbr8_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963846087",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN010AsHJX1bnAndvJqCr_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963781400",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01UCqSqA1bnAnexeMzc_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963992994",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01j42DWX1bnAna37RS2_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964121127",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01I7jsp91bnAna349jF_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964053703",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01CY9wQa1bnAndvJN7B_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964053704",
+            "url": "http://img.alicdn.com/imgextra/i4/696393509/O1CN01RxDmhk1bnAnbSYI7f_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964053705",
+            "url": "http://img.alicdn.com/imgextra/i3/696393509/O1CN01Qo8zv71bnAnaILlCF_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34964053706",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01FIwGPx1bnAnbZLLym_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963872759",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01P7rN851bnAnexgW7b_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:34963872760",
+            "url": "http://img.alicdn.com/imgextra/i1/696393509/O1CN01pLohUx1bnAnbSWssd_!!696393509.jpg"
+          },
+          {
+            "properties": "1627207:39702780517",
+            "url": "http://img.alicdn.com/imgextra/i2/696393509/O1CN01xncc8h1bnAs6157hu_!!696393509.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "brand",
+          "value": "No brand/no registered trademark",
+          "name_original": "brand",
+          "value_original": "No brand/no registered trademark"
+        },
+        {
+          "name": "Article number",
+          "value": "2342",
+          "name_original": "Article number",
+          "value_original": "2342"
+        },
+        {
+          "name": "Applicable age",
+          "value": "adult",
+          "name_original": "Applicable age",
+          "value_original": "adult"
+        },
+        {
+          "name": "Place of Origin",
+          "value": "Chinese Mainland",
+          "name_original": "Place of Origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "Material",
+          "value": "Flannel cloth",
+          "name_original": "Material",
+          "value_original": "Flannel cloth"
+        },
+        {
+          "name": "Applicable gender",
+          "value": "currency",
+          "name_original": "Applicable gender",
+          "value_original": "currency"
+        },
+        {
+          "name": "height",
+          "value": "fruit, 10cm mink hair durian, 10cm mink hair carrot, 10cm mink hair watermelon, 12cm mink hair ginger, 10cm mink hair avocado, 8cm mink hair green apple, 8cm mink hair red apple, 10cm mink hair strawberry, 10cm mink hair pink radish, 12cm mink hair banana, 10cm mink hair bamboo shoot, 11cm mink hair cherry, 10cm mink hair eggplant, 9cm mink hair pumpkin, 9cm mink hair garlic, 10cm bitter gourd, 20cm coriander, 11cm corn, 12cm broccoli 12cm bamboo shoots, 15cm scallions, 12cm cabbage, 14cm 2nd grade scallions, 9cm garlic with a big mouth, 9cm garlic with a closed mouth, 12cm carrots, 10cm pumpkins, 12cm ginger, 15cm chili peppers, 13cm white radishes, 14cm white broccoli on the top of the head, 14cm small chicken broccoli on the top of the head, 14cm pink Chinese cabbage, 14cm white Chinese cabbage, 14cm yellow Chinese cabbage, 14cm Purple Chinese cabbage, 11cm small avocado, 12cm long haired avocado, 9cm avocado capybara (without legs), 12cm avocado capybara (with legs), 14cm premium avocado, 15cm pink cartoon avocado, 15cm yellow cartoon avocado, 15cm brown cartoon avocado, 15cm orange cartoon avocado, 7cm small banana, 13cm large banana with sound system, 12cm eggplant",
+          "name_original": "height",
+          "value_original": "Ordinary hanging chain, gold buckle"
+        },
+        {
+          "name": "color classification",
+          "value": "11cm mink hair scallion, 11cm mink hair mango, 11cm mink hair pineapple, 10cm mink hair dragon fruit, 10cm mink hair durian, 10cm mink hair carrot, 10cm mink hair watermelon, 12cm mink hair ginger, 10cm mink hair avocado, 8cm mink hair green apple, 8cm mink hair red apple, 10cm mink hair strawberry, 10cm mink hair pink radish, 12cm mink hair banana, 10cm mink hair bamboo shoot, 11cm mink hair cherry, 10cm mink hair eggplant, 9cm mink hair pumpkin, 9cm mink hair garlic, 10cm bitter gourd, 20cm coriander, 11cm corn, 12cm broccoli 12cm bamboo shoots, 15cm scallions, 12cm cabbage, 14cm 2nd grade scallions, 9cm garlic with a big mouth, 9cm garlic with a closed mouth, 12cm carrots, 10cm pumpkins, 12cm ginger, 15cm chili peppers, 13cm white radishes, 14cm white broccoli on the top of the head, 14cm small chicken broccoli on the top of the head, 14cm pink Chinese cabbage, 14cm white Chinese cabbage, 14cm yellow Chinese cabbage, 14cm Purple Chinese cabbage, 11cm small avocado, 12cm long haired avocado, 9cm avocado capybara (without legs), 12cm avocado capybara (with legs), 14cm premium avocado, 15cm pink cartoon avocado, 15cm yellow cartoon avocado, 15cm brown cartoon avocado, 15cm orange cartoon avocado, 7cm small banana, 13cm large banana with sound system, 12cm eggplant",
+          "name_original": "color classification",
+          "value_original": "11cm mink hair scallion, 11cm mink hair mango, 11cm mink hair pineapple, 10cm mink hair dragon fruit, 10cm mink hair durian, 10cm mink hair carrot, 10cm mink hair watermelon, 12cm mink hair ginger, 10cm mink hair avocado, 8cm mink hair green apple, 8cm mink hair red apple, 10cm mink hair strawberry, 10cm mink hair pink radish, 12cm mink hair banana, 10cm mink hair bamboo shoot, 11cm mink hair cherry, 10cm mink hair eggplant, 9cm mink hair pumpkin, 9cm mink hair garlic, 10cm bitter gourd, 20cm coriander, 11cm corn, 12cm broccoli 12cm bamboo shoots, 15cm scallions, 12cm cabbage, 14cm 2nd grade scallions, 9cm garlic with a big mouth, 9cm garlic with a closed mouth, 12cm carrots, 10cm pumpkins, 12cm ginger, 15cm chili peppers, 13cm white radishes, 14cm white broccoli on the top of the head, 14cm small chicken broccoli on the top of the head, 14cm pink Chinese cabbage, 14cm white Chinese cabbage, 14cm yellow Chinese cabbage, 14cm Purple Chinese cabbage, 11cm small avocado, 12cm long haired avocado, 9cm avocado capybara (without legs), 12cm avocado capybara (with legs), 14cm premium avocado, 15cm pink cartoon avocado, 15cm yellow cartoon avocado, 15cm brown cartoon avocado, 15cm orange cartoon avocado, 7cm small banana, 13cm large banana with sound system, 12cm eggplant"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50011975",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Yueyue Toys",
+        "location": "Shandong Weifang",
+        "rating": null,
+        "name_original": "月月玩具",
+        "location_original": "山东潍坊"
+      },
+      "sales_volume": 500,
+      "description": "src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01BnulEM1bnArhxBfxV_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01MRPjKZ1bnArj5zHdy_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN0152lAAc1bnArj60QL2_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01hHSbc51bnArh7JrIA_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01wMEiXZ1bnAriGQj6X_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN010Rxcwu1bnArgecJvX_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN01d1IQeS1bnArj5OZC1_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01L3gXPB1bnArj61y0S_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01RDyyEv1bnArjnLQBL_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN0127q4lo1bnArgebBFV_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN01iPJQTN1bnArhyttVj_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01nU4KaM1bnAriVZTZ8_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN0109CyFD1bnArjnKgPs_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01sQFRMM1bnArj5QVnU_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01P6AnD81bnArhyxFQa_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01llFM2S1bnArgeZ6Ke_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01w3Bmot1bnAriw6uw6_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01FIOqEx1bnArjVHHae_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01cHsySW1bnArcJTwAb_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN012kKexz1bnAriEuvkX_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01sl5qDY1bnAriEuC18_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01rybrvQ1bnArhx9fCJ_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01z7ejRr1bnArhyxeMa_!!696393509.jpg\"></div></div>",
+      "title_original": "Fruit Plush Toy Pineapple Avocado Doll Machine Doll Cute Gift Bag Keychain Small Pendant",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01BnulEM1bnArhxBfxV_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01MRPjKZ1bnArj5zHdy_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN0152lAAc1bnArj60QL2_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01hHSbc51bnArh7JrIA_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01wMEiXZ1bnAriGQj6X_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN010Rxcwu1bnArgecJvX_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN01d1IQeS1bnArj5OZC1_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01L3gXPB1bnArj61y0S_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01RDyyEv1bnArjnLQBL_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN0127q4lo1bnArgebBFV_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/696393509/O1CN01iPJQTN1bnArhyttVj_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01nU4KaM1bnAriVZTZ8_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN0109CyFD1bnArjnKgPs_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01sQFRMM1bnArj5QVnU_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01P6AnD81bnArhyxFQa_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01llFM2S1bnArgeZ6Ke_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01w3Bmot1bnAriw6uw6_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/696393509/O1CN01FIOqEx1bnArjVHHae_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/696393509/O1CN01cHsySW1bnArcJTwAb_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN012kKexz1bnAriEuvkX_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01sl5qDY1bnAriEuC18_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01rybrvQ1bnArhx9fCJ_!!696393509.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/696393509/O1CN01z7ejRr1bnArhyxeMa_!!696393509.jpg\"></div></div>",
+      "brand_original": "无品牌/无注册商标",
+      "productId": "848581369102",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-27T06:26:17.990Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i4/696393509/O1CN01BnulEM1bnArhxBfxV_!!696393509.jpg",
+        "https://img.alicdn.com/imgextra/i3/696393509/O1CN01nZKQli1bnArdsBtPN_!!696393509.jpg",
+        "https://img.alicdn.com/imgextra/i3/696393509/O1CN01Do25eb1bnAriEvnqb_!!696393509.jpg",
+        "https://img.alicdn.com/imgextra/i2/696393509/O1CN01jUOtmt1bnArjnKDOK_!!696393509.jpg"
+      ]
+    },
+    "975037927230": {
+      "title": "Xiaohongshu Creative Fruit Plush Pendant Cute Vegetables Funny Backpack Doll Pendant Keychain",
+      "desc_short": "",
+      "brand": "No brand",
+      "pic_url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01RB34gc1CzfI9XVD6m_!!2218389460152.jpg",
+      "item_imgs": [
+        {
+          "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01RB34gc1CzfI9XVD6m_!!2218389460152.jpg"
+        },
+        {
+          "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01IY7ehQ1CzfI9wp5Cc_!!2218389460152.jpg"
+        },
+        {
+          "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01Nflel11CzfI9XTw5i_!!2218389460152.jpg"
+        },
+        {
+          "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01Sh70SE1CzfI9BBQBr_!!2218389460152.jpg"
+        },
+        {
+          "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN011gnsZ81CzfI9XXMAQ_!!2218389460152.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01AUzOS11CzfI9XOA3P_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01FFVKfj1CzfI3lZAQp_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01eT6uhB1CzfI95rrwQ_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01p8og9F1CzfI9uy650_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01OMCzpJ1CzfIAZjRhM_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01MtF7N31CzfI87tGgy_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN018gXSmZ1CzfI9SZ3qv_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01lRe3ue1CzfIAMdifi_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01kFslOg1CzfI9SbkES_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01qY2ja81CzfIAMgbSy_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01qxjYom1CzfI87wxSs_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01XUMHap1CzfI9XPEjW_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01fy0fs21CzfIAZlapb_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01LRNnwv1CzfI9SbLKg_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01icDfEk1CzfI95tDDI_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01WofH9x1CzfI9XSzao_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01uBcuqE1CzfI95u9Q0_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01jgI1HQ1CzfIA0lfAB_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01qDHH2S1CzfI9B4qSF_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN011yULZc1CzfIAF7Ytg_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01KWWssI1CzfIAZoHAL_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01FRkVvX1CzfIAZnP9y_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01H3Hbxt1CzfI9B6rGU_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01NMGQdg1CzfI9bqlDJ_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01nCvzjJ1CzfIAZlrZu_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01ZF78Z51CzfI3lbWF2_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01KaXEQK1CzfI9SdUX2_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01m3M8yT1CzfI8WUlPQ_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01DSCC1X1CzfI87xUwj_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01qXRsRn1CzfI9v2Sat_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01bmNOTP1CzfIAFAqmt_!!2218389460152.jpg"
+          },
+          {
+            "properties": "755454:6957649",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01xP9wnW1CzfI9bp5N6_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:3317869",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01AUzOS11CzfI9XOA3P_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:3314790",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01FFVKfj1CzfI3lZAQp_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:110385",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01eT6uhB1CzfI95rrwQ_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:32024",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01p8og9F1CzfI9uy650_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:33974276645",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01OMCzpJ1CzfIAZjRhM_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:111327",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01MtF7N31CzfI87tGgy_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:110339",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN018gXSmZ1CzfI9SZ3qv_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:3224490",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01lRe3ue1CzfIAMdifi_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:110329",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01kFslOg1CzfI9SbkES_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:15176079",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01qY2ja81CzfIAMgbSy_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:106982",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01qxjYom1CzfI87wxSs_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:40273055240",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01XUMHap1CzfI9XPEjW_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:39779841325",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01fy0fs21CzfIAZlapb_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:40273004746",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01LRNnwv1CzfI9SbLKg_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:40272971906",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01icDfEk1CzfI95tDDI_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:651590875",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01WofH9x1CzfI9XSzao_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:42500",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01uBcuqE1CzfI95u9Q0_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:673580016",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01jgI1HQ1CzfIA0lfAB_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:23975364565",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01qDHH2S1CzfI9B4qSF_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:7795311",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN011yULZc1CzfIAF7Ytg_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:110328",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01KWWssI1CzfIAZoHAL_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:14146980",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01FRkVvX1CzfIAZnP9y_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:1166586149",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01H3Hbxt1CzfI9B6rGU_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:30427980028",
+            "url": "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01NMGQdg1CzfI9bqlDJ_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:110317",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01nCvzjJ1CzfIAZlrZu_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:40272989670",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01ZF78Z51CzfI3lbWF2_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:40272989671",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01KaXEQK1CzfI9SdUX2_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:40273046590",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01m3M8yT1CzfI8WUlPQ_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:107117",
+            "url": "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01DSCC1X1CzfI87xUwj_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:1194492613",
+            "url": "https://img.alicdn.com/bao/uploaded/i1/2218389460152/O1CN01qXRsRn1CzfI9v2Sat_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:899600862",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01bmNOTP1CzfIAFAqmt_!!2218389460152.jpg"
+          },
+          {
+            "properties": "1196649227:110313",
+            "url": "https://img.alicdn.com/bao/uploaded/i3/2218389460152/O1CN01xP9wnW1CzfI9bp5N6_!!2218389460152.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "Brand",
+          "value": "No brand",
+          "name_original": "Brand",
+          "value_original": "No brand"
+        },
+        {
+          "name": "Appropriate Age",
+          "value": "Youth (15-35 years old)",
+          "name_original": "Appropriate Age",
+          "value_original": "Youth (15-35 years old)"
+        },
+        {
+          "name": "Item number",
+          "value": "fruit",
+          "name_original": "Item number",
+          "value_original": "fruit"
+        },
+        {
+          "name": "Place of Origin",
+          "value": "Chinese Mainland",
+          "name_original": "Place of Origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "Material",
+          "value": "EVA",
+          "name_original": "Material",
+          "value_original": "EVA"
+        },
+        {
+          "name": "General",
+          "value": "size",
+          "name_original": "Appropriate for all genders",
+          "value_original": "general"
+        },
+        {
+          "name": "10cm",
+          "value": "Color classification",
+          "name_original": "size",
+          "value_original": "10cm"
+        },
+        {
+          "name": "Potato",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "Potato"
+        },
+        {
+          "name": "chili",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "chili"
+        },
+        {
+          "name": "garlic",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "garlic"
+        },
+        {
+          "name": "green leaf",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "green leaf"
+        },
+        {
+          "name": "Sweat pumpkin",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "汗珠南瓜"
+        },
+        {
+          "name": "avocado",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "avocado"
+        },
+        {
+          "name": "carrot",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "carrot"
+        },
+        {
+          "name": "ginger",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "ginger"
+        },
+        {
+          "name": "bitter gourd",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "bitter gourd"
+        },
+        {
+          "name": "chives",
+          "value": "Color classification",
+          "name_original": "Color classification",
+          "value_original": "香葱"
+        },
+        {
+          "name": "corn || Color classification",
+          "value": "Cantaloupe (stick out tongue)",
+          "name_original": "Color classification",
+          "value_original": "corn"
+        },
+        {
+          "name": "Color classification",
+          "value": "Cantaloupe (green)",
+          "name_original": "Color classification",
+          "value_original": "西瓜（笑脸）"
+        },
+        {
+          "name": "Color classification",
+          "value": "litchi",
+          "name_original": "Color classification",
+          "value_original": "西瓜（生气）"
+        },
+        {
+          "name": "Color classification",
+          "value": "Watermelon pulp",
+          "name_original": "Color classification",
+          "value_original": "哈密瓜（笑脸）"
+        },
+        {
+          "name": "Color classification",
+          "value": "Broccoli (lemon)",
+          "name_original": "Color classification",
+          "value_original": "哈密瓜（吐舌头）"
+        },
+        {
+          "name": "Color classification ||",
+          "value": "Broccoli (flower)",
+          "name_original": "Color classification",
+          "value_original": "哈密瓜（绿色）"
+        },
+        {
+          "name": "Color classification",
+          "value": "coriander",
+          "name_original": "Color classification",
+          "value_original": "litchi"
+        },
+        {
+          "name": "Color classification",
+          "value": "Kohlrabi (green)",
+          "name_original": "Color classification",
+          "value_original": "西瓜瓤"
+        },
+        {
+          "name": "Color classification",
+          "value": "Kohlrabi (yellow)",
+          "name_original": "Color classification",
+          "value_original": "西兰花（柠檬）"
+        },
+        {
+          "name": "Color classification",
+          "value": "Kohlrabi (purple)",
+          "name_original": "Color classification",
+          "value_original": "bamboo shoot"
+        },
+        {
+          "name": "Color classification",
+          "value": "durian",
+          "name_original": "Color classification",
+          "value_original": "cucumber"
+        },
+        {
+          "name": "Color classification",
+          "value": "Banana (yellow)",
+          "name_original": "Color classification",
+          "value_original": "sugarcane"
+        },
+        {
+          "name": "Color classification",
+          "value": "Banana (green)",
+          "name_original": "Color classification",
+          "value_original": "小西兰花"
+        },
+        {
+          "name": "Color classification",
+          "value": "",
+          "name_original": "Color classification",
+          "value_original": "西兰花（花朵）"
+        },
+        {
+          "name": "Color classification",
+          "value": "coriander",
+          "name_original": "Color classification",
+          "value_original": "coriander"
+        },
+        {
+          "name": "Color classification",
+          "value": "大头菜（绿）",
+          "name_original": "Color classification",
+          "value_original": "大头菜（绿）"
+        },
+        {
+          "name": "Color classification",
+          "value": "大头菜（黄）",
+          "name_original": "Color classification",
+          "value_original": "大头菜（黄）"
+        },
+        {
+          "name": "Color classification",
+          "value": "大头菜（紫）",
+          "name_original": "Color classification",
+          "value_original": "大头菜（紫）"
+        },
+        {
+          "name": "Color classification",
+          "value": "durian",
+          "name_original": "Color classification",
+          "value_original": "durian"
+        },
+        {
+          "name": "Color classification",
+          "value": "香蕉（黄）",
+          "name_original": "Color classification",
+          "value_original": "香蕉（黄）"
+        },
+        {
+          "name": "Color classification",
+          "value": "香蕉（绿）",
+          "name_original": "Color classification",
+          "value_original": "香蕉（绿）"
+        },
+        {
+          "name": "Color classification",
+          "value": "Chinese cabbage",
+          "name_original": "Color classification",
+          "value_original": "Chinese cabbage"
+        }
+      ],
+      "moq": 1,
+      "category_id": "1",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "HDW Supply Chain",
+        "location": "N/A",
+        "rating": null,
+        "name_original": "HDW Supply Chain",
+        "location_original": "N/A"
+      },
+      "sales_volume": null,
+      "description": "src=\"https://img.alicdn.com/imgextra/i3/2218389460152/O1CN01qjRy2E1CzfIAZpHgn_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2218389460152/O1CN01KeE0Qr1CzfI9NDpNQ_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2218389460152/O1CN01IiZ8a01CzfI95vpbd_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2218389460152/O1CN01VS5UJi1CzfIAZpUAf_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2218389460152/O1CN01EbD7QN1CzfI9Sf2Ev_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2218389460152/O1CN0168r9wB1CzfI9NEAAT_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2218389460152/O1CN0131nZhj1CzfI9bqE5W_!!2218389460152.jpg\"></div></div>",
+      "title_original": "Xiaohongshu Creative Fruit Plush Pendant Cute Vegetables Funny Backpack Doll Pendant Keychain",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2218389460152/O1CN01qjRy2E1CzfIAZpHgn_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2218389460152/O1CN01KeE0Qr1CzfI9NDpNQ_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2218389460152/O1CN01IiZ8a01CzfI95vpbd_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2218389460152/O1CN01VS5UJi1CzfIAZpUAf_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2218389460152/O1CN01EbD7QN1CzfI9Sf2Ev_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2218389460152/O1CN0168r9wB1CzfI9NEAAT_!!2218389460152.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2218389460152/O1CN0131nZhj1CzfI9bqE5W_!!2218389460152.jpg\"></div></div>",
+      "brand_original": "无品牌",
+      "productId": "975037927230",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-27T06:26:28.279Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01RB34gc1CzfI9XVD6m_!!2218389460152.jpg",
+        "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01IY7ehQ1CzfI9wp5Cc_!!2218389460152.jpg",
+        "https://img.alicdn.com/bao/uploaded/i2/2218389460152/O1CN01Nflel11CzfI9XTw5i_!!2218389460152.jpg",
+        "https://img.alicdn.com/bao/uploaded/i4/2218389460152/O1CN01Sh70SE1CzfI9BBQBr_!!2218389460152.jpg"
+      ]
+    }
+  },
+  "totalItems": 4,
+  "successfulItems": 4
+}

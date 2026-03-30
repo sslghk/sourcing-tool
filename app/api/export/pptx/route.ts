@@ -1,158 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
 import PptxGenJS from 'pptxgenjs';
-import probe from 'probe-image-size';
+import {
+  prefetchAllProposalImages,
+  getProcessedImage,
+  getSecondaryImageUrls,
+  getAIImageUrls,
+  calculateFitDimensions,
+  normalizeUrl,
+  type ProcessedImage
+} from '../image-utils';
 
-// Helper function to fetch image as base64
-async function fetchImageAsBase64(imageUrl: string): Promise<string | null> {
-  try {
-    let url = imageUrl;
-    if (url.startsWith('//')) {
-      url = `https:${url}`;
-    }
-    
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
-    }
-    
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString('base64');
-    
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    
-    return `data:${contentType};base64,${base64}`;
-  } catch (error) {
-    console.error('Error fetching image:', error);
-    return null;
-  }
-}
-
-// Helper function to calculate dimensions maintaining aspect ratio
-function calculateAspectRatioDimensions(originalWidth: number, originalHeight: number, maxWidth: number, maxHeight: number): { width: number; height: number } {
-  const aspectRatio = originalWidth / originalHeight;
-  
-  let width = maxWidth;
-  let height = maxWidth / aspectRatio;
-  
-  if (height > maxHeight) {
-    height = maxHeight;
-    width = maxHeight * aspectRatio;
-  }
-  
-  return { width, height };
-}
-
-// Helper function to get image dimensions from base64
-async function getImageDimensions(base64Image: string): Promise<{ width: number; height: number }> {
-  try {
-    // Extract the base64 data (remove data:image/...;base64, prefix)
-    const base64Data = base64Image.replace(/^data:image\/[a-z]+;base64,/, '');
-    
-    const result = await probe('data:image/jpeg;base64,' + base64Data);
-    return { width: result.width, height: result.height };
-  } catch (error) {
-    console.error('Error getting image dimensions:', error);
-    // Fallback to 1:1 aspect ratio
-    return { width: 300, height: 300 };
-  }
-}
-
-// Helper function to add image to PPTX with aspect ratio preservation
-async function addImageToPptx(slide: any, imageUrl: string, x: number, y: number, maxWidth: number, maxHeight: number) {
-  try {
-    const base64Image = await fetchImageAsBase64(imageUrl);
-    
-    if (base64Image) {
-      try {
-        // Get image dimensions to calculate aspect ratio
-        const dimensions = await getImageDimensions(base64Image);
-        const { width, height } = calculateAspectRatioDimensions(
-          dimensions.width,
-          dimensions.height,
-          maxWidth,
-          maxHeight
-        );
-        
-        // Center the image within the available space
-        const xOffset = x + (maxWidth - width) / 2;
-        const yOffset = y + (maxHeight - height) / 2;
-        
-        slide.addImage({
-          data: base64Image,
-          x: xOffset,
-          y: yOffset,
-          w: width,
-          h: height
-        });
-      } catch (imgError) {
-        console.error('Error adding image to PPTX:', imgError);
-        // Fallback to placeholder
-        slide.addShape(PptxGenJS.ShapeType.rect, {
-          x,
-          y,
-          w: maxWidth,
-          h: maxHeight,
-          fill: { color: 'F0F0F0' }
-        });
-      }
-    } else {
-      // Fallback to placeholder if image fetch fails
-      slide.addShape(PptxGenJS.ShapeType.rect, {
-        x,
-        y,
-        w: maxWidth,
-        h: maxHeight,
-        fill: { color: 'F0F0F0' }
-      });
-    }
-  } catch (error) {
-    console.error('Error in addImageToPptx:', error);
-    // Fallback to placeholder
-    slide.addShape(PptxGenJS.ShapeType.rect, {
-      x,
-      y,
-      w: maxWidth,
-      h: maxHeight,
-      fill: { color: 'F0F0F0' }
-    });
-  }
-}
-
-// Helper function to fetch fresh product details with retry logic
-async function fetchProductDetails(productId: string, source: string, maxRetries = 3): Promise<any> {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+// Add a processed image to a PPTX slide with aspect ratio preservation and centering
+function addProcessedImageToSlide(
+  slide: any,
+  image: ProcessedImage | null,
+  x: number, y: number,
+  maxWidth: number, maxHeight: number
+) {
+  if (image) {
     try {
-      // Call backend service directly (not through Next.js API route)
-      const serviceUrl = process.env.TAOBAO_SERVICE_URL || 'http://localhost:8001';
-      const fullUrl = `${serviceUrl}/product/${productId}`;
-      console.log(`Attempt ${attempt} - Calling backend directly: ${fullUrl}`);
-      
-      const response = await fetch(fullUrl);
-      
-      if (!response.ok) {
-        if (attempt < maxRetries) {
-          console.log(`Attempt ${attempt} failed for ${productId} with status ${response.status}, retrying...`);
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
-          continue;
-        }
-        console.error(`Failed to fetch product details for ${productId} after ${maxRetries} attempts: ${response.status}`);
-        return null;
-      }
-      
-      const data = await response.json();
-      console.log(`Fetched fresh details for ${productId} (attempt ${attempt}):`, data);
-      return data;
-    } catch (error) {
-      if (attempt === maxRetries) {
-        console.error(`Error fetching product details for ${productId} after ${maxRetries} attempts:`, error);
-        return null;
-      }
-      console.log(`Attempt ${attempt} failed for ${productId}, retrying...`);
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      const { width, height } = calculateFitDimensions(image.width, image.height, maxWidth, maxHeight);
+      const xOffset = x + (maxWidth - width) / 2;
+      const yOffset = y + (maxHeight - height) / 2;
+      slide.addImage({ data: image.base64, x: xOffset, y: yOffset, w: width, h: height });
+      return;
+    } catch (e) {
+      console.error('Error adding image to PPTX:', e);
     }
   }
-  return null;
+  // Placeholder fallback
+  slide.addShape('rect' as any, {
+    x, y, w: maxWidth, h: maxHeight,
+    fill: { color: 'F0F0F0' }
+  });
+}
+
+// Helper to get AI image metadata (title, description) from product.aiEnrichment
+function getAIImageMetadata(product: any, imageUrl: string) {
+  const alternatives = product.aiEnrichment?.design_alternatives || [];
+  const match = alternatives.find((alt: any) => alt.generated_image_url === imageUrl);
+  return {
+    title: match?.concept_title || 'AI Design',
+    description: (match?.short_description || '').substring(0, 100),
+    rationale: match?.design_rationale || ''
+  };
 }
 
 // Helper function to generate item number
@@ -162,11 +53,15 @@ function generateItemNumber(createdDate: string, source: string, index: number):
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   
-  const sourcePrefix = source.toLowerCase() === 'taobao' ? 'T' : source.charAt(0).toUpperCase();
+  const src = (source || 'unknown').toLowerCase();
+  const sourcePrefix = src === 'taobao' ? 'T' : (source || 'X').charAt(0).toUpperCase();
   const runningNumber = String(index + 1).padStart(3, '0');
   
   return `A${yy}${mm}${dd}-${sourcePrefix}${runningNumber}`;
 }
+
+const MAIN_IMG_MAX = 600;
+const SECONDARY_IMG_MAX = 300;
 
 export async function POST(request: NextRequest) {
   try {
@@ -202,8 +97,12 @@ export async function POST(request: NextRequest) {
       console.log(`Custom template requested: ${templateId}, using default for now`);
     }
 
+    // Pre-fetch and compress ALL images in parallel before generating slides
+    console.log('PPTX: Pre-fetching all images...');
+    const imageMap = await prefetchAllProposalImages(proposal, MAIN_IMG_MAX, SECONDARY_IMG_MAX);
+
     const pptx = new PptxGenJS();
-    pptx.layout = 'LAYOUT_WIDE'; // 16:9 landscape
+    pptx.layout = 'LAYOUT_4x3'; // 4:3 standard aspect ratio
     pptx.author = 'Sourcing Assistant';
     pptx.title = proposal.name;
     
@@ -211,12 +110,16 @@ export async function POST(request: NextRequest) {
     const titleSlide = pptx.addSlide();
     titleSlide.background = { color: '0ea5e9' }; // Sky blue
     
+    // 4:3 layout is 10x7.5 inches - center content
+    const titleWidth = 8;
+    const titleX = (10 - titleWidth) / 2; // Center horizontally
+    
     titleSlide.addText(proposal.name, {
-      x: 1,
-      y: 2,
-      w: 11,
+      x: titleX,
+      y: 1.5,
+      w: titleWidth,
       h: 1,
-      fontSize: 44,
+      fontSize: 36,
       bold: true,
       color: 'FFFFFF',
       align: 'center'
@@ -224,42 +127,42 @@ export async function POST(request: NextRequest) {
     
     if (proposal.client_name) {
       titleSlide.addText(`Client: ${proposal.client_name}`, {
-        x: 1,
-        y: 3.2,
-        w: 11,
+        x: titleX,
+        y: 2.8,
+        w: titleWidth,
         h: 0.5,
-        fontSize: 24,
+        fontSize: 20,
         color: 'FFFFFF',
         align: 'center'
       });
     }
     
-    titleSlide.addText(`Status: ${proposal.status.toUpperCase()}`, {
-      x: 1,
-      y: 4,
-      w: 11,
+    titleSlide.addText(`Status: ${(proposal.status || 'draft').toUpperCase()}`, {
+      x: titleX,
+      y: 3.5,
+      w: titleWidth,
       h: 0.4,
-      fontSize: 18,
+      fontSize: 16,
       color: 'FFFFFF',
       align: 'center'
     });
     
     titleSlide.addText(`Created: ${new Date(proposal.created_at).toLocaleDateString()}`, {
-      x: 1,
-      y: 4.5,
-      w: 11,
+      x: titleX,
+      y: 4.0,
+      w: titleWidth,
       h: 0.4,
-      fontSize: 18,
+      fontSize: 16,
       color: 'FFFFFF',
       align: 'center'
     });
     
     titleSlide.addText(`Total Items: ${proposal.products.length}`, {
-      x: 1,
-      y: 5,
-      w: 11,
+      x: titleX,
+      y: 4.5,
+      w: titleWidth,
       h: 0.4,
-      fontSize: 18,
+      fontSize: 16,
       color: 'FFFFFF',
       align: 'center'
     });
@@ -269,18 +172,32 @@ export async function POST(request: NextRequest) {
       const product = proposal.products[index];
       const slide = pptx.addSlide();
       
-      // Fetch fresh product details with retry logic
-      const freshDetails = await fetchProductDetails(product.source_id, product.source);
-      
-      // Use fresh details if available, otherwise fall back to cached details
-      const detailsToUse = freshDetails || product.cachedDetails || {};
-      
-      console.log(`Product ${product.source_id}:`, {
-        hasFreshDetails: !!freshDetails,
-        hasCachedDetails: !!product.cachedDetails,
-        cachedItemImgs: product.cachedDetails?.item_imgs?.length || 0,
-        productImageUrls: product.image_urls?.length || 0
+      // Header - Creative Concepts reference
+      slide.addText('Creative Concepts for Vegetable Plush Toys - Ref. 1688/Taobao', {
+        x: 0,
+        y: 0.1,
+        w: 10,
+        h: 0.25,
+        fontSize: 10,
+        color: '64748B',
+        align: 'center'
       });
+      
+      // Footer - Proposal reference number
+      slide.addText('PLN-250302-Alice', {
+        x: 0,
+        y: 7.4,
+        w: 10,
+        h: 0.2,
+        fontSize: 9,
+        color: '64748B',
+        align: 'center'
+      });
+      
+      // Use cached product details for faster export
+      const detailsToUse = product.cachedDetails || {};
+      
+      console.log(`Product ${product.source_id}: Using cached details (${product.cachedDetails?.item_imgs?.length || 0} images)`);
       
       const itemNumber = generateItemNumber(proposal.created_at, product.source, index);
       
@@ -293,96 +210,146 @@ export async function POST(request: NextRequest) {
         color: '1e293b'
       });
       
-      // Left section: Images
-      const mainImageSize = 3.5; // Main image size
+      // Left section: Images - scaled for 4:3 layout (10x7.5 inches) - enlarged 15%
+      const mainImageSize = 3.22; // 2.8 * 1.15 = 3.22 inches (enlarged 15%)
       const imageStartX = 0.3;
-      const imageStartY = 1.2;
+      const imageStartY = 1.0; // Add 1 line spacing above main photo
+      
+      // Secondary images layout - fit height to match main image
+      const maxSecondaryImages = 4;
+      const imageSpacing = 0.08;
+      const secondaryImageSize = (mainImageSize - (maxSecondaryImages - 1) * imageSpacing) / maxSecondaryImages;
       
       // Main image (square container)
       if (product.image_urls && product.image_urls.length > 0) {
-        await addImageToPptx(slide, product.image_urls[0], imageStartX, imageStartY, mainImageSize, mainImageSize);
+        const mainImg = getProcessedImage(imageMap, product.image_urls[0], MAIN_IMG_MAX);
+        addProcessedImageToSlide(slide, mainImg, imageStartX, imageStartY, mainImageSize, mainImageSize);
         
-        // 3 supporting images vertically aligned to the right of main image
-        // Collect all available images from multiple sources
-        let allImages: any[] = [];
+        // Secondary images - stacked vertically to the right of main image
+        const secondaryUrls = getSecondaryImageUrls(product);
         
-        // Priority 1: item_imgs from fresh details
-        if (freshDetails?.item_imgs && Array.isArray(freshDetails.item_imgs) && freshDetails.item_imgs.length > 0) {
-          allImages = freshDetails.item_imgs.map((img: any) => img.url || img);
-          console.log(`Found ${allImages.length} images from fresh item_imgs for ${product.source_id}`);
-        }
-        // Priority 2: item_imgs from cached details
-        else if (product.cachedDetails?.item_imgs && Array.isArray(product.cachedDetails.item_imgs) && product.cachedDetails.item_imgs.length > 0) {
-          allImages = product.cachedDetails.item_imgs.map((img: any) => img.url || img);
-          console.log(`Found ${allImages.length} images from cached item_imgs for ${product.source_id}`);
-        }
-        // Priority 3: product.image_urls (fallback)
-        else if (product.image_urls && product.image_urls.length > 0) {
-          allImages = [...product.image_urls];
-          console.log(`Using ${allImages.length} images from product.image_urls for ${product.source_id}`);
-        }
-        
-        // Take up to 3 additional images (skip the first one as it's used as main image)
-        const additionalImages = allImages.slice(1, 4);
-        console.log(`Will add ${additionalImages.length} additional images for ${product.source_id}`);
-        
-        if (additionalImages.length > 0) {
-          const smallImageSize = 1.1; // Size for supporting images
-          const imageSpacing = 0.15; // Vertical space between images
-          const smallImageX = imageStartX + mainImageSize + 0.2; // To the right of main image
+        if (secondaryUrls.length > 0) {
+          const secondaryImageX = imageStartX + mainImageSize + 0.2;
           
-          for (let i = 0; i < additionalImages.length; i++) {
-            const yPos = imageStartY + i * (smallImageSize + imageSpacing);
-            let imageUrl: string = additionalImages[i];
+          for (let i = 0; i < Math.min(secondaryUrls.length, maxSecondaryImages); i++) {
+            const yPos = imageStartY + i * (secondaryImageSize + imageSpacing);
+            const secImg = getProcessedImage(imageMap, secondaryUrls[i], SECONDARY_IMG_MAX);
+            addProcessedImageToSlide(slide, secImg, secondaryImageX, yPos, secondaryImageSize, secondaryImageSize);
+          }
+        }
+
+        // AI images - 4 frames horizontally under main image (doubled size, evenly distributed)
+        const aiUrls = getAIImageUrls(product);
+        if (aiUrls.length > 0) {
+          const frameY = imageStartY + mainImageSize + 0.2; // Add 1 line spacing above concept labels
+          const frameWidth = 1.96; // Doubled from 0.98
+          const frameHeight = 2.645; // 2.3 * 1.15 = 2.645 (increased 15%)
+          // Calculate spacing for even distribution across 10" page width
+          // Available: 10 - 0.3 (left margin) - 0.3 (right) = 9.4"
+          // 4 frames × 1.96 = 7.84", remaining 1.56" for 3 gaps = 0.52" each
+          const frameSpacing = 0.52;
+          const maxFrames = 4;
+          
+          for (let i = 0; i < Math.min(aiUrls.length, maxFrames); i++) {
+            const frameX = imageStartX + i * (frameWidth + frameSpacing);
+            const metadata = getAIImageMetadata(product, aiUrls[i]);
             
-            // Normalize URL - handle both string and object formats
-            if (typeof imageUrl === 'string') {
-              if (imageUrl.startsWith('//')) {
-                imageUrl = `https:${imageUrl}`;
-              }
-            } else if (typeof imageUrl === 'object' && imageUrl !== null && 'url' in imageUrl) {
-              const urlStr = (imageUrl as any).url;
-              imageUrl = urlStr.startsWith('//') ? `https:${urlStr}` : urlStr;
-            }
+            // Concept label above each frame - centered horizontally
+            slide.addText(`Concept ${i + 1}`, {
+              x: frameX,
+              y: frameY,
+              w: frameWidth,
+              h: 0.2,
+              fontSize: 11,
+              bold: true,
+              color: '1e293b',
+              align: 'center'
+            });
             
-            console.log(`Fetching additional image ${i + 1} for ${product.source_id}: ${imageUrl}`);
+            // Frame starts below concept label
+            const aiFrameY = frameY + 0.22;
             
-            await addImageToPptx(slide, imageUrl, smallImageX, yPos, smallImageSize, smallImageSize);
+            // Frame background (light gray border effect)
+            slide.addShape('rect' as any, {
+              x: frameX,
+              y: aiFrameY,
+              w: frameWidth,
+              h: frameHeight,
+              fill: { color: 'F8FAFC' },
+              line: { color: 'E2E8F0', width: 1 }
+            });
+            
+            // Title at top - 10px font
+            slide.addText(metadata.title, {
+              x: frameX + 0.05,
+              y: aiFrameY + 0.05,
+              w: frameWidth - 0.1,
+              h: 0.35,
+              fontSize: 10,
+              bold: true,
+              color: '1e293b',
+              align: 'center',
+              wrap: true
+            });
+            
+            // Image in middle (fitted to frame)
+            const imgMaxWidth = frameWidth - 0.15;
+            const imgMaxHeight = 1.5;
+            const imgY = aiFrameY + 0.42;
+            const aiImg = getProcessedImage(imageMap, aiUrls[i], SECONDARY_IMG_MAX);
+            addProcessedImageToSlide(slide, aiImg, frameX + 0.075, imgY, imgMaxWidth, imgMaxHeight);
+            
+            // Description - bottom of text box is 0.1" (10px) above frame bottom
+            slide.addText(metadata.description, {
+              x: frameX + 0.05,
+              y: aiFrameY + frameHeight - 0.6,
+              w: frameWidth - 0.1,
+              h: 0.5,
+              fontSize: 10,
+              color: '64748B',
+              align: 'center',
+              wrap: true,
+              shrinkText: true
+            });
           }
         }
       }
       
-      // Right section: Details
-      const rightSectionX = 5.2;
-      const rightSectionWidth = 7.5;
-      let currentY = 1.2;
+      // Right section: Details - adjusted for enlarged images
+      // Images end at approximately: 0.3 + 3.22 (main) + 0.15 (spacing) + ~0.76 (secondary) = ~4.4 inches
+      const rightSectionX = 4.6; // Position after enlarged images
+      const rightSectionWidth = 5.1; // Fits within 10 inch width
+      let currentY = 1.0; // Aligned with image startY (with 1 line spacing)
       
-      // Product title
+      // Product title - reduced to 11px, auto shrink to fit
       slide.addText(product.title, {
         x: rightSectionX,
         y: currentY,
         w: rightSectionWidth,
-        h: 0.6,
-        fontSize: 16,
+        h: 0.5,
+        fontSize: 11,
         bold: true,
         color: '1e293b',
-        wrap: true
+        wrap: true,
+        shrinkText: true
       });
-      currentY += 0.8;
+      currentY += 0.6;
       
-      // Pricing Information
+      // Pricing Information - compact layout (price shown next to Pricing label)
+      const priceValue = product.price?.current ?? product.price ?? 'N/A';
+      const priceCurrency = product.price?.currency ?? '';
       const pricingData: any[] = [
         [
-          { text: 'Pricing Information', options: { bold: true, fontSize: 11, color: '1e293b' } },
-          { text: '', options: {} }
+          { text: 'Pricing:', options: { bold: true, fontSize: 9, color: '1e293b' } },
+          { text: `${priceValue} ${priceCurrency}`.trim(), options: { fontSize: 9, color: '0ea5e9', bold: true } }
         ],
         [
-          { text: 'FOB Price:', options: { bold: true } },
-          { text: product.fob ? `${product.fob} ${product.price.currency}` : 'N/A', options: {} }
+          { text: 'FOB:', options: { bold: true, fontSize: 9 } },
+          { text: product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', options: { fontSize: 9 } }
         ],
         [
-          { text: 'ELC:', options: { bold: true } },
-          { text: product.elc ? `${product.elc} ${product.price.currency}` : 'N/A', options: {} }
+          { text: 'ELC:', options: { bold: true, fontSize: 9 } },
+          { text: product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', options: { fontSize: 9 } }
         ],
       ];
       
@@ -390,46 +357,48 @@ export async function POST(request: NextRequest) {
         x: rightSectionX,
         y: currentY,
         w: rightSectionWidth,
-        fontSize: 10,
+        fontSize: 9,
         border: { pt: 0 },
-        margin: 0.05,
-        colW: [2, 5.5]
+        margin: 0.03,
+        colW: [1.2, 4]
       });
-      currentY += 0.6;
+      currentY += 0.5;
       
-      // Description - use fresh details, cached details, or product fields
+      // Description - shortened for 4:3 layout
       const description = detailsToUse?.desc_short || product.description_short || product.description;
       if (description) {
         slide.addText('Description:', {
           x: rightSectionX,
           y: currentY,
           w: rightSectionWidth,
-          h: 0.3,
-          fontSize: 12,
+          h: 0.22,
+          fontSize: 9,
           bold: true,
           color: '1e293b'
         });
-        currentY += 0.4;
+        currentY += 0.28;
         
-        slide.addText(description.substring(0, 500), {
+        // Shortened description for 4:3 layout, auto shrink to fit
+        slide.addText(description.substring(0, 250), {
           x: rightSectionX,
           y: currentY,
           w: rightSectionWidth,
-          h: 2.5,
-          fontSize: 10,
+          h: 1.8,
+          fontSize: 8,
           color: '475569',
           wrap: true,
-          valign: 'top'
+          valign: 'top',
+          shrinkText: true
         });
       }
       
-      // Footer with page number (bottom of slide)
+      // Footer with page number (bottom of slide for 4:3)
       slide.addText(`Page ${index + 2} of ${proposal.products.length + 1}`, {
-        x: 0,
+        x: 4,
         y: 7.2,
-        w: 13,
-        h: 0.3,
-        fontSize: 10,
+        w: 2,
+        h: 0.25,
+        fontSize: 9,
         color: '999999',
         align: 'center'
       });

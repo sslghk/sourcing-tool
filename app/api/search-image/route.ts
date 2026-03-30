@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Forward the image directly to the Taobao service
-    const taobaoServiceUrl = process.env.TAOBAO_SERVICE_URL || 'http://localhost:8001';
+    const taobaoServiceUrl = process.env.TAOBAO_SERVICE_URL || 'http://localhost:8000';
     
     // Create new FormData to send to Taobao service
     const taobaoFormData = new FormData();

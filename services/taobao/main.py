@@ -8,6 +8,7 @@ import json
 import os
 import base64
 import io
+import asyncio
 from PIL import Image
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -63,6 +64,35 @@ print(f"OneBound API configured: {USE_ONEBOUND}")
 print(f"OneBound API Key: {ONEBOUND_API_KEY[:10]}...")
 print(f"OneBound API Secret: {'*' * len(ONEBOUND_API_SECRET)}")
 
+# Retry helper for handling 503 errors
+async def retry_with_backoff(func, max_retries: int = 3, initial_delay: float = 1.0, backoff_factor: float = 2.0):
+    """
+    Retry a function with exponential backoff.
+    Retries on 503 Service Unavailable and other transient errors.
+    """
+    last_exception = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            return await func()
+        except httpx.HTTPStatusError as e:
+            last_exception = e
+            # Retry on 503 (Service Unavailable) and 502 (Bad Gateway)
+            if e.response.status_code in [502, 503, 504]:
+                if attempt < max_retries:
+                    delay = initial_delay * (backoff_factor ** (attempt - 1))
+                    print(f"Attempt {attempt} failed with {e.response.status_code}, retrying in {delay}s...")
+                    await asyncio.sleep(delay)
+                else:
+                    print(f"All {max_retries} attempts failed. Last error: {e.response.status_code}")
+                    raise
+            else:
+                # Don't retry on other HTTP errors
+                raise
+        except Exception as e:
+            # Don't retry on non-HTTP errors
+            raise
+    raise last_exception
+
 class SearchRequest(BaseModel):
     query: str
     page: int = 1
@@ -108,13 +138,14 @@ async def get_product_details(product_id: str):
     cache_key = f"product_detail:{product_id}"
     
     # Try to get from cache first
-    try:
-        cached = redis_client.get(cache_key)
-        if cached:
-            print(f"Cache hit for product {product_id}")
-            return json.loads(cached)
-    except Exception as e:
-        print(f"Cache error: {e}")
+    if REDIS_AVAILABLE and redis_client:
+        try:
+            cached = redis_client.get(cache_key)
+            if cached:
+                print(f"Cache hit for product {product_id}")
+                return json.loads(cached)
+        except Exception as e:
+            print(f"Cache error: {e}")
     
     try:
         async with httpx.AsyncClient() as client:
@@ -128,15 +159,26 @@ async def get_product_details(product_id: str):
             
             print(f"Fetching product details for {product_id}")
             
-            response = await client.get(
-                f"{ONEBOUND_BASE_URL}/item_get_pro",
-                params=params,
-                timeout=30.0
+            # Define the API call function for retry
+            async def make_api_call():
+                response = await client.get(
+                    f"{ONEBOUND_BASE_URL}/item_get_pro",
+                    params=params,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                return response
+            
+            # Call with retry logic for 503 errors
+            response = await retry_with_backoff(
+                make_api_call, 
+                max_retries=3, 
+                initial_delay=2.0, 
+                backoff_factor=2.0
             )
             
             print(f"OneBound detail response status: {response.status_code}")
             
-            response.raise_for_status()
             data = response.json()
             
             # Check for API errors
@@ -191,15 +233,16 @@ async def get_product_details(product_id: str):
                     "location": item.get("location") or item.get("city") or item.get("provcity", "N/A"),
                     "rating": item.get("seller_credit_score"),
                 },
-                "sales_volume": item.get("volume") or item.get("sellCount") or item.get("sales"),
+                "sales_volume": item.get("sales") or item.get("sellCount") or item.get("volume"),
                 "description": item.get("desc") or item.get("subtitle"),
             }
             
             # Cache the result for 1 hour
-            try:
-                redis_client.setex(cache_key, 3600, json.dumps(details))
-            except Exception as e:
-                print(f"Cache set error: {e}")
+            if REDIS_AVAILABLE and redis_client:
+                try:
+                    redis_client.setex(cache_key, 3600, json.dumps(details))
+                except Exception as e:
+                    print(f"Cache set error: {e}")
             
             return details
             
@@ -243,13 +286,33 @@ async def search(request: SearchRequest):
             
             print(f"OneBound request params (secret hidden): {dict(params, secret='***')}")
             
-            response = await client.get(
-                f"{ONEBOUND_BASE_URL}/item_search",
-                params=params,
-                timeout=30.0
+            # Define the API call function for retry
+            async def make_search_call():
+                response = await client.get(
+                    f"{ONEBOUND_BASE_URL}/item_search",
+                    params=params,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                return response
+            
+            # Call with retry logic for 503 errors
+            response = await retry_with_backoff(
+                make_search_call,
+                max_retries=3,
+                initial_delay=2.0,
+                backoff_factor=2.0
             )
             
             print(f"OneBound response status: {response.status_code}")
+            
+            # Handle specific error codes
+            if response.status_code == 403:
+                error_detail = response.text[:200]
+                print(f"OneBound 403 Forbidden: {error_detail}")
+                print("Possible causes: Invalid API key, quota exceeded, or IP blocked")
+                raise HTTPException(status_code=403, detail=f"OneBound API authentication failed: {error_detail}")
+            
             print(f"OneBound response preview: {response.text[:500]}")
             
             response.raise_for_status()
@@ -333,38 +396,103 @@ async def get_detail(product_id: str):
     
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{ONEBOUND_BASE_URL}/item_get",
-                params={
-                    "key": ONEBOUND_API_KEY,
-                    "num_iid": product_id,
-                },
-                timeout=10.0
-            )
-            response.raise_for_status()
-            data = response.json()
+            # Define the API call function for retry
+            async def make_detail_call():
+                response = await client.get(
+                    f"{ONEBOUND_BASE_URL}/item_get",
+                    params={
+                        "key": ONEBOUND_API_KEY,
+                        "num_iid": product_id,
+                    },
+                    timeout=10.0
+                )
+                response.raise_for_status()
+                return response
             
-            item = data.get("item", {})
-            product = normalize_product(item)
-            
-            # Cache result if Redis is available
-            if REDIS_AVAILABLE and redis_client:
+            # Retry loop for data errors (up to 3 attempts)
+            max_data_error_retries = 3
+            for attempt in range(1, max_data_error_retries + 1):
                 try:
-                    redis_client.setex(
-                        cache_key,
-                        21600,
-                        product.json()
+                    # Call with retry logic for 503 errors
+                    response = await retry_with_backoff(
+                        make_detail_call,
+                        max_retries=3,
+                        initial_delay=2.0,
+                        backoff_factor=2.0
                     )
+                    data = response.json()
+                    
+                    print(f"OneBound detail response (attempt {attempt}): {json.dumps(data, ensure_ascii=False)[:500]}")
+                    
+                    # Check for API errors - check multiple possible error indicators
+                    error_msg = None
+                    
+                    # Check explicit error field
+                    if data.get("error") and data.get("error") != "":
+                        error_msg = data.get("error")
+                    
+                    # Check error_code field (non-zero usually indicates error)
+                    error_code = data.get("error_code", "0000")
+                    if error_code and error_code != "0000" and error_code != "":
+                        error_msg = data.get("reason") or error_msg or f"Error code: {error_code}"
+                    
+                    # Check if item exists
+                    if not data.get("item"):
+                        error_msg = "No product details found"
+                    
+                    # If no error, break out of retry loop
+                    if not error_msg or error_msg == "ok":
+                        item = data.get("item", {})
+                        product = normalize_product(item)
+                        
+                        # Cache result if Redis is available
+                        if REDIS_AVAILABLE and redis_client:
+                            try:
+                                redis_client.setex(
+                                    cache_key,
+                                    21600,
+                                    product.json()
+                                )
+                            except Exception as e:
+                                print(f"Cache set error: {e}")
+                        
+                        return product
+                    
+                    # If data error, retry
+                    if error_msg == "data error" and attempt < max_data_error_retries:
+                        print(f"Got data error on attempt {attempt}, retrying...")
+                        await asyncio.sleep(2.0 * attempt)  # Increasing delay
+                        continue
+                    
+                    # For other errors or final attempt, raise exception
+                    print(f"OneBound API error: {error_msg}")
+                    
+                    if error_msg == "data error":
+                        raise HTTPException(
+                            status_code=400, 
+                            detail="Product details not available after 3 retries. This item may be removed or restricted."
+                        )
+                    else:
+                        raise HTTPException(status_code=503, detail=f"OneBound API error: {error_msg}")
+                        
+                except HTTPException:
+                    raise
                 except Exception as e:
-                    print(f"Cache set error: {e}")
+                    if attempt < max_data_error_retries:
+                        print(f"Error on attempt {attempt}: {e}, retrying...")
+                        await asyncio.sleep(2.0 * attempt)
+                        continue
+                    raise
             
-            return product
+            # Should not reach here, but just in case
+            raise HTTPException(status_code=500, detail="Failed to fetch product details after all retries")
             
+    except HTTPException:
+        raise
     except httpx.HTTPError as e:
         raise HTTPException(status_code=503, detail=f"External API error: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
-
 
 def normalize_onebound_product(raw: dict) -> ProductDTO:
     """Normalize OneBound API response to ProductDTO"""
@@ -464,13 +592,14 @@ async def search_by_image(image: UploadFile = File(...)):
         cache_key = f"taobao:image_search:{image_hash}"
         
         # Check cache
-        try:
-            cached = redis_client.get(cache_key)
-            if cached:
-                print(f"Returning cached results for image hash: {image_hash}")
-                return SearchResponse(**json.loads(cached))
-        except Exception as e:
-            print(f"Cache error: {e}")
+        if REDIS_AVAILABLE and redis_client:
+            try:
+                cached = redis_client.get(cache_key)
+                if cached:
+                    print(f"Returning cached results for image hash: {image_hash}")
+                    return SearchResponse(**json.loads(cached))
+            except Exception as e:
+                print(f"Cache error: {e}")
         
         async with httpx.AsyncClient() as client:
             print(f"Using OneBound image search for: {image.filename}")
@@ -510,24 +639,48 @@ async def search_by_image(image: UploadFile = File(...)):
             print(f"OneBound upload_img URL: {ONEBOUND_BASE_URL}/upload_img")
             print(f"Upload params (secret hidden): {dict(upload_params, secret='***')}")
             
-            upload_response = await client.get(
-                f"{ONEBOUND_BASE_URL}/upload_img",
-                params=upload_params,
-                timeout=30.0
-            )
+            # Step 2: Upload image URL to OneBound with retry (max 3 attempts)
+            print("Step 2: Uploading to OneBound (with 3 retry attempts)...")
+            upload_data = None
+            upload_success = False
             
-            print(f"OneBound upload response status: {upload_response.status_code}")
-            print(f"OneBound upload response body: {upload_response.text[:500]}")
+            for upload_attempt in range(1, 4):  # 3 attempts
+                try:
+                    print(f"  Upload attempt {upload_attempt}/3...")
+                    upload_response = await client.get(
+                        f"{ONEBOUND_BASE_URL}/upload_img",
+                        params=upload_params,
+                        timeout=30.0
+                    )
+                    upload_response.raise_for_status()
+                    upload_data = upload_response.json()
+                    
+                    # Check if successful
+                    error_code = upload_data.get("error_code", "0000")
+                    if error_code == "0000" and upload_data.get("items"):
+                        print(f"  ✓ Upload successful on attempt {upload_attempt}")
+                        upload_success = True
+                        break
+                    else:
+                        error_detail = upload_data.get('error') or error_code
+                        print(f"  ✗ Upload returned error: {error_detail}")
+                        if upload_attempt < 3:
+                            wait_time = 2 * upload_attempt
+                            print(f"  ⏳ Waiting {wait_time}s before retry...")
+                            await asyncio.sleep(wait_time)
+                        
+                except Exception as e:
+                    print(f"  ✗ Upload attempt {upload_attempt} failed: {e}")
+                    if upload_attempt < 3:
+                        wait_time = 2 * upload_attempt
+                        print(f"  ⏳ Waiting {wait_time}s before retry...")
+                        await asyncio.sleep(wait_time)
             
-            upload_response.raise_for_status()
-            upload_data = upload_response.json()
+            if not upload_success or not upload_data:
+                raise HTTPException(status_code=503, detail="Failed to upload image to OneBound after 3 attempts")
             
-            print(f"OneBound upload_data: {upload_data}")
-            
-            if upload_data.get("error"):
-                error_detail = upload_data.get('error')
-                print(f"OneBound upload error: {error_detail}")
-                raise HTTPException(status_code=503, detail=f"OneBound upload error: {error_detail}")
+            print(f"OneBound upload response status: 200")
+            print(f"OneBound upload response body: {json.dumps(upload_data, ensure_ascii=False)[:500]}")
             
             # Get image_id from response - try multiple possible paths
             image_id = None
@@ -554,43 +707,112 @@ async def search_by_image(image: UploadFile = File(...)):
             
             print(f"Got image_id: {image_id}")
             
-            # Step 3: Search with image_id
-            print("Step 3: Searching with image_id...")
-            search_params = {
-                "key": ONEBOUND_API_KEY,
-                "secret": ONEBOUND_API_SECRET,
-                "imgid": image_id,
-                "lang": "en"
-            }
+            # Step 3: Search with image_id - ONLY proceed if upload was successful (with 3 retry attempts)
+            print("Step 3: Searching with image_id (with 3 retry attempts)...")
+            search_data = None
+            search_success = False
             
-            response = await client.get(
-                f"{ONEBOUND_BASE_URL}/item_search_img",
-                params=search_params,
-                timeout=30.0
-            )
+            for search_attempt in range(1, 4):  # 3 attempts
+                try:
+                    print(f"  Search attempt {search_attempt}/3...")
+                    search_response = await client.get(
+                        f"{ONEBOUND_BASE_URL}/item_search_img",
+                        params={
+                            "key": ONEBOUND_API_KEY,
+                            "secret": ONEBOUND_API_SECRET,
+                            "imgid": image_id,
+                            "lang": "en"
+                        },
+                        timeout=30.0
+                    )
+                    search_response.raise_for_status()
+                    search_data = search_response.json()
+                    
+                    # Check for API errors
+                    error_msg = None
+                    if search_data.get("error") and search_data.get("error") != "":
+                        error_msg = search_data.get("error")
+                    
+                    error_code = search_data.get("error_code", "0000")
+                    if error_code and error_code != "0000" and error_code != "":
+                        error_msg = search_data.get("reason") or error_msg or f"Error code: {error_code}"
+                    
+                    # If data error, don't retry (no similar products)
+                    if error_msg and "data error" in error_msg.lower():
+                        print(f"  ✗ Search returned 'data error' - no similar products found")
+                        raise HTTPException(
+                            status_code=400,
+                            detail="No similar products found for this image. Try a different image with clearer product details."
+                        )
+                    
+                    # If other error, retry
+                    if error_msg and error_msg != "ok":
+                        print(f"  ✗ Search returned error: {error_msg}")
+                        if search_attempt < 3:
+                            wait_time = 2 * search_attempt
+                            print(f"  ⏳ Waiting {wait_time}s before retry...")
+                            await asyncio.sleep(wait_time)
+                            continue
+                        else:
+                            raise HTTPException(status_code=503, detail=f"OneBound API error: {error_msg}")
+                    
+                    # Success
+                    print(f"  ✓ Search successful on attempt {search_attempt}")
+                    search_success = True
+                    break
+                    
+                except HTTPException:
+                    raise  # Re-raise HTTPException without modification
+                except Exception as e:
+                    print(f"  ✗ Search attempt {search_attempt} failed: {e}")
+                    if search_attempt < 3:
+                        wait_time = 2 * search_attempt
+                        print(f"  ⏳ Waiting {wait_time}s before retry...")
+                        await asyncio.sleep(wait_time)
             
-            print(f"OneBound image search response status: {response.status_code}")
-            response.raise_for_status()
-            data = response.json()
+            if not search_success or not search_data:
+                raise HTTPException(status_code=503, detail="Failed to search by image after 3 attempts")
             
-            # Check for API errors
-            if data.get("error"):
-                error_msg = data.get('error')
+            print(f"OneBound image search response status: 200")
+            data = search_data
+            
+            print(f"OneBound search response: {json.dumps(data, ensure_ascii=False)[:800]}")
+            
+            # Check for API errors - check multiple possible error indicators
+            error_msg = None
+            
+            # Check explicit error field
+            if data.get("error") and data.get("error") != "":
+                error_msg = data.get("error")
+            
+            # Check error_code field (non-zero usually indicates error)
+            error_code = data.get("error_code", "0000")
+            if error_code and error_code != "0000" and error_code != "":
+                error_msg = data.get("reason") or error_msg or f"Error code: {error_code}"
+            
+            # Check if items field exists and has content
+            items_data = data.get("items", {})
+            if not items_data:
+                error_msg = "No items found in response"
+            
+            # Get the actual items list
+            items = items_data.get("item", []) if isinstance(items_data, dict) else []
+            if isinstance(items, dict):
+                items = [items]
+            elif not isinstance(items, list):
+                items = []
+            
+            if error_msg and error_msg != "ok":
                 print(f"OneBound API error: {error_msg}")
                 
                 # Provide more helpful error messages
-                if error_msg == "data error":
+                if "data error" in error_msg.lower():
                     raise HTTPException(
                         status_code=400, 
                         detail="No similar products found for this image. Try a different image with clearer product details."
                     )
                 else:
                     raise HTTPException(status_code=503, detail=f"OneBound API error: {error_msg}")
-            
-            # Parse results
-            items = data.get("items", {}).get("item", [])
-            if not isinstance(items, list):
-                items = [items] if items else []
             
             # Handle empty results
             if not items:
@@ -607,10 +829,11 @@ async def search_by_image(image: UploadFile = File(...)):
             )
             
             # Cache for 1 hour
-            try:
-                redis_client.setex(cache_key, 3600, json.dumps(result.dict()))
-            except Exception as e:
-                print(f"Cache set error: {e}")
+            if REDIS_AVAILABLE and redis_client:
+                try:
+                    redis_client.setex(cache_key, 3600, json.dumps(result.dict()))
+                except Exception as e:
+                    print(f"Cache set error: {e}")
             
             return result
             

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw, GripVertical } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,11 +40,16 @@ interface Proposal {
   products: ProductDTO[];
   totalItems?: number;
   totalValue?: number;
+  createdBy?: { email: string; name: string } | null;
 }
 
 interface ProductDetails {
   title?: string;
+  desc?: string;
   desc_short?: string;
+  sku?: string;
+  num?: string;
+  shop_name?: string;
   brand?: string;
   pic_url?: string;
   item_imgs?: Array<{ url: string }>;
@@ -63,6 +68,7 @@ interface ProductDetails {
   };
   sales_volume?: number;
   description?: string;
+  cached?: boolean;
 }
 
 export default function ProposalDetailPage() {
@@ -85,9 +91,24 @@ export default function ProposalDetailPage() {
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<PPTXTemplate | null>(null);
   const [isExportingPPTX, setIsExportingPPTX] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [exportProgress, setExportProgress] = useState<{ type: 'pdf' | 'pptx' | null; message: string }>({ type: null, message: '' });
   const [metadataPopupOpen, setMetadataPopupOpen] = useState<string | null>(null);
   const [aiEnrichRemarksOpen, setAiEnrichRemarksOpen] = useState<string | null>(null);
   const [aiEnrichRemarks, setAiEnrichRemarks] = useState<Record<string, string>>({});
+  const [selectedSecondaryImages, setSelectedSecondaryImages] = useState<Record<string, string[]>>({});
+  const [selectedAIImages, setSelectedAIImages] = useState<Record<string, string[]>>({});
+
+  // Proposal data from JSON storage
+  const [proposalData, setProposalData] = useState<any>(null);
+  const [isLoadingProposalData, setIsLoadingProposalData] = useState(false);
+  
+  // Expanded product details for full text display
+  const [expandedDetails, setExpandedDetails] = useState<Set<string>>(new Set());
+
+  // Drag-and-drop reorder state
+  const dragIndexRef = useRef<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // Fetch product details with retry logic
   const fetchProductDetailsWithRetry = async (productId: string, platform: string, maxRetries = 3): Promise<ProductDetails | null> => {
@@ -116,69 +137,208 @@ export default function ProposalDetailPage() {
     return null;
   };
 
-  // Fetch all product details on load
-  const fetchAllProductDetails = async () => {
+  // Load proposal data from server-side JSON storage
+  const loadProposalDataFromStorage = useCallback(async () => {
     if (!proposal) return;
-
-    const detailsToFetch: Array<{ productId: string; product: ProductDTO }> = [];
     
-    // Identify products that need details
-    proposal.products.forEach(product => {
-      const productId = product.source_id;
+    setIsLoadingProposalData(true);
+    console.log('Loading proposal data from JSON storage...');
+    
+    try {
+      const response = await fetch(`/api/proposal-details?proposalId=${proposal.id}`);
       
-      // Skip if already in memory
-      if (productDetails.has(productId)) {
-        return;
-      }
-      
-      // Skip if has cached details
-      if (product.cachedDetails) {
-        const newDetails = new Map(productDetails);
-        newDetails.set(productId, product.cachedDetails);
+      if (response.ok) {
+        const data = await response.json();
+        setProposalData(data);
+        console.log('Loaded proposal data:', data);
+        
+        // Load item details from storage into productDetails map
+        const newDetails = new Map<string, ProductDetails>();
+        const newSelectedImages: Record<string, string[]> = {};
+        const newSelectedAIImages: Record<string, string[]> = {};
+        
+        Object.entries(data.itemDetails || {}).forEach(([key, details]: [string, any]) => {
+          // Use the key directly as productId (it's the source_id / num_iid)
+          const productId = details.productId || key;
+          newDetails.set(productId, details);
+          
+          const product = proposal.products.find(p => p.source_id === productId);
+          if (product) {
+            // Load saved secondary image selections
+            if (details.selectedSecondaryImages && details.selectedSecondaryImages.length > 0) {
+              newSelectedImages[product.id] = details.selectedSecondaryImages;
+            } else if (details.item_imgs && details.item_imgs.length > 0) {
+              // Auto-select first 4 secondary images from item_imgs
+              const imageUrls = details.item_imgs.slice(0, 4).map((img: any) => {
+                const url = typeof img === 'string' ? img : img.url;
+                return url.startsWith('//') ? `https:${url}` : url;
+              });
+              newSelectedImages[product.id] = imageUrls;
+            }
+            // Load saved AI image selections
+            if (details.selectedAIImages && details.selectedAIImages.length > 0) {
+              newSelectedAIImages[product.id] = details.selectedAIImages;
+            }
+          }
+        });
+        
         setProductDetails(newDetails);
-        return;
+        setSelectedSecondaryImages(newSelectedImages);
+        if (Object.keys(newSelectedAIImages).length > 0) {
+          setSelectedAIImages(newSelectedAIImages);
+        }
+
+        // Apply aiEnrichments from server JSON back into products
+        if (data.aiEnrichments && Object.keys(data.aiEnrichments).length > 0) {
+          setProposal(prev => {
+            if (!prev) return prev;
+            const updatedProducts = prev.products.map(p => {
+              const enrichment = data.aiEnrichments[p.source_id];
+              if (enrichment && !p.aiEnrichment) {
+                return { ...p, aiEnrichment: enrichment };
+              }
+              return p;
+            });
+            return { ...prev, products: updatedProducts };
+          });
+        }
+
+        console.log(`Loaded ${newDetails.size} product details from storage`);
+      } else if (response.status === 404) {
+        // No storage file yet - this is normal for older proposals
+        console.log('No proposal data file found - will create when saving');
+      } else {
+        console.error('Failed to load proposal data:', await response.text());
       }
-      
-      detailsToFetch.push({ productId, product });
-    });
-
-    if (detailsToFetch.length === 0) return;
-
-    console.log(`Fetching details for ${detailsToFetch.length} products...`);
-    
-    // Mark all as loading
-    const newLoading = new Set(loadingDetails);
-    detailsToFetch.forEach(({ productId }) => newLoading.add(productId));
-    setLoadingDetails(newLoading);
-
-    // Fetch all details in parallel
-    const results = await Promise.all(
-      detailsToFetch.map(async ({ productId, product }) => {
-        const details = await fetchProductDetailsWithRetry(productId, product.source);
-        return { productId, details };
-      })
-    );
-
-    // Update state with all fetched details
-    const newDetails = new Map(productDetails);
-    results.forEach(({ productId, details }) => {
-      if (details) {
-        newDetails.set(productId, details);
-      }
-    });
-    setProductDetails(newDetails);
-
-    // Save to localStorage for caching
-    if (proposal) {
-      const cachedDetailsKey = `proposal_details_${proposal.id}`;
-      const detailsObj = Object.fromEntries(newDetails);
-      localStorage.setItem(cachedDetailsKey, JSON.stringify(detailsObj));
+    } catch (error) {
+      console.error('Error loading proposal data:', error);
+    } finally {
+      setIsLoadingProposalData(false);
     }
+  }, [proposal]);
 
-    // Clear loading state
-    setLoadingDetails(new Set());
+  // Fetch a single product detail on demand (for expand functionality)
+  const fetchProductDetailOnDemand = async (productId: string) => {
+    if (!proposal) return;
     
-    console.log(`Successfully fetched details for ${results.filter(r => r.details).length}/${detailsToFetch.length} products`);
+    const product = proposal.products.find(p => p.source_id === productId || p.id === productId);
+    if (!product) return;
+    
+    setLoadingDetails(prev => new Set(prev).add(productId));
+    
+    try {
+      // Try to fetch from storage with fetch=true to trigger API call if not cached
+      const response = await fetch(`/api/proposal-details?proposalId=${proposal.id}&productId=${productId}&fetch=true`);
+      
+      if (response.ok) {
+        const details = await response.json();
+        
+        // Update productDetails map
+        setProductDetails(prev => new Map(prev).set(productId, details));
+        
+        // Update proposalData
+        setProposalData((prev: any) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            itemDetails: {
+              ...prev.itemDetails,
+              [`${proposal.id}_${productId}`]: details
+            }
+          };
+        });
+        
+        // Auto-select first 4 secondary images if not already selected
+        if (details.item_imgs && !selectedSecondaryImages[product.id]) {
+          const imageUrls = details.item_imgs.slice(0, 4).map((img: { url: string }) => {
+            const url = img.url.startsWith('//') ? `https:${img.url}` : img.url;
+            return url;
+          });
+          
+          setSelectedSecondaryImages(prev => ({
+            ...prev,
+            [product.id]: imageUrls
+          }));
+          
+          // Save to server
+          await saveSecondaryImageSelection(productId, imageUrls);
+        }
+        
+        console.log(`Fetched details for ${productId}`);
+      } else {
+        console.error(`Failed to fetch details for ${productId}:`, await response.text());
+      }
+    } catch (error) {
+      console.error(`Error fetching details for ${productId}:`, error);
+    } finally {
+      setLoadingDetails(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(productId);
+        return newSet;
+      });
+    }
+  };
+
+  // Save secondary image selection to JSON file
+  const saveSecondaryImageSelection = async (productId: string, images: string[]) => {
+    if (!proposal) return;
+    
+    try {
+      const response = await fetch('/api/proposal-details', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId: proposal.id,
+          productId,
+          selectedSecondaryImages: images
+        })
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to save secondary image selection:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error saving secondary image selection:', error);
+    }
+  };
+
+  // Toggle expand for full text item details
+  const toggleDetailExpansion = (productId: string) => {
+    setExpandedDetails(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
+
+  // Sequential fetch all remaining product details (for force reload)
+  const fetchAllProductDetailsSequential = async () => {
+    if (!proposal || !proposalData) return;
+    
+    const productsToFetch = proposal.products.filter(p => {
+      const key = `${proposal.id}_${p.source_id}`;
+      return !proposalData.itemDetails?.[key];
+    });
+    
+    if (productsToFetch.length === 0) {
+      console.log('All product details already loaded');
+      return;
+    }
+    
+    console.log(`Fetching details for ${productsToFetch.length} remaining products...`);
+    
+    for (let i = 0; i < productsToFetch.length; i++) {
+      const product = productsToFetch[i];
+      console.log(`[${i + 1}/${productsToFetch.length}] Fetching ${product.source_id}...`);
+      
+      await fetchProductDetailOnDemand(product.source_id);
+    }
+    
+    console.log('Finished fetching all product details');
   };
 
   useEffect(() => {
@@ -188,12 +348,61 @@ export default function ProposalDetailPage() {
   // Fetch details for all products on load
   useEffect(() => {
     if (proposal && proposal.products.length > 0) {
-      fetchAllProductDetails();
+      loadProposalDataFromStorage();
     }
   }, [proposal?.id]);
 
-  const loadProposal = () => {
+  const loadProposal = async () => {
     try {
+      // Always fetch from server first — server JSON is the source of truth
+      const response = await fetch(`/api/proposal-details?proposalId=${params.id}`);
+      if (response.ok) {
+        const data = await response.json();
+
+        // Merge aiEnrichments into products
+        const products = (data.products || []).map((p: any) => {
+          const enrichment = data.aiEnrichments?.[p.source_id];
+          return enrichment ? { ...p, aiEnrichment: enrichment } : p;
+        });
+
+        const serverProposal: Proposal = {
+          id: data.proposalId,
+          name: data.proposalName || 'Untitled',
+          client_name: data.clientName || '',
+          notes: data.notes || '',
+          status: data.status || 'draft',
+          currency: 'CNY',
+          created_at: data.createdAt,
+          updated_at: data.updatedAt,
+          products,
+          totalItems: data.products?.length || 0,
+          totalValue: data.products?.reduce((sum: number, p: any) => sum + (p.price?.current || 0), 0) || 0,
+          createdBy: data.createdBy,
+        };
+
+        setProposal(serverProposal);
+        setEditedName(serverProposal.name);
+        setEditedClientName(serverProposal.client_name || '');
+        setEditedNotes(serverProposal.notes || '');
+        setEditedStatus(serverProposal.status);
+
+        // Update localStorage to keep it in sync with server
+        try {
+          const existing = JSON.parse(localStorage.getItem('proposals') || '[]');
+          const idx = existing.findIndex((p: any) => p.id === serverProposal.id);
+          const stripped = stripBase64Images(serverProposal);
+          if (idx >= 0) {
+            existing[idx] = stripped;
+          } else {
+            existing.unshift(stripped);
+          }
+          localStorage.setItem('proposals', JSON.stringify(existing));
+        } catch (e) { /* ignore storage errors */ }
+        return;
+      }
+
+      // Fallback: load from localStorage if server returns 404 or error
+      console.log('Server fetch failed, falling back to localStorage...');
       const stored = localStorage.getItem('proposals');
       if (stored) {
         const proposals = JSON.parse(stored);
@@ -204,22 +413,10 @@ export default function ProposalDetailPage() {
           setEditedClientName(found.client_name || "");
           setEditedNotes(found.notes || "");
           setEditedStatus(found.status);
-          
-          // Load cached product details from localStorage
-          const cachedDetailsKey = `proposal_details_${found.id}`;
-          const cachedDetailsStr = localStorage.getItem(cachedDetailsKey);
-          if (cachedDetailsStr) {
-            try {
-              const cachedDetailsObj = JSON.parse(cachedDetailsStr);
-              setProductDetails(new Map(Object.entries(cachedDetailsObj)));
-            } catch (e) {
-              console.error('Error loading cached details:', e);
-            }
-          }
-        } else {
-          setProposal(null);
+          return;
         }
       }
+      setProposal(null);
     } catch (error) {
       console.error('Error loading proposal:', error);
     } finally {
@@ -283,14 +480,39 @@ export default function ProposalDetailPage() {
   const handleExportPDF = async () => {
     if (!proposal) return;
 
+    setIsExportingPDF(true);
+    setExportProgress({ type: 'pdf', message: 'Generating PDF...' });
+
     try {
+      // Add selected secondary images and cached details to each product
+      const proposalWithDetails = {
+        ...proposal,
+        products: proposal.products.map(product => {
+          const details = productDetails.get(product.source_id);
+          return {
+            ...product,
+            selectedSecondaryImages: selectedSecondaryImages[product.id] || [],
+            selectedAIImages: selectedAIImages[product.id] || [],
+            // Include cached details if available
+            cachedDetails: details ? {
+              desc: details.desc,
+              props: details.props,
+              sku: details.sku,
+              num: details.num,
+              shop_name: details.shop_name,
+              item_imgs: details.item_imgs,
+            } : undefined
+          };
+        })
+      };
+
       const response = await fetch('/api/export/pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          proposal,
+          proposal: proposalWithDetails,
           orientation: 'landscape',
         }),
       });
@@ -311,6 +533,9 @@ export default function ProposalDetailPage() {
     } catch (error) {
       console.error('Error exporting PDF:', error);
       alert('Failed to export PDF. This feature is coming soon!');
+    } finally {
+      setIsExportingPDF(false);
+      setExportProgress({ type: null, message: '' });
     }
   };
 
@@ -318,21 +543,45 @@ export default function ProposalDetailPage() {
     if (!proposal) return;
 
     setIsExportingPPTX(true);
+    setExportProgress({ type: 'pptx', message: 'Generating PowerPoint...' });
     try {
+      // Add selected secondary images and cached details to each product
+      const proposalWithDetails = {
+        ...proposal,
+        products: proposal.products.map(product => {
+          const details = productDetails.get(product.source_id);
+          return {
+            ...product,
+            selectedSecondaryImages: selectedSecondaryImages[product.id] || [],
+            selectedAIImages: selectedAIImages[product.id] || [],
+            // Include cached details if available
+            cachedDetails: details ? {
+              desc: details.desc,
+              props: details.props,
+              sku: details.sku,
+              num: details.num,
+              shop_name: details.shop_name,
+              item_imgs: details.item_imgs,
+            } : undefined
+          };
+        })
+      };
+
       const response = await fetch('/api/export/pptx', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          proposal,
+          proposal: proposalWithDetails,
           orientation: 'landscape',
           templateId: templateId || 'default',
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate PPTX');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.details || errData.error || `Server error ${response.status}`);
       }
 
       const blob = await response.blob();
@@ -349,6 +598,7 @@ export default function ProposalDetailPage() {
       alert('Failed to export PPTX');
     } finally {
       setIsExportingPPTX(false);
+      setExportProgress({ type: null, message: '' });
     }
   };
 
@@ -381,53 +631,91 @@ export default function ProposalDetailPage() {
     }
   };
 
-  const toggleRowExpansion = async (productId: string, product: ProductDTO) => {
-    const newExpanded = new Set(expandedRows);
+  const toggleSecondaryImageSelection = async (productId: string, imageUrl: string) => {
+    const currentSelection = selectedSecondaryImages[productId] || [];
+    const newSelection = currentSelection.includes(imageUrl)
+      ? currentSelection.filter((url: string) => url !== imageUrl)
+      : [...currentSelection, imageUrl].slice(0, 4); // Max 4 images
     
-    if (newExpanded.has(productId)) {
-      newExpanded.delete(productId);
-      setExpandedRows(newExpanded);
-      return;
+    setSelectedSecondaryImages(prev => ({
+      ...prev,
+      [productId]: newSelection
+    }));
+    
+    // Find the product's source_id for saving to JSON
+    const product = proposal?.products.find(p => p.id === productId);
+    if (product) {
+      await saveSecondaryImageSelection(product.source_id, newSelection);
     }
+  };
 
-    newExpanded.add(productId);
-    setExpandedRows(newExpanded);
+  const toggleAIImageSelection = async (productId: string, imageUrl: string) => {
+    const currentSelection = selectedAIImages[productId] || [];
+    const newSelection = currentSelection.includes(imageUrl)
+      ? currentSelection.filter((url: string) => url !== imageUrl)
+      : [...currentSelection, imageUrl].slice(0, 4); // Max 4 images
+    
+    setSelectedAIImages(prev => ({
+      ...prev,
+      [productId]: newSelection
+    }));
 
-    // Check if details are already in memory or cached with product
-    if (!productDetails.has(productId)) {
-      // Check if product has cached details
-      if (product.cachedDetails) {
-        console.log(`Using cached details for ${productId}`);
-        const newDetails = new Map(productDetails);
-        newDetails.set(productId, product.cachedDetails);
-        setProductDetails(newDetails);
-        return;
-      }
-
-      // Fetch details if not cached
-      const newLoading = new Set(loadingDetails);
-      newLoading.add(productId);
-      setLoadingDetails(newLoading);
-
+    // Auto-save to server JSON
+    const product = proposal?.products.find(p => p.id === productId);
+    if (product?.source_id) {
       try {
-        const response = await fetch(`/api/product-details?productId=${productId}&platform=${product.source}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch details');
-        }
-
-        const details = await response.json();
-        const newDetails = new Map(productDetails);
-        newDetails.set(productId, details);
-        setProductDetails(newDetails);
-      } catch (error) {
-        console.error('Error fetching product details:', error);
-      } finally {
-        const newLoading = new Set(loadingDetails);
-        newLoading.delete(productId);
-        setLoadingDetails(newLoading);
+        await fetch('/api/proposal-details', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            proposalId: proposal!.id,
+            allSelectedAIImages: { [product.source_id]: newSelection },
+          }),
+        });
+      } catch (err) {
+        console.error('Failed to save AI image selection:', err);
       }
     }
+  };
+
+  // Helper function to normalize item_imgs from various API formats
+  const normalizeItemImgs = (itemImgs: any): Array<{ url: string }> => {
+    if (!itemImgs) return [];
+    
+    // Already an array of objects with url
+    if (Array.isArray(itemImgs) && itemImgs.length > 0 && typeof itemImgs[0] === 'object' && itemImgs[0].url) {
+      return itemImgs;
+    }
+    
+    // Array of strings (URLs)
+    if (Array.isArray(itemImgs) && itemImgs.length > 0 && typeof itemImgs[0] === 'string') {
+      return itemImgs.map((url: string) => ({ url }));
+    }
+    
+    // Single string
+    if (typeof itemImgs === 'string') {
+      return [{ url: itemImgs }];
+    }
+    
+    // Object with nested structure (some APIs wrap images differently)
+    if (typeof itemImgs === 'object' && !Array.isArray(itemImgs)) {
+      // Try to extract from common nested formats
+      const possibleArrays = ['img', 'image', 'url', 'src', 'thumb'];
+      for (const key of possibleArrays) {
+        if (Array.isArray(itemImgs[key])) {
+          return normalizeItemImgs(itemImgs[key]);
+        }
+      }
+    }
+    
+    return [];
+  };
+
+  // Force reload all product details (fetch missing details sequentially)
+  const forceReloadAllProductDetails = async () => {
+    if (!proposal || !proposalData) return;
+    
+    await fetchAllProductDetailsSequential();
   };
 
   const openImageCarousel = (images: Array<{ url: string }>, initialIndex: number = 0) => {
@@ -467,7 +755,54 @@ export default function ProposalDetailPage() {
     }
   };
 
-  // Helper function to strip base64 images before saving to localStorage
+  // Helper function to strip base64 data: URLs before saving to localStorage (keep regular URLs)
+  const saveProductOrder = async (orderedProducts: ProductDTO[]) => {
+    if (!proposal) return;
+    try {
+      await fetch('/api/proposal-details', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId: proposal.id,
+          updatedProducts: orderedProducts.map(p => ({
+            id: p.id, source_id: p.source_id, source: p.source,
+            title: p.title, price: p.price, image_urls: p.image_urls,
+            url: p.url, moq: p.moq, seller: p.seller,
+          })),
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to save product order:', err);
+    }
+  };
+
+  const handleDragStart = (index: number) => {
+    dragIndexRef.current = index;
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const fromIndex = dragIndexRef.current;
+    if (fromIndex === null || fromIndex === dropIndex || !proposal) return;
+    const reordered = [...proposal.products];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(dropIndex, 0, moved);
+    setProposal({ ...proposal, products: reordered });
+    saveProductOrder(reordered);
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  };
+
   const stripBase64Images = (proposal: Proposal): Proposal => {
     return {
       ...proposal,
@@ -477,7 +812,8 @@ export default function ProposalDetailPage() {
           ...product.aiEnrichment,
           design_alternatives: product.aiEnrichment.design_alternatives.map(alt => ({
             ...alt,
-            generated_image_url: undefined // Remove base64 images to save space
+            // Only strip actual base64 data URLs, keep regular https:// URLs
+            generated_image_url: alt.generated_image_url?.startsWith('data:') ? undefined : alt.generated_image_url
           }))
         } : undefined
       }))
@@ -506,6 +842,8 @@ export default function ProposalDetailPage() {
         body: JSON.stringify({
           imageUrl: product.image_urls[0],
           userNotes: userRemarks,
+          proposalId: params.id,
+          productId: product.source_id || product.id,
         }),
       });
 
@@ -562,7 +900,7 @@ export default function ProposalDetailPage() {
     }
   };
 
-  const removeProduct = (productId: string) => {
+  const removeProduct = async (productId: string) => {
     if (!proposal) return;
 
     const updatedProducts = proposal.products.filter(p => p.id !== productId);
@@ -585,6 +923,15 @@ export default function ProposalDetailPage() {
           setProposal(updatedProposal);
         }
       }
+      // Auto-save product list to server JSON
+      await fetch('/api/proposal-details', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId: proposal.id,
+          updatedProducts,
+        }),
+      });
     } catch (error) {
       console.error('Error updating proposal:', error);
       alert('Failed to remove product');
@@ -770,9 +1117,23 @@ export default function ProposalDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={forceReloadAllProductDetails}
+                    className="border-sky-300 text-sky-600 hover:bg-sky-50 rounded-full h-9 w-9 p-0"
+                    disabled={loadingDetails.size > 0}
+                    title="Reload All Secondary Photos"
+                  >
+                    {loadingDetails.size > 0 ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="h-4 w-4" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setIsEditing(true)}
                     className="rounded-full h-9 w-9 p-0"
-                    title="Edit"
+                    title="Edit proposal details"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -818,17 +1179,18 @@ export default function ProposalDetailPage() {
             <div>
               <p className="text-sm text-gray-600 mb-1">Details Status</p>
               {(() => {
-                const productsWithDetails = proposal.products.filter(p => p.cachedDetails);
-                const allHaveDetails = productsWithDetails.length === proposal.products.length;
+                const loadedCount = proposalData?.successfulItems || 0;
+                const totalCount = proposal?.products.length || 0;
+                const allHaveDetails = loadedCount === totalCount && totalCount > 0;
                 return allHaveDetails ? (
                   <div className="flex items-center text-green-600">
                     <CheckCircle2 className="h-4 w-4 mr-2" />
                     <span className="text-sm font-medium">All loaded</span>
                   </div>
-                ) : productsWithDetails.length > 0 ? (
+                ) : loadedCount > 0 ? (
                   <div className="flex items-center text-amber-600">
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    <span className="text-sm font-medium">{productsWithDetails.length}/{proposal.products.length} loaded</span>
+                    <span className="text-sm font-medium">{loadedCount}/{totalCount} loaded</span>
                   </div>
                 ) : (
                   <div className="flex items-center text-gray-500">
@@ -875,26 +1237,29 @@ export default function ProposalDetailPage() {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {proposal.products.map((product) => {
-                const isExpanded = expandedRows.has(product.id);
-                const isLoadingDetails = loadingDetails.has(product.id);
-                const details = productDetails.get(product.id);
+              {proposal.products.map((product, index) => {
+                const details = productDetails.get(product.source_id);
 
                 return (
-                  <div key={product.id}>
+                  <div
+                    key={`${product.id}-${index}`}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    className={`transition-colors ${
+                      dragOverIndex === index && dragIndexRef.current !== index
+                        ? 'border-t-2 border-sky-400 bg-sky-50'
+                        : ''
+                    }`}
+                  >
                     <div className="p-6 hover:bg-gray-50 transition-colors">
                       <div className="flex gap-6">
-                        <div className="flex-shrink-0">
-                          <button
-                            onClick={() => toggleRowExpansion(product.id, product)}
-                            className="text-gray-400 hover:text-gray-600 transition-colors mb-2"
-                          >
-                            {isExpanded ? (
-                              <ChevronUp className="h-5 w-5" />
-                            ) : (
-                              <ChevronDown className="h-5 w-5" />
-                            )}
-                          </button>
+                        <div
+                          draggable
+                          onDragStart={() => handleDragStart(index)}
+                          onDragEnd={handleDragEnd}
+                          className="flex-shrink-0 flex items-center pr-1 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500"
+                        >
+                          <GripVertical className="h-5 w-5" />
                         </div>
                         <div className="flex-shrink-0">
                           <button
@@ -932,101 +1297,112 @@ export default function ProposalDetailPage() {
                             )}
                           </div>
                           
-                          {/* Metadata Popup */}
-                          {metadataPopupOpen === product.id && details && (
-                            <div className="mb-4 p-4 bg-white border border-gray-300 rounded-lg shadow-lg relative">
-                              <button
-                                onClick={() => setMetadataPopupOpen(null)}
-                                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-                              >
-                                ✕
-                              </button>
-                              <h4 className="font-semibold text-gray-900 mb-3 text-sm">Original Product Metadata</h4>
-                              <div className="grid grid-cols-2 gap-4 text-xs">
-                                <div>
-                                  <h5 className="font-medium text-gray-700 mb-2">Product Information</h5>
-                                  <dl className="space-y-1">
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Brand:</dt>
-                                      <dd className="font-medium text-gray-900">{details.brand || 'N/A'}</dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">MOQ:</dt>
-                                      <dd className="font-medium text-gray-900">{details.moq || 'N/A'}</dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Category ID:</dt>
-                                      <dd className="font-medium text-gray-900">{details.category_id || 'N/A'}</dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Created:</dt>
-                                      <dd className="font-medium text-gray-900">{details.created_time || 'N/A'}</dd>
-                                    </div>
-                                  </dl>
-                                </div>
-                                <div>
-                                  <h5 className="font-medium text-gray-700 mb-2">Engagement Metrics</h5>
-                                  <dl className="space-y-1">
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Favorites:</dt>
-                                      <dd className="font-medium text-gray-900">
-                                        {details.fav_count !== undefined && details.fav_count !== null ? details.fav_count : 'N/A'}
-                                      </dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Fans:</dt>
-                                      <dd className="font-medium text-gray-900">
-                                        {details.fans_count !== undefined && details.fans_count !== null ? details.fans_count : 'N/A'}
-                                      </dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Rating:</dt>
-                                      <dd className="font-medium text-gray-900">{details.rating_grade || 'N/A'}</dd>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <dt className="text-gray-600">Sales:</dt>
-                                      <dd className="font-medium text-gray-900">
-                                        {details.sales_volume ? `${details.sales_volume.toLocaleString()}` : 'N/A'}
-                                      </dd>
-                                    </div>
-                                  </dl>
-                                </div>
-                              </div>
-                              {details.props && details.props.length > 0 && (
-                                <div className="mt-3 pt-3 border-t border-gray-200">
-                                  <h5 className="font-medium text-gray-700 mb-2 text-xs">Specifications</h5>
-                                  <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                                    {details.props.slice(0, 6).map((prop, idx) => (
-                                      <div key={idx} className="flex justify-between">
-                                        <dt className="text-gray-600 truncate">{prop.name}:</dt>
-                                        <dd className="font-medium text-gray-900 truncate">{prop.value}</dd>
-                                      </div>
-                                    ))}
-                                  </dl>
-                                </div>
+                          {/* Secondary Images with Checkboxes */}
+                          <div className="space-y-2">
+                            <h5 className="text-sm font-medium text-gray-700 mb-2">
+                              Select up to 4 secondary photos for export:
+                              {details?.item_imgs && (
+                                <span className="ml-2 text-xs text-gray-500">
+                                  ({details.item_imgs.length} available)
+                                </span>
                               )}
-                            </div>
-                          )}
-                      
-                      <div className="space-y-2">
-                        {/* Secondary Images on left, Product info on right */}
-                        <div className="flex gap-4">
-                          {/* OneBound Product Images - Left side */}
-                          {details?.item_imgs && details.item_imgs.length > 0 && (
-                            <div className="flex gap-2 overflow-x-auto">
-                              {details.item_imgs.slice(0, 6).map((img, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => openImageCarousel(details.item_imgs || [], idx)}
-                                  className="w-16 h-16 bg-gray-100 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer flex-shrink-0"
-                                >
-                                  <img 
-                                    src={img.url.startsWith('//') ? `https:${img.url}` : img.url}
-                                    alt={`Product ${idx + 1}`}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </button>
-                              ))}
+                            </h5>
+                            {!details?.item_imgs && (
+                              <p className="text-xs text-gray-400">No secondary images data available</p>
+                            )}
+                            {details?.item_imgs && details.item_imgs.length === 0 && (
+                              <p className="text-xs text-gray-400">Empty image list from API</p>
+                            )}
+                            {details?.item_imgs && details.item_imgs.length > 0 && (
+                              <div className="flex gap-2 overflow-x-auto">
+                                {details.item_imgs.slice(0, 6).map((img, idx) => {
+                                  const imageUrl = img.url.startsWith('//') ? `https:${img.url}` : img.url;
+                                  const isSelected = selectedSecondaryImages[product.id]?.includes(imageUrl) || false;
+                                  
+                                  return (
+                                    <div key={idx} className="relative">
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => toggleSecondaryImageSelection(product.id, imageUrl)}
+                                        className="absolute top-1 left-1 w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                                        id={`secondary-img-${product.id}-${idx}`}
+                                      />
+                                      <button
+                                        onClick={() => openImageCarousel(details.item_imgs || [], idx)}
+                                        className={`w-16 h-16 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer flex-shrink-0 ${
+                                          isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300'
+                                        }`}
+                                      >
+                                        <img 
+                                          src={imageUrl}
+                                          alt={`Product ${idx + 1}`}
+                                          className="w-full h-full object-cover"
+                                        />
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* AI Generated Image Selection - directly under secondary images */}
+                          {product.aiEnrichment?.design_alternatives && product.aiEnrichment.design_alternatives.some(a => a.generated_image_url) && (
+                            <div className="mt-3 space-y-2">
+                              <h5 className="text-sm font-medium text-purple-700">
+                                Select AI designs for export (up to 4):
+                                <span className="ml-2 text-xs text-gray-500">
+                                  ({selectedAIImages[product.id]?.length || 0}/4 selected)
+                                </span>
+                              </h5>
+                              <div className="flex gap-2 overflow-x-auto pb-1">
+                                {product.aiEnrichment.design_alternatives.map((alt, idx) => {
+                                  if (!alt.generated_image_url) return null;
+                                  const isSelected = selectedAIImages[product.id]?.includes(alt.generated_image_url) || false;
+                                  return (
+                                    <div key={idx} className="relative flex-shrink-0">
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => toggleAIImageSelection(product.id, alt.generated_image_url!)}
+                                        className="absolute top-1 left-1 w-4 h-4 text-purple-600 rounded focus:ring-purple-500 z-10"
+                                      />
+                                      <button
+                                        onClick={() => openImageCarousel(
+                                          product.aiEnrichment!.design_alternatives
+                                            .filter(a => a.generated_image_url)
+                                            .map(a => ({ url: a.generated_image_url! })),
+                                          idx
+                                        )}
+                                        title={alt.concept_title}
+                                        className={`w-16 h-16 rounded overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer ${
+                                          isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300'
+                                        }`}
+                                      >
+                                        <img
+                                          src={alt.generated_image_url}
+                                          alt={alt.concept_title}
+                                          className="w-full h-full object-cover bg-purple-50"
+                                          referrerPolicy="no-referrer"
+                                          onError={(e) => {
+                                            const t = e.currentTarget;
+                                            t.style.display = 'none';
+                                            const parent = t.parentElement;
+                                            if (parent && !parent.querySelector('.img-fallback')) {
+                                              const fb = document.createElement('div');
+                                              fb.className = 'img-fallback w-full h-full flex items-center justify-center bg-purple-100 text-purple-500 text-xs text-center p-1';
+                                              fb.textContent = alt.concept_title;
+                                              parent.appendChild(fb);
+                                            }
+                                          }}
+                                        />
+                                      </button>
+                                      <p className="text-xs text-gray-500 mt-1 text-center w-16 truncate">{alt.concept_title}</p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
                           )}
                           
@@ -1062,19 +1438,95 @@ export default function ProposalDetailPage() {
                             >
                               View on {product.source}
                             </a>
+                            
+                            {/* Expand/Collapse Button */}
+                            <button
+                              onClick={() => toggleDetailExpansion(product.source_id)}
+                              className="flex items-center gap-1 text-sky-600 hover:text-sky-700 text-sm mt-2"
+                            >
+                              {expandedDetails.has(product.source_id) ? (
+                                <>
+                                  <ChevronUp className="h-4 w-4" />
+                                  Hide Details
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="h-4 w-4" />
+                                  Show Full Details
+                                  {!details && loadingDetails.has(product.source_id) && (
+                                    <Loader2 className="h-3 w-3 animate-spin ml-1" />
+                                  )}
+                                </>
+                              )}
+                            </button>
+                            
+                            {/* Expanded Full Details */}
+                            {expandedDetails.has(product.source_id) && details && (
+                              <div className="mt-3 p-3 bg-gray-50 rounded-lg text-sm">
+                                {loadingDetails.has(product.source_id) ? (
+                                  <div className="flex items-center gap-2 text-gray-500">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Loading details...
+                                  </div>
+                                ) : (
+                                  <div className="space-y-2">
+                                    {details.desc && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Description:</span>
+                                        <p className="text-gray-600 mt-1 whitespace-pre-wrap">{details.desc}</p>
+                                      </div>
+                                    )}
+                                    {details.props && details.props.length > 0 && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Properties:</span>
+                                        <div className="mt-1 grid grid-cols-2 gap-1">
+                                          {details.props.slice(0, 8).map((prop: { name: string; value: string }, idx: number) => (
+                                            <div key={idx} className="text-xs text-gray-600">
+                                              <span className="font-medium">{prop.name}:</span> {prop.value}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {details.sku && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">SKU:</span>
+                                        <span className="text-gray-600 ml-1">{details.sku}</span>
+                                      </div>
+                                    )}
+                                    {details.num && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Item ID:</span>
+                                        <span className="text-gray-600 ml-1">{details.num}</span>
+                                      </div>
+                                    )}
+                                    {details.shop_name && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Shop:</span>
+                                        <span className="text-gray-600 ml-1">{details.shop_name}</span>
+                                      </div>
+                                    )}
+                                    <div className="text-xs text-gray-400 mt-2">
+                                      {details.cached ? 'Loaded from cache' : 'Fetched from API'}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                         
-                        {/* AI Enrichment Context - Pill-shaped textbox below */}
-                        <div className="flex items-center gap-2">
-                          <Input
+                        {/* AI Enrichment Context - Textarea below */}
+                        <div className="flex items-start gap-2">
+                          <Textarea
                             value={aiEnrichRemarks[product.id] || ''}
                             onChange={(e) => setAiEnrichRemarks(prev => ({
                               ...prev,
                               [product.id]: e.target.value
                             }))}
                             placeholder="Guide AI designs (e.g., eco-friendly, modern)"
-                            className="flex-1 text-xs bg-white border border-purple-200 rounded-full px-4 h-9 focus:ring-2 focus:ring-purple-300 focus:border-transparent transition-all placeholder:text-gray-400"
+                            rows={3}
+                            className="flex-1 text-xs bg-white border border-purple-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-300 focus:border-transparent transition-all placeholder:text-gray-400 resize-none"
                           />
                           <Button
                             size="sm"
@@ -1092,8 +1544,6 @@ export default function ProposalDetailPage() {
                             )}
                           </Button>
                         </div>
-                      </div>
-                        </div>
 
                         <div className="flex-shrink-0">
                           <Button
@@ -1107,122 +1557,6 @@ export default function ProposalDetailPage() {
                         </div>
                       </div>
                     </div>
-
-                    {/* Expanded Details - Combined View */}
-                    {isExpanded && (
-                      <div className="px-6 pb-6 bg-gray-50">
-                        {isLoadingDetails ? (
-                          <div className="flex items-center justify-center py-8">
-                            <Loader2 className="h-6 w-6 animate-spin text-sky-500 mr-2" />
-                            <span className="text-gray-600">Loading product details...</span>
-                          </div>
-                        ) : (
-                          <div className="space-y-6 mt-6">
-                            {/* AI Enrichment Section */}
-                              {product.aiEnrichment && (
-                                <>
-                                  <div className="flex items-center gap-2 mb-4">
-                                    <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                    <h4 className="font-semibold text-gray-900">AI Design Alternatives</h4>
-                                    <Badge variant="outline" className="text-purple-600 border-purple-600">
-                                      Generated {new Date(product.aiEnrichment.enriched_at).toLocaleDateString()}
-                                    </Badge>
-                                  </div>
-
-                                  {/* Original Product Analysis */}
-                                  <div className="bg-white rounded-lg p-4 mb-4">
-                                    <h5 className="font-medium text-gray-900 mb-3">Original Product</h5>
-                                    <p className="text-sm font-semibold text-gray-800 mb-1">
-                                      {product.aiEnrichment.original_product.title}
-                                    </p>
-                                    <p className="text-sm text-gray-600 mb-4">
-                                      {product.aiEnrichment.original_product.description}
-                                    </p>
-
-                                    {/* Product Specifications */}
-                                    {product.aiEnrichment.original_product.specifications && (
-                                      <div className="border-t border-gray-200 pt-3 mt-3">
-                                        <h6 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Product Specifications</h6>
-                                        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                          {product.aiEnrichment.original_product.specifications.dimensions !== 'N/A' && (
-                                            <>
-                                              <dt className="text-gray-600">Dimensions:</dt>
-                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.dimensions}</dd>
-                                            </>
-                                          )}
-                                          {product.aiEnrichment.original_product.specifications.weight !== 'N/A' && (
-                                            <>
-                                              <dt className="text-gray-600">Weight:</dt>
-                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.weight}</dd>
-                                            </>
-                                          )}
-                                          {product.aiEnrichment.original_product.specifications.materials !== 'N/A' && (
-                                            <>
-                                              <dt className="text-gray-600">Materials:</dt>
-                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.materials}</dd>
-                                            </>
-                                          )}
-                                          {product.aiEnrichment.original_product.specifications.other_specs !== 'N/A' && (
-                                            <>
-                                              <dt className="text-gray-600">Other:</dt>
-                                              <dd className="font-medium text-gray-900">{product.aiEnrichment.original_product.specifications.other_specs}</dd>
-                                            </>
-                                          )}
-                                        </dl>
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Design Alternatives */}
-                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {product.aiEnrichment.design_alternatives.map((alt, idx) => (
-                                      <div key={idx} className="bg-white rounded-lg border border-gray-200 hover:border-purple-300 transition-colors overflow-hidden">
-                                        <div className="flex items-start gap-2 p-3 bg-gray-50 border-b border-gray-200">
-                                          <Badge variant="secondary" className="text-xs">
-                                            Concept {idx + 1}
-                                          </Badge>
-                                          <h6 className="font-semibold text-gray-900 flex-1">{alt.concept_title}</h6>
-                                        </div>
-                                        
-                                        {/* Concept Image Visualization */}
-                                        <div className="relative bg-gradient-to-br from-purple-50 to-sky-50 aspect-square">
-                                          {alt.generated_image_url ? (
-                                            <img 
-                                              src={alt.generated_image_url} 
-                                              alt={alt.concept_title}
-                                              className="w-full h-full object-cover"
-                                            />
-                                          ) : (
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                                              <svg className="h-12 w-12 text-purple-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                              </svg>
-                                              <p className="text-xs text-gray-600 italic leading-relaxed">
-                                                {alt.generated_image_prompt}
-                                              </p>
-                                            </div>
-                                          )}
-                                        </div>
-
-                                        <div className="p-4 space-y-3">
-                                          <p className="text-sm text-gray-700">{alt.short_description}</p>
-                                          
-                                          <div className="border-t border-gray-100 pt-3">
-                                            <p className="text-xs font-medium text-gray-500 mb-1">Design Rationale:</p>
-                                            <p className="text-xs text-gray-700 leading-relaxed">{alt.design_rationale}</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </div>
                 );
               })}
@@ -1242,6 +1576,35 @@ export default function ProposalDetailPage() {
         open={isTemplateDialogOpen}
         onOpenChange={setIsTemplateDialogOpen}
       />
+
+      {/* Export Progress Overlay */}
+      {(isExportingPDF || isExportingPPTX) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl p-8 shadow-2xl flex flex-col items-center gap-4 max-w-sm mx-4">
+            <div className="relative">
+              <div className="h-16 w-16 rounded-full border-4 border-sky-100 border-t-sky-500 animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                {exportProgress.type === 'pdf' ? (
+                  <FileText className="h-6 w-6 text-sky-500" />
+                ) : (
+                  <Download className="h-6 w-6 text-sky-500" />
+                )}
+              </div>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-semibold text-gray-900 mb-1">
+                {exportProgress.message}
+              </p>
+              <p className="text-sm text-gray-500">
+                Please wait, this may take a moment...
+              </p>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-2 overflow-hidden">
+              <div className="bg-sky-500 h-2 rounded-full animate-pulse w-2/3" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

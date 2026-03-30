@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2 } from "lucide-react";
+import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ProductDTO } from "@/types/product";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface Proposal {
   id: string;
@@ -20,12 +22,17 @@ interface Proposal {
   status: string;
   created_at: string;
   updated_at: string;
+  createdBy?: { email: string; name: string } | null;
   totalItems?: number;
   totalValue?: number;
+  successfulItems?: number;
   products?: ProductDTO[];
 }
 
 export default function ProposalsPage() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [proposalProducts, setProposalProducts] = useState<ProductDTO[]>([]);
@@ -35,33 +42,164 @@ export default function ProposalsPage() {
   const [clientName, setClientName] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [filterMode, setFilterMode] = useState<'my' | 'all'>('all');
+  const [sortField, setSortField] = useState<'name' | 'date'>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  
+  // Product details state
+  const [productDetails, setProductDetails] = useState<Map<string, any>>(new Map());
+  const [loadingDetails, setLoadingDetails] = useState<Set<string>>(new Set());
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    fetchProposals();
-    loadProposalProducts();
-  }, []);
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+    }
+  }, [status, router]);
 
   const loadProposalProducts = () => {
+    console.log('Loading proposal products from localStorage...');
     const stored = localStorage.getItem('proposalProducts');
+    console.log('Raw proposal products data:', stored);
+    
     if (stored) {
-      setProposalProducts(JSON.parse(stored));
+      const parsed = JSON.parse(stored);
+      console.log('Parsed proposal products:', parsed);
+      setProposalProducts(parsed);
+    } else {
+      console.log('No proposal products found in localStorage');
     }
   };
 
-  const fetchProposals = async () => {
+  // Load proposals from server JSON files and products from localStorage
+  const fetchProposalsData = async () => {
     try {
-      // Load from localStorage for now
-      const stored = localStorage.getItem('proposals');
-      if (stored) {
-        setProposals(JSON.parse(stored));
+      setIsLoading(true);
+      const response = await fetch('/api/proposals');
+      if (response.ok) {
+        const data = await response.json();
+        setProposals(data.proposals || []);
       } else {
+        console.error('Failed to fetch proposals from API');
         setProposals([]);
       }
     } catch (error) {
-      console.log("Error fetching proposals:", error);
+      console.error('Error fetching proposals:', error);
       setProposals([]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProposalsData();
+    loadProposalProducts();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchProposalsData();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
+  const userEmail = session?.user?.email;
+  const filteredProposals = filterMode === 'all' || !userEmail
+    ? proposals
+    : proposals.filter(p => !p.createdBy || p.createdBy?.email === userEmail);
+
+  const sortedProposals = [...filteredProposals].sort((a, b) => {
+    const cmp = sortField === 'name'
+      ? (a.name || '').localeCompare(b.name || '')
+      : new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
+  // Show loading while checking auth
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-sky-500" />
+      </div>
+    );
+  }
+  // Don't render content if not authenticated
+  if (!session) {
+    return null;
+  };
+
+  // Fetch product details
+  const fetchProductDetails = async (productId: string, platform: string) => {
+    if (productDetails.has(productId) || loadingDetails.has(productId)) {
+      return;
+    }
+
+    console.log(`Fetching details for product ${productId} from ${platform}`);
+    setLoadingDetails(prev => new Set(prev).add(productId));
+    
+    try {
+      const response = await fetch('/api/product-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ platform, productId }),
+      });
+      
+      console.log(`Response status: ${response.status}`);
+      
+      if (response.ok) {
+        const details = await response.json();
+        console.log('Product details received:', details);
+        setProductDetails(prev => new Map(prev).set(productId, details));
+      } else {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+      }
+    } catch (error) {
+      console.error('Failed to fetch product details:', error);
+    } finally {
+      setLoadingDetails(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(productId);
+        return newSet;
+      });
+    }
+  };
+
+  // Test function to manually fetch details
+  const testFetchDetails = () => {
+    if (proposalProducts.length > 0) {
+      const firstProduct = proposalProducts[0];
+      console.log('Test fetching details for:', firstProduct.id, firstProduct.source);
+      fetchProductDetails(firstProduct.id, firstProduct.source);
+    }
+  };
+
+  const handleDeleteProposal = async (proposalId: string) => {
+    if (!confirm('Are you sure you want to delete this proposal?')) {
+      return;
+    }
+    try {
+      const response = await fetch(`/api/proposals?id=${encodeURIComponent(proposalId)}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setProposals(prev => prev.filter(p => p.id !== proposalId));
+        // Also remove from localStorage if present
+        try {
+          const stored = localStorage.getItem('proposals');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            const updated = parsed.filter((p: any) => p.id !== proposalId);
+            localStorage.setItem('proposals', JSON.stringify(updated));
+          }
+        } catch (e) { /* ignore localStorage errors */ }
+      } else {
+        alert('Failed to delete proposal');
+      }
+    } catch (error) {
+      console.error('Error deleting proposal:', error);
+      alert('Failed to delete proposal');
     }
   };
 
@@ -71,16 +209,23 @@ export default function ProposalsPage() {
     localStorage.setItem('proposalProducts', JSON.stringify(updated));
   };
 
+  const [savingProgress, setSavingProgress] = useState('');
+  
   const handleSaveProposal = async () => {
+    console.log('Save proposal clicked');
+    console.log('Proposal name:', proposalName);
+    
     if (!proposalName.trim()) {
       alert('Please enter a proposal name');
       return;
     }
 
     setIsSaving(true);
+    setSavingProgress('Saving proposal...');
 
+    const proposalId = `proposal_${Date.now()}`;
     const proposal = {
-      id: `proposal_${Date.now()}`,
+      id: proposalId,
       name: proposalName,
       client_name: clientName,
       currency: 'CNY',
@@ -93,14 +238,49 @@ export default function ProposalsPage() {
       totalValue: proposalProducts.reduce((sum, p) => sum + p.price.current, 0),
     };
 
+    console.log('Proposal object:', proposal);
+
     try {
+      // Step 1: Save proposal to localStorage
+      setSavingProgress('Saving proposal to local storage...');
       const existingProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
       existingProposals.unshift(proposal);
       localStorage.setItem('proposals', JSON.stringify(existingProposals));
       
+      // Step 2: Fetch and save all item details to server-side JSON
+      if (proposalProducts.length > 0) {
+        setSavingProgress(`Fetching item details for ${proposalProducts.length} products... This may take a few minutes.`);
+        console.log('Fetching item details for all products...');
+        const detailsResponse = await fetch('/api/proposal-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            proposalId,
+            proposalName,
+            clientName,
+            notes,
+            products: proposalProducts,
+            createdBy: session?.user ? {
+              email: session.user.email || '',
+              name: session.user.name || '',
+            } : null
+          })
+        });
+        
+        if (!detailsResponse.ok) {
+          console.error('Failed to fetch item details:', await detailsResponse.text());
+          setSavingProgress('Warning: Some item details may not have been saved.');
+        } else {
+          const result = await detailsResponse.json();
+          console.log('Item details saved:', result);
+          setSavingProgress(`Saved! ${result.successfulItems}/${result.totalItems} item details fetched.`);
+        }
+      }
+      
       localStorage.removeItem('proposalProducts');
       
-      setProposals(existingProposals);
+      // Reload proposals from server
+      await fetchProposalsData();
       setProposalProducts([]);
       setShowCreateForm(false);
       setUserDismissedForm(false);
@@ -114,6 +294,7 @@ export default function ProposalsPage() {
       alert('Failed to save proposal');
     } finally {
       setIsSaving(false);
+      setSavingProgress('');
     }
   };
 
@@ -207,111 +388,196 @@ export default function ProposalsPage() {
                 </div>
                 <Button
                   onClick={handleSaveProposal}
-                  disabled={isSaving || proposalProducts.length === 0}
+                  disabled={isSaving}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  {isSaving ? 'Saving...' : 'Save Proposal'}
+                  {isSaving ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Saving...
+                    </span>
+                  ) : 'Save Proposal'}
                 </Button>
               </div>
+              {isSaving && savingProgress && (
+                <div className="mt-3 p-3 bg-sky-50 border border-sky-200 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="h-5 w-5 animate-spin text-sky-600 flex-shrink-0" />
+                    <p className="text-sm text-sky-700">{savingProgress}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b bg-gray-50">
-              <h2 className="font-semibold text-gray-900">Products ({proposalProducts.length})</h2>
+            <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h2 className="font-semibold text-gray-900">Products ({proposalProducts.length})</h2>
+                <div className="text-xs text-gray-500">
+                  Details: {productDetails.size} | Loading: {loadingDetails.size}
+                </div>
+              </div>
+              {proposalProducts.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={testFetchDetails}
+                  className="text-xs"
+                >
+                  Test Fetch Details
+                </Button>
+              )}
             </div>
 
             {proposalProducts.length === 0 ? (
               <div className="p-12 text-center text-gray-500">
                 <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <p>No products added yet. Go to Search tab and add products.</p>
+                <p>No products added yet.</p>
+                <div className="mt-4">
+                  <Button
+                    onClick={() => router.push('/')}
+                    className="bg-sky-600 hover:bg-sky-700 text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Products
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
-                {proposalProducts.map((product) => (
-                  <div key={product.id} className="p-6 hover:bg-gray-50 transition-colors">
-                    <div className="flex gap-6">
-                      <div className="flex-shrink-0">
-                        <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
-                          {product.image_urls[0] ? (
-                            <img
-                              src={product.image_urls[0]}
-                              alt={product.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400">
-                              No image
-                            </div>
-                          )}
-                        </div>
-                        {product.image_urls.length > 1 && (
-                          <div className="mt-2 flex gap-2">
-                            {product.image_urls.slice(1, 4).map((url, idx) => (
-                              <div key={idx} className="w-10 h-10 bg-gray-100 rounded overflow-hidden">
-                                <img src={url} alt="" className="w-full h-full object-cover" />
-                              </div>
-                            ))}
-                            {product.image_urls.length > 4 && (
-                              <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-600">
-                                +{product.image_urls.length - 4}
+                {proposalProducts.map((product) => {
+                  const details = productDetails.get(product.id);
+                  const isLoading = loadingDetails.has(product.id);
+                  
+                  return (
+                    <div key={product.id} className="p-6 hover:bg-gray-50 transition-colors">
+                      <div className="flex gap-6">
+                        <div className="flex-shrink-0">
+                          <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
+                            {details?.pic_url || product.image_urls[0] ? (
+                              <img
+                                src={details?.pic_url || product.image_urls[0]}
+                                alt={details?.title || product.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                No image
                               </div>
                             )}
                           </div>
-                        )}
-                      </div>
-
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-2">{product.title}</h3>
-                        
-                        <div className="grid grid-cols-2 gap-4 text-sm mb-3">
-                          <div>
-                            <span className="text-gray-600">Price:</span>
-                            <span className="ml-2 font-semibold text-sky-600">
-                              {formatCurrency(product.price.current, product.price.currency)}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Platform:</span>
-                            <span className="ml-2 capitalize">{product.source}</span>
-                          </div>
-                          {product.moq && (
-                            <div>
-                              <span className="text-gray-600">MOQ:</span>
-                              <span className="ml-2">{product.moq} units</span>
-                            </div>
-                          )}
-                          {product.seller?.location && (
-                            <div>
-                              <span className="text-gray-600">Location:</span>
-                              <span className="ml-2">{product.seller.location}</span>
+                          {(details?.item_imgs?.length > 0 || product.image_urls.length > 1) && (
+                            <div className="mt-2 flex gap-2">
+                              {(details?.item_imgs?.slice(0, 4) || product.image_urls.slice(1, 5)).map((img: any, idx: number) => (
+                                <div key={idx} className="w-10 h-10 bg-gray-100 rounded overflow-hidden">
+                                  <img 
+                                    src={typeof img === 'string' ? img : img.url} 
+                                    alt="" 
+                                    className="w-full h-full object-cover" 
+                                  />
+                                </div>
+                              ))}
+                              {((details?.item_imgs?.length || product.image_urls.length - 1) > 4) && (
+                                <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-600">
+                                  +{((details?.item_imgs?.length || product.image_urls.length - 1) - 4)}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
 
-                        <a
-                          href={product.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-sky-600 hover:text-sky-700"
-                        >
-                          View on {product.source}
-                        </a>
-                      </div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-semibold text-gray-900">{details?.title || product.title}</h3>
+                            {isLoading && (
+                              <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                            )}
+                          </div>
+                          
+                          {details?.description && (
+                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                              {details.description}
+                            </p>
+                          )}
+                          
+                          <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                            <div>
+                              <span className="text-gray-600">Price:</span>
+                              <span className="ml-2 font-semibold text-sky-600">
+                                {formatCurrency(details?.price?.current || product.price.current, details?.price?.currency || product.price.currency)}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Platform:</span>
+                              <span className="ml-2 capitalize">{product.source}</span>
+                            </div>
+                            {details?.moq || product.moq ? (
+                              <div>
+                                <span className="text-gray-600">MOQ:</span>
+                                <span className="ml-2">{details?.moq || product.moq} units</span>
+                              </div>
+                            ) : null}
+                            {details?.seller?.name && (
+                              <div>
+                                <span className="text-gray-600">Seller:</span>
+                                <span className="ml-2">{details.seller.name}</span>
+                              </div>
+                            )}
+                            {details?.seller?.rating && (
+                              <div>
+                                <span className="text-gray-600">Rating:</span>
+                                <span className="ml-2">⭐ {details.seller.rating}</span>
+                              </div>
+                            )}
+                            {details?.sales && (
+                              <div>
+                                <span className="text-gray-600">Sales:</span>
+                                <span className="ml-2">{details.sales} sold</span>
+                              </div>
+                            )}
+                          </div>
 
-                      <div className="flex-shrink-0">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeProduct(product.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          {details?.specifications && Object.keys(details.specifications).length > 0 && (
+                            <div className="mb-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Info className="h-4 w-4 text-gray-500" />
+                                <span className="text-sm font-medium text-gray-700">Specifications</span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                {Object.entries(details.specifications).slice(0, 4).map(([key, value]) => (
+                                  <div key={key} className="text-gray-600">
+                                    <span className="font-medium">{key}:</span> {String(value)}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <a
+                            href={product.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-sky-600 hover:text-sky-700"
+                          >
+                            View on {product.source}
+                          </a>
+                        </div>
+
+                        <div className="flex-shrink-0">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeProduct(product.id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -328,21 +594,53 @@ export default function ProposalsPage() {
           <h1 className="text-3xl font-bold text-gray-900">
             Proposals
           </h1>
-          <Button 
-            onClick={() => {
-              setShowCreateForm(true);
-              setUserDismissedForm(false);
-            }}
-            className="bg-sky-500 hover:bg-sky-600 text-white relative"
-          >
-            <Plus className="h-5 w-5 mr-2" />
-            New Proposal
-            {proposalProducts.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
-                {proposalProducts.length}
-              </span>
-            )}
-          </Button>
+          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setSortField('name')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                sortField === 'name' ? 'bg-white text-sky-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >Name</button>
+            <button
+              onClick={() => setSortField('date')}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                sortField === 'date' ? 'bg-white text-sky-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >Date</button>
+            <button
+              onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
+              className="px-2 py-1.5 rounded-md text-gray-600 hover:text-sky-700 transition-colors"
+              title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              {sortDir === 'asc' ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+          <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setFilterMode('my')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                filterMode === 'my'
+                  ? 'bg-white text-sky-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <User className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+              My Proposals
+            </button>
+            <button
+              onClick={() => setFilterMode('all')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                filterMode === 'all'
+                  ? 'bg-white text-sky-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <FileText className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+              All Proposals
+            </button>
+          </div>
+          </div>
         </div>
 
         {/* Pending Products Alert */}
@@ -365,9 +663,13 @@ export default function ProposalsPage() {
                   setShowCreateForm(true);
                   setUserDismissedForm(false);
                 }}
-                className="bg-sky-600 hover:bg-sky-700 text-white"
+                className="bg-sky-600 hover:bg-sky-700 text-white relative"
               >
-                Create Proposal
+                <Plus className="h-4 w-4 mr-2" />
+                Add to New Proposal
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {proposalProducts.length}
+                </span>
               </Button>
             </div>
           </div>
@@ -376,15 +678,15 @@ export default function ProposalsPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {[
-            { label: "Total Proposals", value: proposals.length, icon: FileText },
+            { label: "Total Proposals", value: sortedProposals.length, icon: FileText },
             {
               label: "Draft",
-              value: proposals.filter((p) => p.status === "draft").length,
+              value: sortedProposals.filter((p) => p.status === "draft").length,
               icon: FileText,
             },
             {
               label: "Submitted",
-              value: proposals.filter((p) => p.status === "submitted").length,
+              value: sortedProposals.filter((p) => p.status === "submitted").length,
               icon: FileText,
             },
           ].map((stat, index) => (
@@ -415,7 +717,7 @@ export default function ProposalsPage() {
             <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-sky-500 border-r-transparent"></div>
             <p className="mt-4 text-gray-600">Loading proposals...</p>
           </div>
-        ) : proposals.length === 0 ? (
+        ) : sortedProposals.length === 0 ? (
           <Card className="bg-white border-gray-200">
             <CardContent className="p-12 text-center">
               <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -423,23 +725,13 @@ export default function ProposalsPage() {
                 No proposals yet
               </h3>
               <p className="text-gray-600 mb-6">
-                Create your first proposal to get started
+                Search for products and add them to create your first proposal
               </p>
-              <Button 
-                onClick={() => {
-                  setShowCreateForm(true);
-                  setUserDismissedForm(false);
-                }}
-                className="bg-sky-500 hover:bg-sky-600 text-white"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Create Proposal
-              </Button>
             </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {proposals.map((proposal, index) => (
+            {sortedProposals.map((proposal, index) => (
               <motion.div
                 key={proposal.id}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -459,6 +751,11 @@ export default function ProposalsPage() {
                     {proposal.client_name && (
                       <p className="text-sm text-gray-600">
                         Client: {proposal.client_name}
+                      </p>
+                    )}
+                    {proposal.createdBy?.name && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        By: {proposal.createdBy.name}
                       </p>
                     )}
                   </CardHeader>
@@ -516,6 +813,7 @@ export default function ProposalsPage() {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => handleDeleteProposal(proposal.id)}
                         className="border-gray-300 hover:border-red-500 hover:text-red-500 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />

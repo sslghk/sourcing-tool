@@ -1,0 +1,384 @@
+{
+  "proposalId": "proposal_1774327513565",
+  "proposalName": "test",
+  "clientName": "",
+  "notes": "",
+  "createdBy": {
+    "email": "admin@example.com",
+    "name": "Admin User"
+  },
+  "createdAt": "2026-03-24T04:45:13.856Z",
+  "updatedAt": "2026-03-24T08:19:39.019Z",
+  "products": [
+    {
+      "id": "taobao_992270769591",
+      "source_id": "992270769591",
+      "source": "taobao",
+      "title": "Sofa cushion cover for plush home use, removable and washable without core, 40x40/50x50, living room, dormitory, bedroom cushion",
+      "price": {
+        "current": 6.86,
+        "currency": "CNY",
+        "original": 6.86
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01YM0Zkg2GHTjYGQPV8_!!2212884638990.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=992270769591",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    },
+    {
+      "id": "taobao_991504158445",
+      "source_id": "991504158445",
+      "source": "taobao",
+      "title": "Sofa Pillow Cover New Chenille Plush Quilted 3D Love Pillow Pillow Back Cover Pillow Cushion Cover Living Room Bedroom",
+      "price": {
+        "current": 6.88,
+        "currency": "CNY",
+        "original": 6.88
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/O1CN01pz9ug02GHTjYpMSzs_!!2212884638990.jpg"
+      ],
+      "url": "//item.taobao.com/item.htm?id=991504158445",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    }
+  ],
+  "itemDetails": {
+    "992270769591": {
+      "title": "Sofa cushion cover for plush home use, removable and washable without core, 40x40/50x50, living room, dormitory, bedroom cushion",
+      "desc_short": "",
+      "brand": "No brand",
+      "pic_url": "//img.alicdn.com/imgextra/i2/2212884638990/O1CN0103a5qR2GHTjYVaAi8_!!2212884638990.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2212884638990/O1CN0103a5qR2GHTjYVaAi8_!!2212884638990.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2212884638990/O1CN01nz2Esg2GHTjZBsOV3_!!2212884638990.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2212884638990/O1CN01Nv8UBe2GHTjYGPXQo_!!2212884638990.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2212884638990/O1CN01xMdNLo2GHTjYX8WEc_!!2212884638990.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2212884638990/O1CN01AC4sPQ2GHTjXjaTbP_!!2212884638990.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:28320",
+            "url": "http://img.alicdn.com/imgextra/i2/2212884638990/O1CN01ACPIRh2GHTjZPnMcp_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:100679",
+            "url": "http://img.alicdn.com/imgextra/i1/2212884638990/O1CN01YM0Zkg2GHTjYGQPV8_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:28323",
+            "url": "http://img.alicdn.com/imgextra/i2/2212884638990/O1CN01GRifYG2GHTjYRaRGn_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:28334",
+            "url": "http://img.alicdn.com/imgextra/i4/2212884638990/O1CN01N8AWzS2GHTjYcZm9k_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:189448913",
+            "url": "http://img.alicdn.com/imgextra/i4/2212884638990/O1CN01kWk4vb2GHTjYur29z_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:41217213259",
+            "url": "http://img.alicdn.com/imgextra/i2/2212884638990/O1CN01RUxyIR2GHTjXN3wmO_!!2212884638990.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "style",
+          "value": "Simplicity",
+          "name_original": "style",
+          "value_original": "Simplicity"
+        },
+        {
+          "name": "Brand",
+          "value": "No brand",
+          "name_original": "Brand",
+          "value_original": "No brand"
+        },
+        {
+          "name": "Item number",
+          "value": "L26428d",
+          "name_original": "Item number",
+          "value_original": "L26428d"
+        },
+        {
+          "name": "product category",
+          "value": "Cushions",
+          "name_original": "product category",
+          "value_original": "Cushions"
+        },
+        {
+          "name": "shape",
+          "value": "Square",
+          "name_original": "shape",
+          "value_original": "Square"
+        },
+        {
+          "name": "Coat material",
+          "value": "Other",
+          "name_original": "Coat material",
+          "value_original": "Other"
+        },
+        {
+          "name": "size",
+          "value": "30 * 50 (excluding core), 40 * 40 (excluding core), 45 * 45 (excluding core), 50 * 50 (excluding core), 30 * 50 (including 350 grams of non-woven fabric core), 30 * 50 (including 380 grams of high elasticity abrasive core), 30 * 50 (including 600 grams of abrasive feather velvet core), 45 * 45 (including 400 grams of non-woven fabric core), 45 * 45 (including 500 grams of high elasticity abrasive feather velvet core), 45 * 45 (including 750 grams of abrasive feather velvet core), 50 * 50 (including 500 grams of non-woven fabric core), 50 * 50 (including 700 grams of high elasticity abrasive feather core), 50 * 50 (including 950 grams of abrasive feather velvet core) Velvet core), 55 * 55 (excluding core), 60 * 60 (excluding core), 66 * 66 (excluding core)",
+          "name_original": "size",
+          "value_original": "30 * 50 (excluding core), 40 * 40 (excluding core), 45 * 45 (excluding core), 50 * 50 (excluding core), 30 * 50 (including 350 grams of non-woven fabric core), 30 * 50 (including 380 grams of high elasticity abrasive core), 30 * 50 (including 600 grams of abrasive feather velvet core), 45 * 45 (including 400 grams of non-woven fabric core), 45 * 45 (including 500 grams of high elasticity abrasive feather velvet core), 45 * 45 (including 750 grams of abrasive feather velvet core), 50 * 50 (including 500 grams of non-woven fabric core), 50 * 50 (including 700 grams of high elasticity abrasive feather core), 50 * 50 (including 950 grams of abrasive feather velvet core) Velvet core), 55 * 55 (excluding core), 60 * 60 (excluding core), 66 * 66 (excluding core)"
+        },
+        {
+          "name": "Applicable scene",
+          "value": "Home",
+          "name_original": "Applicable scene",
+          "value_original": "Home"
+        },
+        {
+          "name": "Color classification",
+          "value": "White, gray, bright red, pink, creamy rice, lake blue promotional items",
+          "name_original": "Color classification",
+          "value_original": "White, gray, bright red, pink, creamy rice, lake blue promotional items"
+        }
+      ],
+      "moq": 1,
+      "category_id": "213002",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "A small shop where you can drink milk tea when it snows",
+        "location": "Jinhua, Zhejiang",
+        "rating": null,
+        "name_original": "下雪可以喝奶茶的小店",
+        "location_original": "浙江金华"
+      },
+      "sales_volume": null,
+      "description": "100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01ZIlKjz2GHTjXN6pZK_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN01GIhDmy2GHTjYusAnl_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01Qrg4Hd2GHTjYX9SRo_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN01tUGyLV2GHTjXjWaOV_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2212884638990/O1CN01nxzWRY2GHTjYVa2Oa_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01yryWiO2GHTjXN4syb_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01jLkgIc2GHTjXN5Dlt_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN01Q9LW5s2GHTjXN3oRH_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2212884638990/O1CN01D2mlBz2GHTjZKN0Ag_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN017KZdAG2GHTjYcb39W_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2212884638990/O1CN01eyDFJy2GHTjT3qFpc_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01v7sIzy2GHTjXjZfiT_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN01qucaqz2GHTjYuq1lx_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2212884638990/O1CN01u30ylY2GHTjYvTxgc_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2212884638990/O1CN012ZobFZ2GHTjYpOHAl_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01c4Jij72GHTjYpKmx7_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2212884638990/O1CN01IRoNvb2GHTjYVYUlG_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN0117E4wI2GHTjYvSkqX_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2212884638990/O1CN01Hac68k2GHTjXkAXEu_!!2212884638990.jpg\"></div></div>",
+      "title_original": "Sofa cushion cover for plush home use, removable and washable without core, 40x40/50x50, living room, dormitory, bedroom cushion",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01ZIlKjz2GHTjXN6pZK_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN01GIhDmy2GHTjYusAnl_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01Qrg4Hd2GHTjYX9SRo_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN01tUGyLV2GHTjXjWaOV_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2212884638990/O1CN01nxzWRY2GHTjYVa2Oa_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01yryWiO2GHTjXN4syb_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01jLkgIc2GHTjXN5Dlt_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN01Q9LW5s2GHTjXN3oRH_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2212884638990/O1CN01D2mlBz2GHTjZKN0Ag_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN017KZdAG2GHTjYcb39W_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2212884638990/O1CN01eyDFJy2GHTjT3qFpc_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01v7sIzy2GHTjXjZfiT_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN01qucaqz2GHTjYuq1lx_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2212884638990/O1CN01u30ylY2GHTjYvTxgc_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2212884638990/O1CN012ZobFZ2GHTjYpOHAl_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i3/2212884638990/O1CN01c4Jij72GHTjYpKmx7_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i1/2212884638990/O1CN01IRoNvb2GHTjYVYUlG_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i4/2212884638990/O1CN0117E4wI2GHTjYvSkqX_!!2212884638990.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"//img.alicdn.com/imgextra/i2/2212884638990/O1CN01Hac68k2GHTjXkAXEu_!!2212884638990.jpg\"></div></div>",
+      "brand_original": "无品牌",
+      "productId": "992270769591",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T04:45:21.893Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i2/2212884638990/O1CN0103a5qR2GHTjYVaAi8_!!2212884638990.jpg",
+        "https://img.alicdn.com/imgextra/i4/2212884638990/O1CN01nz2Esg2GHTjZBsOV3_!!2212884638990.jpg",
+        "https://img.alicdn.com/imgextra/i4/2212884638990/O1CN01Nv8UBe2GHTjYGPXQo_!!2212884638990.jpg",
+        "https://img.alicdn.com/imgextra/i3/2212884638990/O1CN01xMdNLo2GHTjYX8WEc_!!2212884638990.jpg"
+      ]
+    },
+    "991504158445": {
+      "title": "Sofa Pillow Cover New Chenille Plush Quilted 3D Love Pillow Pillow Back Cover Pillow Cushion Cover Living Room Bedroom",
+      "desc_short": "",
+      "brand": "No brand",
+      "pic_url": "//img.alicdn.com/imgextra/i2/2212884638990/O1CN01tkuiIm2GHTjYusyjz_!!2212884638990.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2212884638990/O1CN01tkuiIm2GHTjYusyjz_!!2212884638990.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2212884638990/O1CN01wKveDc2GHTjYutaAY_!!2212884638990.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2212884638990/O1CN01GAwmrN2GHTjXkCspd_!!2212884638990.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2212884638990/O1CN01TuNXhg2GHTjZKNbdW_!!2212884638990.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2212884638990/O1CN013WkWS72GHTjYRcr0W_!!2212884638990.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:28320",
+            "url": "http://img.alicdn.com/imgextra/i3/2212884638990/O1CN01wSrUCE2GHTjYGQgAk_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:100679",
+            "url": "http://img.alicdn.com/imgextra/i1/2212884638990/O1CN01pz9ug02GHTjYpMSzs_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:28323",
+            "url": "http://img.alicdn.com/imgextra/i4/2212884638990/O1CN01R8e0AM2GHTjYRcFaZ_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:28334",
+            "url": "http://img.alicdn.com/imgextra/i4/2212884638990/O1CN01Kk2oLN2GHTjXjb0v2_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:189448913",
+            "url": "http://img.alicdn.com/imgextra/i3/2212884638990/O1CN01d6F6ls2GHTjYRb2kN_!!2212884638990.jpg"
+          },
+          {
+            "properties": "1627207:41217213259",
+            "url": "http://img.alicdn.com/imgextra/i1/2212884638990/O1CN013K3qHJ2GHTjXjYw15_!!2212884638990.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "style",
+          "value": "Simplicity",
+          "name_original": "style",
+          "value_original": "Simplicity"
+        },
+        {
+          "name": "Brand",
+          "value": "No brand",
+          "name_original": "Brand",
+          "value_original": "No brand"
+        },
+        {
+          "name": "Item number",
+          "value": "L41509d",
+          "name_original": "Item number",
+          "value_original": "L41509d"
+        },
+        {
+          "name": "Coat material",
+          "value": "Other",
+          "name_original": "Coat material",
+          "value_original": "Other"
+        },
+        {
+          "name": "size",
+          "value": "30*50 (without core), 40*40 (without core), 45*45 (without core), 50*50 (without core), 30*50 (including 350 grams of non-woven core) ,30*50 (including 380 grams of high-elastic sanded core), 30*50 (including 600 grams of sanded feather core), 45*45 (including 400 grams of non-woven core), 45*4 5 (including 500 grams of high-elastic sanded core), 45*45 (including 750 grams of sanded down velvet core), 50*50 (including 500 grams of non-woven core), 50*50 (including 70 0g high elastic brushed core), 50*50 (including 950g brushed feather velvet core), 55*55 (excluding core), 60*60 (excluding core), 66*66 (excluding core)",
+          "name_original": "size",
+          "value_original": "30*50(不含芯),40*40(不含芯),45*45(不含芯),50*50(不含芯),30*50(含350克无纺布芯),30*50(含380克高弹磨毛芯),30*50(含600克磨毛羽丝绒芯子),45*45(含400克无纺布芯),45*45(含500克高弹磨毛芯),45*45(含750克磨毛羽丝绒芯子),50*50(含500克无纺布芯),50*50(含700克高弹磨毛芯),50*50(含950克磨毛羽丝绒芯子),55*55(不含芯),60*60(不含芯),66*66(不含芯)"
+        },
+        {
+          "name": "Color classification",
+          "value": "White, gray, bright red, pink, creamy rice, lake blue promotional items",
+          "name_original": "Color classification",
+          "value_original": "White, gray, bright red, pink, creamy rice, lake blue promotional items"
+        }
+      ],
+      "moq": 1,
+      "category_id": "213002",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "A small shop where you can drink milk tea in the snow",
+        "location": "Zhejiang Jinhua",
+        "rating": null,
+        "name_original": "下雪可以喝奶茶的小店",
+        "location_original": "浙江金华"
+      },
+      "sales_volume": 1,
+      "description": "<img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i3/2212884638990/O1CN01lpvKOj2GHTjXN5DpB_!!2212884638990.jpg\" align=\"absmiddle\"><img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i1/2212884638990/O1CN019dWEki2GHTjYvSLxv_!!2212884638990.jpg\" align=\"absmiddle\"><img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i2/2212884638990/O1CN01YXdw7K2GHTjYRe80M_!!2212884638990.jpg\" align=\"absmiddle\"><img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i2/2212884638990/O1CN019uilJz2GHTjYRaqHV_!!2212884638990.jpg\" align=\"absmiddle\"><img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i3/2212884638990/O1CN01gnqqWh2GHTjYXA3u9_!!2212884638990.jpg\" align=\"absmiddle\"><span style=\"color: #ffffff;\">81d4f83a-7d73-40c0-bcab-c44773ffdce2</span>",
+      "title_original": "Sofa Pillow Cover New Chenille Plush Quilted 3D Love Pillow Pillow Back Cover Pillow Cushion Cover Living Room Bedroom",
+      "description_original": "<img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i3/2212884638990/O1CN01lpvKOj2GHTjXN5DpB_!!2212884638990.jpg\" align=\"absmiddle\"><img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i1/2212884638990/O1CN019dWEki2GHTjYvSLxv_!!2212884638990.jpg\" align=\"absmiddle\"><img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i2/2212884638990/O1CN01YXdw7K2GHTjYRe80M_!!2212884638990.jpg\" align=\"absmiddle\"><img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i2/2212884638990/O1CN019uilJz2GHTjYRaqHV_!!2212884638990.jpg\" align=\"absmiddle\"><img style=\"width: 750.0px;\" src=\"https://img.alicdn.com/imgextra/i3/2212884638990/O1CN01gnqqWh2GHTjYXA3u9_!!2212884638990.jpg\" align=\"absmiddle\"><span style=\"color: #ffffff;\">81d4f83a-7d73-40c0-bcab-c44773ffdce2</span>",
+      "brand_original": "无品牌",
+      "productId": "991504158445",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-24T04:45:41.634Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i2/2212884638990/O1CN01tkuiIm2GHTjYusyjz_!!2212884638990.jpg",
+        "https://img.alicdn.com/imgextra/i3/2212884638990/O1CN01wKveDc2GHTjYutaAY_!!2212884638990.jpg",
+        "https://img.alicdn.com/imgextra/i1/2212884638990/O1CN01GAwmrN2GHTjXkCspd_!!2212884638990.jpg",
+        "https://img.alicdn.com/imgextra/i4/2212884638990/O1CN01TuNXhg2GHTjZKNbdW_!!2212884638990.jpg"
+      ]
+    }
+  },
+  "totalItems": 2,
+  "successfulItems": 2,
+  "aiEnrichments": {
+    "992270769591": {
+      "original_product": {
+        "title": "Red Heart-Textured Plush Pillow",
+        "description": "A vibrant red square throw pillow featuring a plush, textured surface with raised heart patterns.",
+        "specifications": {
+          "dimensions": "45 x 45 x 15 cm (approx. 18 x 18 x 6 inches)",
+          "weight": "400g (estimated)",
+          "materials": "Polyester plush fabric, PP cotton filling",
+          "other_specs": "Decorative, soft-touch"
+        }
+      },
+      "design_alternatives": [
+        {
+          "concept_title": "Modern Geo-Tuft Pillow",
+          "generated_image_prompt": "A square decorative throw pillow in a muted sage green color, made from soft, short-pile velvet. The surface features a repeating geometric diamond tufted pattern, creating a subtle texture. The pillow has crisp, clean edges, placed on a light grey sofa in a minimalist living room.",
+          "short_description": "Muted sage green velvet pillow with elegant geometric tufting for modern homes.",
+          "design_rationale": "Appeals to a broader, more sophisticated demographic with its neutral color palette and contemporary geometric texture. Velvet adds a premium feel, suitable for modern minimalist or Scandinavian interiors, and easy to manufacture via machine tufting.",
+          "generated_image_url": "/ai-images/proposal_1774327513565/992270769591/concept-0.png"
+        },
+        {
+          "concept_title": "Whimsical Cloud Dream Pillow",
+          "generated_image_prompt": "An irregularly shaped, fluffy decorative pillow resembling a soft, white cloud. It is made from ultra-soft sherpa fleece. One side features two simple, closed eyes and a small, embroidered smile in pastel grey, giving it a 'sleeping cloud' character. The pillow is on a pastel blue bedsheet in a child's bedroom.",
+          "short_description": "Soft sherpa cloud-shaped pillow with embroidered sleeping face for kids' rooms.",
+          "design_rationale": "Targets children's decor or whimsical adult spaces. The unique cloud shape and charming embroidered face create strong gifting appeal for baby showers, birthdays, or as a comforting decor item. Sherpa fleece is soft, durable, and cost-effective for mass production.",
+          "generated_image_url": "/ai-images/proposal_1774327513565/992270769591/concept-1.png"
+        },
+        {
+          "concept_title": "Luxury Shag Statement Pillow",
+          "generated_image_prompt": "A large, round decorative pillow made from luxurious, long-pile faux fur in a deep emerald green color. The fur is shaggy and soft, creating a rich, inviting texture. The pillow has a substantial, plush feel, placed on a dark leather armchair in a chic, contemporary setting.",
+          "short_description": "Round, deep emerald green long-pile faux fur pillow for luxurious decor.",
+          "design_rationale": "Elevates the product to a luxury segment. The deep jewel tone and shaggy faux fur create a dramatic, opulent statement piece, appealing to those seeking high-end decor or a plush, comforting accent. Round shape offers a distinct visual difference, and faux fur is highly manufacturable.",
+          "generated_image_url": "/ai-images/proposal_1774327513565/992270769591/concept-2.png"
+        }
+      ],
+      "enriched_at": "2026-03-24T08:18:04.415Z"
+    },
+    "991504158445": {
+      "original_product": {
+        "title": "Red Fluffy Heart Decorative Pillow",
+        "description": "Soft plush pillow with textured heart patterns, perfect for cozy or romantic decor.",
+        "specifications": {
+          "dimensions": "45 x 45 x 15 cm",
+          "weight": "600g",
+          "materials": "Polyester plush fabric, PP cotton filling",
+          "other_specs": "N/A"
+        }
+      },
+      "design_alternatives": [
+        {
+          "concept_title": "Dream Cloud Lumbar Pillow",
+          "generated_image_prompt": "A soft, oblong lumbar pillow in a gradient of pastel blues and purples, resembling a serene sky or cloud. Made from ultra-soft, short-pile faux shearling fabric, with a subtle, abstract wave-like texture created by different pile directions or subtle tufting. The edges are soft and rounded. Photographed in a bright, airy room with natural light, evoking a utopian feel.",
+          "short_description": "Serene gradient lumbar pillow, soft faux shearling, abstract wave texture.",
+          "design_rationale": "Taps into the 'utopia feel' with calming colors and soft texture, offers ergonomic support, and appeals to modern, minimalist, or cozy aesthetics. Easy to manufacture with gradient dyeing and subtle tufting.",
+          "generated_image_url": "/ai-images/proposal_1774327513565/991504158445/concept-0.png"
+        },
+        {
+          "concept_title": "Whimsical Forest Mushroom Cushion",
+          "generated_image_prompt": "A large, round floor cushion shaped like a whimsical toadstool mushroom. The cap is a deep forest green velvet, with embroidered white polka dots. The stem is a creamy off-white boucle fabric. The overall shape is soft and inviting. Photographed in a cozy reading nook with warm lighting, suggesting a playful fantasy forest.",
+          "short_description": "Playful mushroom-shaped floor cushion in velvet and boucle, perfect for cozy spaces.",
+          "design_rationale": "Offers a strong novelty item with excellent gifting appeal, visually distinctive, and provides additional seating or comfort. Targets a younger demographic or those seeking quirky, nature-inspired decor. Simple pattern cutting and sewing for production.",
+          "generated_image_url": "/ai-images/proposal_1774327513565/991504158445/concept-1.png"
+        },
+        {
+          "concept_title": "Artisan Knit Hygge Throw Pillow",
+          "generated_image_prompt": "A square decorative throw pillow featuring a chunky, cable-knit pattern in a deep terracotta orange hue. Made from a soft, thick chenille yarn, giving it a luxurious, tactile feel. The knit pattern is intricate yet visually comforting. Photographed on a luxurious sofa with a warm, inviting atmosphere, emphasizing hygge comfort.",
+          "short_description": "Luxurious chunky cable-knit chenille pillow in terracotta, ultimate hygge comfort.",
+          "design_rationale": "Focuses on premium texture and material for a sophisticated, cozy feel. Appeals to consumers seeking high-quality, tactile home decor and adds a touch of artisan craftsmanship. Standard chunky knit production is scalable for factories.",
+          "generated_image_url": "/ai-images/proposal_1774327513565/991504158445/concept-2.png"
+        }
+      ],
+      "enriched_at": "2026-03-24T08:19:39.019Z"
+    }
+  }
+}
