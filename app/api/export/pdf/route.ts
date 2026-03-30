@@ -113,15 +113,14 @@ export async function POST(request: NextRequest) {
       doc.addPage();
       doc.setTextColor(0, 0, 0);
       
-      // Header - Creative Concepts reference
-      doc.setFontSize(10);
-      doc.setFont('calibri', 'normal');
-      doc.setTextColor(100, 116, 139);
-      doc.text('Creative Concepts for Vegetable Plush Toys - Ref. 1688/Taobao', pageWidth / 2, 5, { align: 'center' });
-      
-      // Footer - Proposal reference number
-      doc.setFontSize(9);
-      doc.text('PLN-250302-Alice', pageWidth / 2, pageHeight - 8, { align: 'center' });
+      // Category header - same line as item number
+      const categoryHeaderName = product.cachedDetails?.category || product.cachedDetails?.category_id || '';
+      if (categoryHeaderName) {
+        doc.setFontSize(14);
+        doc.setFont('calibri', 'bold');
+        doc.setTextColor(30, 41, 59);
+        doc.text(String(categoryHeaderName), pageWidth / 2, margin + 2, { align: 'center' });
+      }
       
       doc.setTextColor(0, 0, 0);
       
@@ -136,7 +135,7 @@ export async function POST(request: NextRequest) {
       // PPTX uses inches, PDF uses mm. Convert: 1 inch = 25.4mm
       // Matching PPTX 4:3 layout: main image 3.22", startY 0.8"
       const imageStartX = 0.3 * 25.4; // ~7.6mm
-      const imageStartY = 1.0 * 25.4; // ~25.4mm (moved down to avoid item number overlap)
+      const imageStartY = 0.85 * 25.4; // ~21.6mm (single line spacing below item number)
       const mainImageSize = 3.22 * 25.4; // ~81.8mm (matches PPTX)
       
       // Secondary images layout - fit height to match main image
@@ -298,7 +297,7 @@ export async function POST(request: NextRequest) {
       doc.setFont('calibri', 'normal');
       doc.text(product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', rightSectionX + 18, currentY);
       currentY += 0.15 * 25.4;
-      
+
       // Description - auto fit to box size
       const description = product.cachedDetails?.desc_short || product.description_short || product.description;
       if (description) {

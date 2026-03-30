@@ -93,7 +93,7 @@ async function translateProductDetails(details: any): Promise<any> {
   const fieldMap: { field: string; index: number; subField?: string; subIndex?: number }[] = [];
   
   // Simple text fields
-  const textFields = ['title', 'desc_short', 'description', 'brand'];
+  const textFields = ['title', 'desc_short', 'description', 'brand', 'category'];
   for (const field of textFields) {
     if (details[field] && typeof details[field] === 'string') {
       textsToTranslate.push(details[field]);

@@ -57,6 +57,7 @@ interface ProductDetails {
   props?: Array<{ name: string; value: string }>;
   moq?: number;
   category_id?: string;
+  category?: string;
   fav_count?: string | number;
   fans_count?: string | number;
   created_time?: string;
@@ -501,6 +502,8 @@ export default function ProposalDetailPage() {
               num: details.num,
               shop_name: details.shop_name,
               item_imgs: details.item_imgs,
+              category: details.category,
+              category_id: details.category_id,
             } : undefined
           };
         })
@@ -562,6 +565,8 @@ export default function ProposalDetailPage() {
               num: details.num,
               shop_name: details.shop_name,
               item_imgs: details.item_imgs,
+              category: details.category,
+              category_id: details.category_id,
             } : undefined
           };
         })
@@ -1504,6 +1509,12 @@ export default function ProposalDetailPage() {
                                       <div>
                                         <span className="font-medium text-gray-700">Shop:</span>
                                         <span className="text-gray-600 ml-1">{details.shop_name}</span>
+                                      </div>
+                                    )}
+                                    {details.category && (
+                                      <div>
+                                        <span className="font-medium text-gray-700">Category:</span>
+                                        <span className="text-gray-600 ml-1">{details.category}</span>
                                       </div>
                                     )}
                                     <div className="text-xs text-gray-400 mt-2">

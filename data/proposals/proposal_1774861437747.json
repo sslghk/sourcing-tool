@@ -1,0 +1,200 @@
+{
+  "proposalId": "proposal_1774861437747",
+  "proposalName": "test 3",
+  "clientName": "",
+  "notes": "",
+  "createdBy": {
+    "email": "jacktong@simplesymbol.com",
+    "name": "jacktong"
+  },
+  "createdAt": "2026-03-30T09:03:57.779Z",
+  "updatedAt": "2026-03-30T09:04:03.565Z",
+  "products": [
+    {
+      "id": "taobao_896767574085",
+      "source_id": "896767574085",
+      "source": "taobao",
+      "title": "Tiktok, the same creative dopamine plush hairpin, popular in autumn and winter, cartoon gifts for students, intimate gifts",
+      "price": {
+        "current": 5.09,
+        "currency": "CNY",
+        "original": 5.09
+      },
+      "image_urls": [
+        "https://img.alicdn.com/imgextra/i3/2858038328/O1CN01PCUM812BOHTVbIDVZ_!!2858038328.jpg"
+      ],
+      "url": "https://item.taobao.com/item.htm?id=896767574085",
+      "seller": {
+        "name": "Unknown",
+        "id": null,
+        "rating": null,
+        "location": ""
+      }
+    }
+  ],
+  "itemDetails": {
+    "896767574085": {
+      "title": "Tiktok, the same creative dopamine plush hairpin, popular in autumn and winter, cartoon gifts for students, intimate gifts",
+      "desc_short": "",
+      "brand": "Other Home",
+      "pic_url": "//img.alicdn.com/imgextra/i3/2858038328/O1CN01PCUM812BOHTVbIDVZ_!!2858038328.jpg",
+      "item_imgs": [
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2858038328/O1CN01PCUM812BOHTVbIDVZ_!!2858038328.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i4/2858038328/O1CN01Ji2wEI2BOHTWvhq7m_!!2858038328.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i2/2858038328/O1CN01y6zMTi2BOHTX4pZlj_!!2858038328.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i1/2858038328/O1CN01AuDcJ62BOHTYN5rl1_!!2858038328.jpg"
+        },
+        {
+          "url": "//img.alicdn.com/imgextra/i3/2858038328/O1CN01mXf42Q2BOHTWhXmSZ_!!2858038328.jpg"
+        }
+      ],
+      "prop_imgs": {
+        "prop_img": [
+          {
+            "properties": "1627207:30188980023",
+            "url": "http://img.alicdn.com/imgextra/i2/2858038328/O1CN01uc1Kd02BOHTYOmCEj_!!2858038328.jpg"
+          },
+          {
+            "properties": "1627207:30118912409",
+            "url": "http://img.alicdn.com/imgextra/i2/2858038328/O1CN01uc1Kd02BOHTYOmCEj_!!2858038328.jpg"
+          },
+          {
+            "properties": "1627207:30118912410",
+            "url": "http://img.alicdn.com/imgextra/i2/2858038328/O1CN01uc1Kd02BOHTYOmCEj_!!2858038328.jpg"
+          },
+          {
+            "properties": "1627207:30118912411",
+            "url": "http://img.alicdn.com/imgextra/i2/2858038328/O1CN01uc1Kd02BOHTYOmCEj_!!2858038328.jpg"
+          },
+          {
+            "properties": "1627207:30118912412",
+            "url": "http://img.alicdn.com/imgextra/i2/2858038328/O1CN01uc1Kd02BOHTYOmCEj_!!2858038328.jpg"
+          }
+        ]
+      },
+      "props": [
+        {
+          "name": "brand",
+          "value": "Other Home",
+          "name_original": "brand",
+          "value_original": "Other Home"
+        },
+        {
+          "name": "style",
+          "value": "Cute",
+          "name_original": "style",
+          "value_original": "Cute"
+        },
+        {
+          "name": "Applicable festivals",
+          "value": "Festival general",
+          "name_original": "Applicable festivals",
+          "value_original": "Festival general"
+        },
+        {
+          "name": "Product classification",
+          "value": "creative gift",
+          "name_original": "Product classification",
+          "value_original": "creative gift"
+        },
+        {
+          "name": "intended for",
+          "value": "children",
+          "name_original": "intended for",
+          "value_original": "children"
+        },
+        {
+          "name": "Popular trend words",
+          "value": "lovely",
+          "name_original": "Popular trend words",
+          "value_original": "lovely"
+        },
+        {
+          "name": "Scenario Type",
+          "value": "currency",
+          "name_original": "Scenario Type",
+          "value_original": "currency"
+        },
+        {
+          "name": "Is it customizable",
+          "value": "no",
+          "name_original": "Is it customizable",
+          "value_original": "no"
+        },
+        {
+          "name": "Place of Origin",
+          "value": "Chinese Mainland",
+          "name_original": "Place of Origin",
+          "value_original": "Chinese Mainland"
+        },
+        {
+          "name": "Modifier",
+          "value": "lovely",
+          "name_original": "Modifier",
+          "value_original": "lovely"
+        },
+        {
+          "name": "Packing type",
+          "value": "Paperback",
+          "name_original": "Packing type",
+          "value_original": "Paperback"
+        },
+        {
+          "name": "Shui",
+          "value": "good luck",
+          "name_original": "Is it special purpose cosmetics",
+          "value_original": "no"
+        },
+        {
+          "name": "Color classification",
+          "value": "5 coal ball hairpins, 10 coal ball hairpins, 20 coal ball hairpins, 30 coal ball hairpins, 50 coal ball hairpins",
+          "name_original": "Feng Shui",
+          "value_original": "good luck"
+        },
+        {
+          "name": "Color classification",
+          "value": "5 coal ball hairpins, 10 coal ball hairpins, 20 coal ball hairpins, 30 coal ball hairpins, 50 coal ball hairpins",
+          "name_original": "Color classification",
+          "value_original": "5 coal ball hairpins, 10 coal ball hairpins, 20 coal ball hairpins, 30 coal ball hairpins, 50 coal ball hairpins"
+        }
+      ],
+      "moq": 1,
+      "category_id": "50003854",
+      "category": "50003854",
+      "fav_count": null,
+      "fans_count": null,
+      "created_time": "",
+      "rating_grade": null,
+      "seller": {
+        "name": "Shanbao Stationery Gifts",
+        "location": "Zhejiang Jinhua",
+        "rating": null,
+        "name_original": "杉宝文具礼品",
+        "location_original": "浙江金华"
+      },
+      "sales_volume": 200,
+      "description": "src=\"https://img.alicdn.com/imgextra/i1/2858038328/O1CN01MwjXd02BOHTXlyI7l_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2858038328/O1CN01P6JOtp2BOHTZJI59p_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2858038328/O1CN0185pDVT2BOHTVjszyb_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2858038328/O1CN01iNs8gy2BOHTYN5CAE_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2858038328/O1CN01pkNbTP2BOHTXXaWFR_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2858038328/O1CN01y0b9Qe2BOHTWhVy9F_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2858038328/O1CN01iojfNY2BOHTXlvXfv_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2858038328/O1CN01Sufcdk2BOHTUxnp6u_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2858038328/O1CN01tKPswR2BOHTXWDc66_!!2858038328.jpg\"></div></div>",
+      "title_original": "Tiktok, the same creative dopamine plush hairpin, popular in autumn and winter, cartoon gifts for students, intimate gifts",
+      "description_original": "<div style=\"width: 750.0px;height: auto;overflow: hidden;\"><div style=\"width: 750.0px;height: auto;overflow: hidden;\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2858038328/O1CN01MwjXd02BOHTXlyI7l_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2858038328/O1CN01P6JOtp2BOHTZJI59p_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i2/2858038328/O1CN0185pDVT2BOHTVjszyb_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i1/2858038328/O1CN01iNs8gy2BOHTYN5CAE_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2858038328/O1CN01pkNbTP2BOHTXXaWFR_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2858038328/O1CN01y0b9Qe2BOHTWhVy9F_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2858038328/O1CN01iojfNY2BOHTXlvXfv_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i3/2858038328/O1CN01Sufcdk2BOHTUxnp6u_!!2858038328.jpg\"><img style=\"display: block;width: 100.0%;\" src=\"https://img.alicdn.com/imgextra/i4/2858038328/O1CN01tKPswR2BOHTXWDc66_!!2858038328.jpg\"></div></div>",
+      "brand_original": "其他家",
+      "productId": "896767574085",
+      "platform": "taobao",
+      "fetchedAt": "2026-03-30T09:04:03.565Z",
+      "selectedSecondaryImages": [
+        "https://img.alicdn.com/imgextra/i3/2858038328/O1CN01PCUM812BOHTVbIDVZ_!!2858038328.jpg",
+        "https://img.alicdn.com/imgextra/i4/2858038328/O1CN01Ji2wEI2BOHTWvhq7m_!!2858038328.jpg",
+        "https://img.alicdn.com/imgextra/i2/2858038328/O1CN01y6zMTi2BOHTX4pZlj_!!2858038328.jpg",
+        "https://img.alicdn.com/imgextra/i1/2858038328/O1CN01AuDcJ62BOHTYN5rl1_!!2858038328.jpg"
+      ]
+    }
+  },
+  "totalItems": 1,
+  "successfulItems": 1
+}
