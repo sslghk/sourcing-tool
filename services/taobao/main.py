@@ -54,6 +54,7 @@ except Exception as e:
 ONEBOUND_API_KEY = os.getenv("ONEBOUND_API_KEY", "")
 ONEBOUND_API_SECRET = os.getenv("ONEBOUND_API_SECRET", "")
 ONEBOUND_BASE_URL = "https://api-gw.onebound.cn/taobao"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 # Require OneBound API - no fallback
 USE_ONEBOUND = bool(ONEBOUND_API_KEY and ONEBOUND_API_SECRET)
@@ -63,6 +64,74 @@ if not USE_ONEBOUND:
 print(f"OneBound API configured: {USE_ONEBOUND}")
 print(f"OneBound API Key: {ONEBOUND_API_KEY[:10]}...")
 print(f"OneBound API Secret: {'*' * len(ONEBOUND_API_SECRET)}")
+
+async def translate_to_english(client: httpx.AsyncClient, text: str) -> str:
+    """Translate text to English using Gemini API."""
+    if not text or not GEMINI_API_KEY:
+        return text
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+        payload = {
+            "contents": [{"parts": [{"text": f"Translate this product category name to English. Return only the translated text, nothing else: {text}"}]}]
+        }
+        response = await client.post(url, json=payload, timeout=10.0)
+        response.raise_for_status()
+        data = response.json()
+        translated = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        print(f"Translated '{text}' -> '{translated}'")
+        return translated
+    except Exception as e:
+        print(f"Translation error for '{text}': {e}")
+        return text
+
+
+async def fetch_item_category(client: httpx.AsyncClient, num_iid: str) -> dict:
+    """Fetch category name and root category name from OneBound item_cat_get API using num_iid."""
+    if not num_iid:
+        return {}
+    try:
+        params = {
+            "key": ONEBOUND_API_KEY,
+            "secret": ONEBOUND_API_SECRET,
+            "num_iid": num_iid,
+        }
+        response = await client.get(
+            f"{ONEBOUND_BASE_URL}/item_cat_get",
+            params=params,
+            timeout=10.0
+        )
+        response.raise_for_status()
+        data = response.json()
+        print(f"item_cat_get raw response for {num_iid}: {json.dumps(data, ensure_ascii=False)[:800]}")
+        
+        if data.get("error") or data.get("error_code") not in (None, "0000", 0):
+            print(f"item_cat_get error for {num_iid}: {data.get('error')}")
+            return {}
+        
+        # Response structure: data["item"]["cat_name"]["items"]["item"][0]["name"]
+        cat_name = ""
+        try:
+            item_data = data.get("item", {})
+            print(f"item_cat_get item_data keys: {list(item_data.keys()) if item_data else 'EMPTY'}")
+            cat_name_data = item_data.get("cat_name", {})
+            print(f"item_cat_get cat_name_data type: {type(cat_name_data)}, value: {str(cat_name_data)[:200]}")
+            items = cat_name_data.get("items", {}).get("item", []) if isinstance(cat_name_data, dict) else []
+            print(f"item_cat_get items type: {type(items)}, count: {len(items) if isinstance(items, list) else 'dict'}")
+            if isinstance(items, dict):
+                items = [items]
+            if items:
+                cat_name = items[0].get("name", "")
+                print(f"item_cat_get items[0]: {items[0]}")
+        except Exception as e:
+            print(f"item_cat_get parsing exception: {e}")
+        if cat_name:
+            cat_name = await translate_to_english(client, cat_name)
+        print(f"item_cat_get parsed - cat_name: {cat_name}")
+        return {"category": cat_name}
+    except Exception as e:
+        print(f"item_cat_get error for {num_iid}: {e}")
+    return {}
+
 
 # Retry helper for handling 503 errors
 async def retry_with_backoff(func, max_retries: int = 3, initial_delay: float = 1.0, backoff_factor: float = 2.0):
@@ -192,6 +261,12 @@ async def get_product_details(product_id: str):
             if not item:
                 raise HTTPException(status_code=404, detail="Product not found")
             
+            # Fetch category name and root category using item_cat_get
+            cid = str(item.get("cid", ""))
+            cat_info = await fetch_item_category(client, product_id)
+            category_name = cat_info.get("category", "") or cid
+            print(f"Category for {product_id}: cid={cid}, name={category_name}")
+            
             # Debug: Log all available fields to understand the API response structure
             print(f"\n=== OneBound API Response for {product_id} ===")
             print(f"Available fields: {list(item.keys())}")
@@ -223,6 +298,7 @@ async def get_product_details(product_id: str):
                 "props": item.get("props", []),
                 "moq": item.get("min_num") or item.get("moq") or item.get("start_amount") or 1,
                 "category_id": item.get("cid"),
+                "category": category_name,
                 "fav_count": item.get("favcount"),
                 "fans_count": item.get("fanscount"),
                 "created_time": item.get("created_time"),

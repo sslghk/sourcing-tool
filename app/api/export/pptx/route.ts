@@ -171,31 +171,22 @@ export async function POST(request: NextRequest) {
     for (let index = 0; index < proposal.products.length; index++) {
       const product = proposal.products[index];
       const slide = pptx.addSlide();
-      
-      // Header - Creative Concepts reference
-      slide.addText('Creative Concepts for Vegetable Plush Toys - Ref. 1688/Taobao', {
-        x: 0,
-        y: 0.1,
-        w: 10,
-        h: 0.25,
-        fontSize: 10,
-        color: '64748B',
-        align: 'center'
-      });
-      
-      // Footer - Proposal reference number
-      slide.addText('PLN-250302-Alice', {
-        x: 0,
-        y: 7.4,
-        w: 10,
-        h: 0.2,
-        fontSize: 9,
-        color: '64748B',
-        align: 'center'
-      });
-      
-      // Use cached product details for faster export
       const detailsToUse = product.cachedDetails || {};
+      
+      // Category header - same line as item number
+      const categoryHeaderName = detailsToUse?.category || detailsToUse?.category_id || '';
+      if (categoryHeaderName) {
+        slide.addText(String(categoryHeaderName), {
+          x: 0,
+          y: 0.3,
+          w: 10,
+          fontSize: 14,
+          bold: true,
+          color: '1e293b',
+          align: 'center'
+        });
+      }
+      
       
       console.log(`Product ${product.source_id}: Using cached details (${product.cachedDetails?.item_imgs?.length || 0} images)`);
       
@@ -213,7 +204,7 @@ export async function POST(request: NextRequest) {
       // Left section: Images - scaled for 4:3 layout (10x7.5 inches) - enlarged 15%
       const mainImageSize = 3.22; // 2.8 * 1.15 = 3.22 inches (enlarged 15%)
       const imageStartX = 0.3;
-      const imageStartY = 1.0; // Add 1 line spacing above main photo
+      const imageStartY = 0.65; // Single line spacing below item number
       
       // Secondary images layout - fit height to match main image
       const maxSecondaryImages = 4;
