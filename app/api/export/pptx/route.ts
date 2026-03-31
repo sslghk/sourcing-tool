@@ -122,7 +122,8 @@ export async function POST(request: NextRequest) {
       fontSize: 36,
       bold: true,
       color: 'FFFFFF',
-      align: 'center'
+      align: 'center',
+      line: { width: 0 }
     });
     
     if (proposal.client_name) {
@@ -133,7 +134,8 @@ export async function POST(request: NextRequest) {
         h: 0.5,
         fontSize: 20,
         color: 'FFFFFF',
-        align: 'center'
+        align: 'center',
+        line: { width: 0 }
       });
     }
     
@@ -144,7 +146,8 @@ export async function POST(request: NextRequest) {
       h: 0.4,
       fontSize: 16,
       color: 'FFFFFF',
-      align: 'center'
+      align: 'center',
+      line: { width: 0 }
     });
     
     titleSlide.addText(`Created: ${new Date(proposal.created_at).toLocaleDateString()}`, {
@@ -154,7 +157,8 @@ export async function POST(request: NextRequest) {
       h: 0.4,
       fontSize: 16,
       color: 'FFFFFF',
-      align: 'center'
+      align: 'center',
+      line: { width: 0 }
     });
     
     titleSlide.addText(`Total Items: ${proposal.products.length}`, {
@@ -164,7 +168,8 @@ export async function POST(request: NextRequest) {
       h: 0.4,
       fontSize: 16,
       color: 'FFFFFF',
-      align: 'center'
+      align: 'center',
+      line: { width: 0 }
     });
 
     // ===== PRODUCT SLIDES (1 per product) =====
@@ -183,7 +188,8 @@ export async function POST(request: NextRequest) {
           fontSize: 14,
           bold: true,
           color: '1e293b',
-          align: 'center'
+          align: 'center',
+          line: { width: 0 }
         });
       }
       
@@ -198,7 +204,8 @@ export async function POST(request: NextRequest) {
         y: 0.3,
         fontSize: 14,
         bold: true,
-        color: '1e293b'
+        color: '1e293b',
+        line: { width: 0 }
       });
       
       // Left section: Images - scaled for 4:3 layout (10x7.5 inches) - enlarged 15%
@@ -254,7 +261,8 @@ export async function POST(request: NextRequest) {
               fontSize: 11,
               bold: true,
               color: '1e293b',
-              align: 'center'
+              align: 'center',
+              line: { width: 0 }
             });
             
             // Frame starts below concept label
@@ -280,7 +288,8 @@ export async function POST(request: NextRequest) {
               bold: true,
               color: '1e293b',
               align: 'center',
-              wrap: true
+              wrap: true,
+              line: { width: 0 }
             });
             
             // Image in middle (fitted to frame)
@@ -300,7 +309,8 @@ export async function POST(request: NextRequest) {
               color: '64748B',
               align: 'center',
               wrap: true,
-              shrinkText: true
+              shrinkText: true,
+              line: { width: 0 }
             });
           }
         }
@@ -322,7 +332,8 @@ export async function POST(request: NextRequest) {
         bold: true,
         color: '1e293b',
         wrap: true,
-        shrinkText: true
+        shrinkText: true,
+        line: { width: 0 }
       });
       currentY += 0.6;
       
@@ -365,7 +376,8 @@ export async function POST(request: NextRequest) {
           h: 0.22,
           fontSize: 9,
           bold: true,
-          color: '1e293b'
+          color: '1e293b',
+          line: { width: 0 }
         });
         currentY += 0.28;
         
@@ -379,7 +391,8 @@ export async function POST(request: NextRequest) {
           color: '475569',
           wrap: true,
           valign: 'top',
-          shrinkText: true
+          shrinkText: true,
+          line: { width: 0 }
         });
       }
       
@@ -391,7 +404,8 @@ export async function POST(request: NextRequest) {
         h: 0.25,
         fontSize: 9,
         color: '999999',
-        align: 'center'
+        align: 'center',
+        line: { width: 0 }
       });
     }
 
