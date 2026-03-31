@@ -337,34 +337,26 @@ export async function POST(request: NextRequest) {
       });
       currentY += 0.6;
       
-      // Pricing Information - compact layout (price shown next to Pricing label)
+      // Pricing Information - individual text boxes
       const priceValue = product.price?.current ?? product.price ?? 'N/A';
       const priceCurrency = product.price?.currency ?? '';
-      const pricingData: any[] = [
-        [
-          { text: 'Pricing:', options: { bold: true, fontSize: 9, color: '1e293b' } },
-          { text: `${priceValue} ${priceCurrency}`.trim(), options: { fontSize: 9, color: '0ea5e9', bold: true } }
-        ],
-        [
-          { text: 'FOB:', options: { bold: true, fontSize: 9 } },
-          { text: product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', options: { fontSize: 9 } }
-        ],
-        [
-          { text: 'ELC:', options: { bold: true, fontSize: 9 } },
-          { text: product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', options: { fontSize: 9 } }
-        ],
-      ];
-      
-      slide.addTable(pricingData, {
-        x: rightSectionX,
-        y: currentY,
-        w: rightSectionWidth,
-        fontSize: 9,
-        border: { pt: 0 },
-        margin: 0.03,
-        colW: [1.2, 4]
-      });
-      currentY += 0.5;
+      const labelW = 1.0;
+      const valueX = rightSectionX + labelW;
+      const valueW = rightSectionWidth - labelW;
+      const rowH = 0.22;
+      const rowSpacing = 0.22;
+
+      slide.addText('Pricing:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b', line: { width: 0 } });
+      slide.addText(`${priceValue} ${priceCurrency}`.trim(), { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, bold: true, color: '0ea5e9', line: { width: 0 } });
+      currentY += rowSpacing;
+
+      slide.addText('FOB:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b', line: { width: 0 } });
+      slide.addText(product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, color: '1e293b', line: { width: 0 } });
+      currentY += rowSpacing;
+
+      slide.addText('ELC:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b', line: { width: 0 } });
+      slide.addText(product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, color: '1e293b', line: { width: 0 } });
+      currentY += rowSpacing + 0.06;
       
       // Description - shortened for 4:3 layout
       const description = detailsToUse?.desc_short || product.description_short || product.description;
