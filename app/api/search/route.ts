@@ -12,7 +12,7 @@ const searchSchema = z.object({
     moq_max: z.number().optional(),
   }).optional(),
   page: z.number().default(1),
-  limit: z.number().default(20),
+  limit: z.number().default(parseInt(process.env.NEXT_PUBLIC_SEARCH_RESULT_LIMIT || '50', 10)),
 });
 
 const SERVICE_URLS: Record<Platform, string> = {

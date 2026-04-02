@@ -562,7 +562,7 @@ export default function Home() {
       query,
       platforms: selectedPlatforms,
       page: 1,
-      limit: 20,
+      limit: parseInt(process.env.NEXT_PUBLIC_SEARCH_RESULT_LIMIT || '50', 10),
     };
 
     try {

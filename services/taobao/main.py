@@ -9,6 +9,7 @@ import os
 import base64
 import io
 import asyncio
+import math
 from PIL import Image
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -165,7 +166,7 @@ async def retry_with_backoff(func, max_retries: int = 3, initial_delay: float = 
 class SearchRequest(BaseModel):
     query: str
     page: int = 1
-    limit: int = 20
+    limit: int = 50
     price_min: Optional[float] = None
     price_max: Optional[float] = None
     category: Optional[str] = None
@@ -173,7 +174,7 @@ class SearchRequest(BaseModel):
 class ImageSearchRequest(BaseModel):
     image_url: str
     page: int = 1
-    limit: int = 20
+    limit: int = 50
 
 class ProductDTO(BaseModel):
     id: str
@@ -346,69 +347,78 @@ async def search(request: SearchRequest):
         async with httpx.AsyncClient() as client:
             # Use OneBound API (required)
             print(f"Using OneBound API for query: {request.query}")
-            params = {
+
+            # OneBound API hard cap is 20 items per page.
+            # Fetch multiple pages concurrently to satisfy larger limits.
+            ONEBOUND_PAGE_SIZE = 20
+            pages_needed = math.ceil(request.limit / ONEBOUND_PAGE_SIZE)
+            # Map user's page to the correct OneBound page range
+            base_api_page = (request.page - 1) * pages_needed + 1
+
+            base_params = {
                 "key": ONEBOUND_API_KEY,
                 "secret": ONEBOUND_API_SECRET,
                 "q": request.query,
-                "page": request.page,
-                "pageSize": request.limit,
+                "pageSize": ONEBOUND_PAGE_SIZE,
                 "lang": "en",
             }
-            
             if request.price_min:
-                params["start_price"] = request.price_min
+                base_params["start_price"] = request.price_min
             if request.price_max:
-                params["end_price"] = request.price_max
-            
-            print(f"OneBound request params (secret hidden): {dict(params, secret='***')}")
-            
-            # Define the API call function for retry
-            async def make_search_call():
-                response = await client.get(
-                    f"{ONEBOUND_BASE_URL}/item_search",
-                    params=params,
-                    timeout=30.0
-                )
-                response.raise_for_status()
-                return response
-            
-            # Call with retry logic for 503 errors
-            response = await retry_with_backoff(
-                make_search_call,
-                max_retries=3,
-                initial_delay=2.0,
-                backoff_factor=2.0
+                base_params["end_price"] = request.price_max
+
+            print(f"Fetching {pages_needed} page(s) from OneBound (limit={request.limit})")
+
+            async def fetch_page(api_page: int):
+                params = {**base_params, "page": api_page}
+                print(f"OneBound request page {api_page} (secret hidden): {dict(params, secret='***')}")
+                async def make_call():
+                    resp = await client.get(
+                        f"{ONEBOUND_BASE_URL}/item_search",
+                        params=params,
+                        timeout=30.0
+                    )
+                    resp.raise_for_status()
+                    return resp
+                response = await retry_with_backoff(make_call, max_retries=3, initial_delay=2.0, backoff_factor=2.0)
+                if response.status_code == 403:
+                    error_detail = response.text[:200]
+                    raise HTTPException(status_code=403, detail=f"OneBound API authentication failed: {error_detail}")
+                data = response.json()
+                if data.get("error"):
+                    print(f"OneBound API error on page {api_page}: {data.get('error')}")
+                    return []
+                items_data = data.get("items", {})
+                return items_data.get("item", []) if isinstance(items_data, dict) else []
+
+            page_results = await asyncio.gather(
+                *[fetch_page(base_api_page + i) for i in range(pages_needed)],
+                return_exceptions=True
             )
-            
-            print(f"OneBound response status: {response.status_code}")
-            
-            # Handle specific error codes
-            if response.status_code == 403:
-                error_detail = response.text[:200]
-                print(f"OneBound 403 Forbidden: {error_detail}")
-                print("Possible causes: Invalid API key, quota exceeded, or IP blocked")
-                raise HTTPException(status_code=403, detail=f"OneBound API authentication failed: {error_detail}")
-            
-            print(f"OneBound response preview: {response.text[:500]}")
-            
-            response.raise_for_status()
-            data = response.json()
-            
-            # OneBound API response structure
-            if data.get("error"):
-                print(f"OneBound API error: {data.get('error')}")
-                raise HTTPException(status_code=503, detail=f"OneBound API error: {data.get('error')}")
-            
-            # OneBound nests items under items.item
-            items_data = data.get("items", {})
-            items = items_data.get("item", []) if isinstance(items_data, dict) else []
-            
-            print(f"OneBound response: {len(items)} items found")
-            
+
+            all_items = []
+            for result in page_results:
+                if isinstance(result, Exception):
+                    print(f"Page fetch error: {result}")
+                else:
+                    all_items.extend(result)
+
+            # Trim to requested limit and deduplicate by item id
+            seen_ids = set()
+            unique_items = []
+            for item in all_items:
+                item_id = str(item.get("num_iid", ""))
+                if item_id and item_id not in seen_ids:
+                    seen_ids.add(item_id)
+                    unique_items.append(item)
+            items = unique_items[:request.limit]
+
+            print(f"OneBound response: {len(all_items)} raw items → {len(items)} after dedup/trim")
+
             if items:
-                print(f"Sample item keys: {list(items[0].keys()) if items else 'No items'}")
-                print(f"Sample item data: {items[0] if items else 'No items'}")
-            
+                print(f"Sample item keys: {list(items[0].keys())}")
+                print(f"Sample item data: {items[0]}")
+
             products = [normalize_onebound_product(item) for item in items]
             print(f"Successfully normalized {len(products)} products")
             
