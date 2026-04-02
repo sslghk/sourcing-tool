@@ -1640,12 +1640,26 @@ export default function ProposalDetailPage() {
                           </Button>
                         </div>
 
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 flex flex-col gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fetchProductDetailOnDemand(product.source_id)}
+                            disabled={loadingDetails.has(product.source_id)}
+                            className="text-sky-600 hover:text-sky-700 hover:bg-sky-50 h-8 w-8 p-0"
+                            title="Reload item details"
+                          >
+                            {loadingDetails.has(product.source_id) ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <RefreshCw className="h-4 w-4" />
+                            )}
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => removeProduct(product.id)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
