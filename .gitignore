@@ -70,6 +70,9 @@ docker-compose.override.yml
 # Runtime data (proposals, users, reset-pins - environment-specific, should not be committed)
 /data/
 
+# AI-generated images (environment-specific, should not be committed)
+/public/ai-images/
+
 # IDE
 .vscode/
 .idea/
