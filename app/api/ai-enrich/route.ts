@@ -84,7 +84,7 @@ GUIDELINES
 
 export async function POST(request: NextRequest) {
   try {
-    const { imageUrl, userNotes, proposalId, productId } = await request.json();
+    const { imageUrl, userNotes, proposalId, productId, startIndex = 0, generateCount } = await request.json();
 
     if (!imageUrl) {
       return NextResponse.json(
@@ -95,9 +95,13 @@ export async function POST(request: NextRequest) {
 
     // Read max AI images from env (default 4)
     const maxAIImages = Math.max(1, parseInt(process.env.MAX_AI_IMAGES || '4', 10));
+    // generateCount lets frontend request fewer images (to preserve selected ones)
+    const countToGenerate = (typeof generateCount === 'number' && generateCount > 0)
+      ? Math.min(generateCount, maxAIImages)
+      : maxAIImages;
 
     // Build prompt dynamically with correct count and user notes
-    const prompt = buildEnrichmentPrompt(maxAIImages, userNotes || 'None provided');
+    const prompt = buildEnrichmentPrompt(countToGenerate, userNotes || 'None provided');
 
     // Normalise the URL (handle protocol-relative URLs)
     const normalizedUrl = imageUrl.startsWith('//') ? `https:${imageUrl}` : imageUrl;
@@ -129,9 +133,10 @@ export async function POST(request: NextRequest) {
         const alt: any = enrichedAlternatives[i];
         if (alt.generated_image_url?.startsWith('data:')) {
           try {
+            // Use startIndex offset so new images don't overwrite existing saved ones
             enrichedAlternatives[i] = {
               ...alt,
-              generated_image_url: saveImageToServer(alt.generated_image_url as string, proposalId, productId, i),
+              generated_image_url: saveImageToServer(alt.generated_image_url as string, proposalId, productId, startIndex + i),
             };
           } catch (err) {
             console.error(`Failed to save image ${i} to server:`, err);
