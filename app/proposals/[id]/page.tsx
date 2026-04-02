@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw, GripVertical } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw, GripVertical, Languages } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -100,6 +100,9 @@ export default function ProposalDetailPage() {
   const [selectedSecondaryImages, setSelectedSecondaryImages] = useState<Record<string, string[]>>({});
   const [selectedAIImages, setSelectedAIImages] = useState<Record<string, string[]>>({});
   const [dragOverMain, setDragOverMain] = useState<string | null>(null);
+  const [translatingProduct, setTranslatingProduct] = useState<string | null>(null);
+  const [translations, setTranslations] = useState<Record<string, { translations: Array<{ original: string; english: string }>; summary: string } | null>>({});
+  const [showTranslation, setShowTranslation] = useState<Set<string>>(new Set());
 
   // Proposal data from JSON storage
   const [proposalData, setProposalData] = useState<any>(null);
@@ -892,17 +895,26 @@ export default function ProposalDetailPage() {
 
     try {
       const userRemarks = aiEnrichRemarks[productId] || '';
-      
+      const maxAIImages = parseInt(process.env.NEXT_PUBLIC_MAX_AI_IMAGES || '4', 10) || 4;
+
+      // Find existing selected AI alternatives to preserve them
+      const selectedUrls = selectedAIImages[productId] || [];
+      const existingAlts = (product.aiEnrichment?.design_alternatives || []).filter(
+        (alt: any) => alt.generated_image_url && selectedUrls.includes(alt.generated_image_url)
+      );
+      const generateCount = Math.max(1, maxAIImages - existingAlts.length);
+      const startIndex = existingAlts.length;
+
       const response = await fetch('/api/ai-enrich', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           imageUrl: product.image_urls[0],
           userNotes: userRemarks,
           proposalId: params.id,
           productId: product.source_id || product.id,
+          startIndex,
+          generateCount,
         }),
       });
 
@@ -912,16 +924,22 @@ export default function ProposalDetailPage() {
 
       const enrichmentData = await response.json();
 
-      // Update product with AI enrichment data
-      const updatedProducts = proposal.products.map(p => 
-        p.id === productId 
-          ? { 
-              ...p, 
-              aiEnrichment: {
-                ...enrichmentData,
-                enriched_at: new Date().toISOString(),
-              }
-            } 
+      // Merge: keep selected existing alternatives + add newly generated ones
+      const mergedAlternatives = [
+        ...existingAlts,
+        ...enrichmentData.design_alternatives,
+      ];
+
+      const mergedEnrichment = {
+        ...enrichmentData,
+        design_alternatives: mergedAlternatives,
+        enriched_at: new Date().toISOString(),
+      };
+
+      // Update product with merged AI enrichment data
+      const updatedProducts = proposal.products.map(p =>
+        p.id === productId
+          ? { ...p, aiEnrichment: mergedEnrichment }
           : p
       );
 
@@ -939,11 +957,10 @@ export default function ProposalDetailPage() {
         if (index !== -1) {
           proposals[index] = stripBase64Images(updatedProposal);
           localStorage.setItem('proposals', JSON.stringify(proposals));
-          // Keep full data in state (with images)
           setProposal(updatedProposal);
         }
       }
-      
+
       // Clear remarks after successful enrichment
       setAiEnrichRemarksOpen(null);
       setAiEnrichRemarks(prev => {
@@ -956,6 +973,30 @@ export default function ProposalDetailPage() {
       alert('Failed to enrich product with AI. Please try again.');
     } finally {
       setLoadingAIEnrich(null);
+    }
+  };
+
+  const handleTranslate = async (productId: string, imageUrl: string) => {
+    setTranslatingProduct(productId);
+    try {
+      const normalizedUrl = imageUrl.startsWith('//') ? `https:${imageUrl}` : imageUrl;
+      const response = await fetch('/api/translate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: normalizedUrl }),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'Translation failed');
+      }
+      const data = await response.json();
+      setTranslations(prev => ({ ...prev, [productId]: data }));
+      setShowTranslation(prev => new Set(prev).add(productId));
+    } catch (error) {
+      console.error('Translation error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to translate image text');
+    } finally {
+      setTranslatingProduct(null);
     }
   };
 
@@ -1658,6 +1699,28 @@ export default function ProposalDetailPage() {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => {
+                              const imageUrl = product.image_urls?.[0];
+                              if (!imageUrl) { alert('No product image available'); return; }
+                              if (showTranslation.has(product.id) && translations[product.id]) {
+                                setShowTranslation(prev => { const s = new Set(prev); s.delete(product.id); return s; });
+                              } else {
+                                handleTranslate(product.id, imageUrl);
+                              }
+                            }}
+                            disabled={translatingProduct === product.id}
+                            className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 h-8 w-8 p-0"
+                            title="Translate text in photo"
+                          >
+                            {translatingProduct === product.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Languages className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => removeProduct(product.id)}
                             className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
                           >
@@ -1665,6 +1728,67 @@ export default function ProposalDetailPage() {
                           </Button>
                         </div>
                       </div>
+
+                      {/* Translation Result Panel */}
+                      {showTranslation.has(product.id) && translations[product.id] && (
+                        <div className="mt-4 rounded-lg overflow-hidden border border-amber-200">
+                          <div className="flex items-center justify-between px-3 py-2 bg-amber-50 border-b border-amber-200">
+                            <h5 className="text-xs font-medium text-amber-800 flex items-center gap-1">
+                              <Languages className="h-3 w-3" />
+                              Photo Text Translation
+                            </h5>
+                            <button
+                              onClick={() => setShowTranslation(prev => { const s = new Set(prev); s.delete(product.id); return s; })}
+                              className="text-amber-500 hover:text-amber-700 text-xs"
+                            >
+                              Hide
+                            </button>
+                          </div>
+                          <div className="flex gap-0">
+                            {/* Product image with translation overlay */}
+                            <div className="relative flex-shrink-0 w-48 h-48 bg-gray-100">
+                              {product.image_urls?.[0] && (
+                                <img
+                                  src={product.image_urls[0]}
+                                  alt={product.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              )}
+                              {/* Translation overlay strip at bottom of image */}
+                              <div className="absolute bottom-0 left-0 right-0 bg-black/75 px-2 py-1.5 max-h-24 overflow-y-auto">
+                                {translations[product.id]!.translations.length === 0 ? (
+                                  <p className="text-white text-xs">{translations[product.id]!.summary}</p>
+                                ) : (
+                                  <div className="space-y-0.5">
+                                    {translations[product.id]!.translations.map((t, i) => (
+                                      <div key={i} className="text-xs leading-tight">
+                                        <span className="text-gray-400 line-through mr-1">{t.original}</span>
+                                        <span className="text-white font-medium">{t.english}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {/* Summary panel */}
+                            <div className="flex-1 p-3 bg-white text-xs">
+                              <p className="font-medium text-gray-700 mb-2">Summary</p>
+                              <p className="text-gray-600 leading-relaxed">{translations[product.id]!.summary}</p>
+                              {translations[product.id]!.translations.length > 0 && (
+                                <div className="mt-3 space-y-1.5 border-t pt-2">
+                                  {translations[product.id]!.translations.map((t, i) => (
+                                    <div key={i} className="flex gap-2">
+                                      <span className="text-gray-400 min-w-0 flex-1 truncate">{t.original}</span>
+                                      <span className="text-gray-300">→</span>
+                                      <span className="text-gray-800 font-medium min-w-0 flex-1">{t.english}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
