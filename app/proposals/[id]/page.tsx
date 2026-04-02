@@ -99,6 +99,7 @@ export default function ProposalDetailPage() {
   const [aiEnrichRemarks, setAiEnrichRemarks] = useState<Record<string, string>>({});
   const [selectedSecondaryImages, setSelectedSecondaryImages] = useState<Record<string, string[]>>({});
   const [selectedAIImages, setSelectedAIImages] = useState<Record<string, string[]>>({});
+  const [dragOverMain, setDragOverMain] = useState<string | null>(null);
 
   // Proposal data from JSON storage
   const [proposalData, setProposalData] = useState<any>(null);
@@ -761,6 +762,59 @@ export default function ProposalDetailPage() {
   };
 
   // Helper function to strip base64 data: URLs before saving to localStorage (keep regular URLs)
+  const swapMainImage = async (productId: string, newMainUrl: string) => {
+    if (!proposal) return;
+    const product = proposal.products.find(p => p.id === productId);
+    if (!product) return;
+    const oldMainUrl = product.image_urls[0];
+
+    // 1. Reorder image_urls: new main first, old main stays in array
+    const updatedProducts = proposal.products.map(p => {
+      if (p.id !== productId) return p;
+      const filtered = p.image_urls.filter(u => u !== newMainUrl);
+      return { ...p, image_urls: [newMainUrl, ...filtered] };
+    });
+    const updatedProposal = { ...proposal, products: updatedProducts, updated_at: new Date().toISOString() };
+    setProposal(updatedProposal);
+
+    // 2. Swap in productDetails.item_imgs: replace newMainUrl slot with oldMainUrl
+    if (oldMainUrl && oldMainUrl !== newMainUrl) {
+      const details = productDetails.get(product.source_id);
+      if (details?.item_imgs) {
+        const updatedImgs = details.item_imgs.map((img: any) => {
+          const imgUrl = img.url.startsWith('//') ? `https:${img.url}` : img.url;
+          if (imgUrl === newMainUrl) return { ...img, url: oldMainUrl };
+          return img;
+        });
+        setProductDetails(prev => new Map(prev).set(product.source_id, { ...details, item_imgs: updatedImgs }));
+      }
+
+      // 3. Swap in selectedSecondaryImages: replace newMainUrl with oldMainUrl
+      setSelectedSecondaryImages(prev => {
+        const current = prev[productId] || [];
+        const updated = current.map(u => (u === newMainUrl ? oldMainUrl : u));
+        if (!updated.includes(oldMainUrl) && current.includes(newMainUrl)) {
+          // newMainUrl was selected → replace it with oldMainUrl
+        } else if (!current.includes(newMainUrl)) {
+          // secondary wasn't selected; no change needed
+          return prev;
+        }
+        return { ...prev, [productId]: updated };
+      });
+    }
+
+    // 4. Persist to localStorage + server
+    try {
+      const stored = localStorage.getItem('proposals');
+      if (stored) {
+        const proposals = JSON.parse(stored);
+        const idx = proposals.findIndex((p: Proposal) => p.id === proposal.id);
+        if (idx !== -1) { proposals[idx] = updatedProposal; localStorage.setItem('proposals', JSON.stringify(proposals)); }
+      }
+    } catch (e) { console.error('Error saving main image swap:', e); }
+    await saveProductOrder(updatedProducts);
+  };
+
   const saveProductOrder = async (orderedProducts: ProductDTO[]) => {
     if (!proposal) return;
     try {
@@ -1267,25 +1321,46 @@ export default function ProposalDetailPage() {
                           <GripVertical className="h-5 w-5" />
                         </div>
                         <div className="flex-shrink-0">
-                          <button
-                            onClick={() => openImageCarousel(
-                              product.image_urls.map(url => ({ url })),
-                              0
-                            )}
-                            className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer"
+                          <div
+                            draggable={false}
+                            className={`w-32 h-32 bg-gray-100 rounded-lg overflow-hidden relative transition-all ${
+                              dragOverMain === product.id ? 'ring-2 ring-sky-500 ring-offset-1' : ''
+                            }`}
+                            onDragOver={(e) => { e.preventDefault(); setDragOverMain(product.id); }}
+                            onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverMain(null); }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              setDragOverMain(null);
+                              const droppedUrl = e.dataTransfer.getData('text/plain');
+                              if (droppedUrl) swapMainImage(product.id, droppedUrl);
+                            }}
                           >
-                            {product.image_urls[0] ? (
-                              <img
-                                src={product.image_urls[0]}
-                                alt={product.title}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                No image
+                            <button
+                              onClick={() => openImageCarousel(
+                                product.image_urls.map(url => ({ url })),
+                                0
+                              )}
+                              className="w-full h-full hover:brightness-90 transition-all cursor-pointer"
+                            >
+                              {product.image_urls[0] ? (
+                                <img
+                                  src={product.image_urls[0]}
+                                  alt={product.title}
+                                  draggable={false}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                  No image
+                                </div>
+                              )}
+                            </button>
+                            {dragOverMain === product.id && (
+                              <div className="absolute inset-0 bg-sky-500/20 flex items-center justify-center pointer-events-none rounded-lg">
+                                <span className="text-xs text-sky-700 font-semibold bg-white/80 px-1 rounded">Swap</span>
                               </div>
                             )}
-                          </button>
+                          </div>
                         </div>
 
                         <div className="flex-1">
@@ -1325,24 +1400,32 @@ export default function ProposalDetailPage() {
                                   const isSelected = selectedSecondaryImages[product.id]?.includes(imageUrl) || false;
                                   
                                   return (
-                                    <div key={idx} className="relative">
+                                    <div
+                                      key={idx}
+                                      className="relative cursor-grab active:cursor-grabbing"
+                                      draggable
+                                      onDragStart={(e) => {
+                                        e.dataTransfer.setData('text/plain', imageUrl);
+                                        e.dataTransfer.effectAllowed = 'copy';
+                                      }}
+                                    >
                                       <input
                                         type="checkbox"
                                         checked={isSelected}
                                         onChange={() => toggleSecondaryImageSelection(product.id, imageUrl)}
-                                        className="absolute top-1 left-1 w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                                        className="absolute top-1 left-1 w-4 h-4 text-purple-600 rounded focus:ring-purple-500 z-10"
                                         id={`secondary-img-${product.id}-${idx}`}
                                       />
                                       <button
                                         onClick={() => openImageCarousel(details.item_imgs || [], idx)}
-                                        className={`w-16 h-16 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer flex-shrink-0 ${
+                                        className={`w-16 h-16 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-grab flex-shrink-0 ${
                                           isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300'
                                         }`}
                                       >
                                         <img 
                                           src={imageUrl}
                                           alt={`Product ${idx + 1}`}
-                                          className="w-full h-full object-cover"
+                                          className="w-full h-full object-cover pointer-events-none"
                                         />
                                       </button>
                                     </div>
@@ -1366,7 +1449,7 @@ export default function ProposalDetailPage() {
                                   if (!alt.generated_image_url) return null;
                                   const isSelected = selectedAIImages[product.id]?.includes(alt.generated_image_url) || false;
                                   return (
-                                    <div key={idx} className="relative flex-shrink-0">
+                                    <div key={idx} className="relative flex-shrink-0" draggable={false} onDragStart={(e) => e.preventDefault()}>
                                       <input
                                         type="checkbox"
                                         checked={isSelected}
@@ -1388,7 +1471,8 @@ export default function ProposalDetailPage() {
                                         <img
                                           src={alt.generated_image_url}
                                           alt={alt.concept_title}
-                                          className="w-full h-full object-cover bg-purple-50"
+                                          className="w-full h-full object-cover bg-purple-50 pointer-events-none"
+                                          draggable={false}
                                           referrerPolicy="no-referrer"
                                           onError={(e) => {
                                             const t = e.currentTarget;
