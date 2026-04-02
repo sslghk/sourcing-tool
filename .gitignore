@@ -67,6 +67,9 @@ docker-compose.override.yml
 *.sqlite
 *.sqlite3
 
+# Runtime data (proposals, users, reset-pins - environment-specific, should not be committed)
+/data/
+
 # IDE
 .vscode/
 .idea/
