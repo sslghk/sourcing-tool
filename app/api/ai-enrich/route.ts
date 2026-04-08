@@ -5,7 +5,7 @@ import path from 'path';
 const DATA_DIR = path.join(process.cwd(), 'data', 'proposals');
 const AI_IMAGES_DIR = path.join(process.cwd(), 'public', 'ai-images');
 
-function saveImageToServer(dataUrl: string, proposalId: string, productId: string, index: number): string {
+function saveImageToServer(dataUrl: string, proposalId: string, productId: string, index: number, generationId: string): string {
   const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
   if (!match) return dataUrl;
   const mimeType = match[1];
@@ -14,72 +14,56 @@ function saveImageToServer(dataUrl: string, proposalId: string, productId: strin
   const safeProductId = productId.replace(/[^a-zA-Z0-9_-]/g, '_');
   const dir = path.join(AI_IMAGES_DIR, proposalId, safeProductId);
   fs.mkdirSync(dir, { recursive: true });
-  const filename = `concept-${index}.${ext}`;
+  // Include generationId in filename to bust browser cache on regeneration
+  const filename = `concept-${index}-${generationId}.${ext}`;
   fs.writeFileSync(path.join(dir, filename), Buffer.from(base64Data, 'base64'));
   return `/ai-images/${proposalId}/${safeProductId}/${filename}`;
 }
 
-const ALTERNATIVE_EXAMPLE = `    {
-      "concept_title": "<short name>",
-      "generated_image_prompt": "<detailed visual description for generating the alternative product image - be specific about colors, materials, style, and key features>",
-      "short_description": "<under 20 words>",
-      "design_rationale": "<why this design is compelling or commercially interesting>"
-    }`;
-
 function buildEnrichmentPrompt(count: number, userNotes: string): string {
-  const examples = Array.from({ length: count }, () => ALTERNATIVE_EXAMPLE).join(',\n');
-  return `You are a senior industrial designer working for a global product sourcing company. Your task is to analyze the uploaded product image and propose alternative design concepts that could be manufactured and sold as product variations.
+  const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+  const examples = Array.from({ length: count }, (_, i) => `    {
+      "concept_title": "<short distinctive name for Variant ${labels[i] || i + 1}>",
+      "generated_image_prompt": "<MUST start with: 'Product photo of [exact product type from original image]:' then describe the specific design changes — color, material, texture, pattern, finish, style. End with: 'White background, professional e-commerce studio lighting, no text, no people, product fills frame.'>",
+      "short_description": "<under 20 words>",
+      "design_rationale": "<why this variant is commercially compelling>"
+    }`).join(',\n');
 
-INPUTS  
-- Product Image: (attached automatically)  
-- User Notes (optional): ${userNotes}
+  return `You are a senior industrial designer for a global product sourcing company. Analyze the product image and generate ${count} DISTINCT design variants.
 
-OBJECTIVES  
-1. Identify what the original product is.  
-2. Generate a concise title and description for the original product.  
-3. Extract key product specifications (dimensions, weight, materials) from the image.
-4. Create multiple alternative product design concepts inspired by the original item.
+⚠️ CRITICAL RULES (violations will be rejected):
+1. ALL variants MUST be the EXACT SAME product type/category as the original (e.g., if original is a USB cable, ALL variants must be USB cables — not accessories, not cases, not other products)
+2. Each variant must look VISUALLY DIFFERENT from the others and from the original
+3. The generated_image_prompt must be self-contained and specific enough to recreate the design from text alone — include product type, all key visual features, colors, materials
+4. User Notes below MUST be incorporated into the design directions
 
-Alternative concepts should be:
-- manufacturable at scale
-- visually differentiated
-- commercially appealing for e-commerce
-- simple enough for factories to produce
+INPUTS:
+- Product Image: (attached)
+- User Notes: ${userNotes}
 
-You may modify:
-- shape
-- theme or character
-- materials
-- colors
-- emotional tone
-- function or usability
-- gifting appeal
+DESIGN DIMENSIONS TO VARY (stay within same product category):
+- Color palette / gradient / finish (matte, glossy, metallic, translucent)
+- Material texture (braided, silicone, leather-look, frosted)
+- Pattern / graphic / motif (geometric, floral, character, minimal)
+- Style target (luxury, kids, sporty, eco, retro, futuristic)
+- Functional accent (ergonomic grip, extra indicator light, unique connector style)
 
-OUTPUT FORMAT (JSON)
-
+OUTPUT FORMAT (valid JSON only, no markdown fences):
 {
   "original_product": {
     "title": "<short title under 8 words>",
     "description": "<short description under 20 words>",
     "specifications": {
-      "dimensions": "<estimated dimensions in cm or inches, e.g., '15 x 10 x 8 cm' or 'N/A if not visible'>",
-      "weight": "<estimated weight in grams or kg, e.g., '200g' or 'N/A if not determinable'>",
-      "materials": "<primary materials used, e.g., 'Polyester plush, PP cotton filling' or 'N/A if not visible'>",
-      "other_specs": "<any other notable specifications like capacity, power, etc. or 'N/A'>"
+      "dimensions": "<estimated dimensions or N/A>",
+      "weight": "<estimated weight or N/A>",
+      "materials": "<primary materials or N/A>",
+      "other_specs": "<other specs or N/A>"
     }
   },
   "design_alternatives": [
 ${examples}
   ]
-}
-
-GUIDELINES
-
-- Generate exactly ${count} alternative concepts.
-- Keep designs practical for manufacturing.
-- Avoid unrealistic materials or extremely complex structures.
-- Alternative concepts should be meaningfully different from the original product.
-- Favor ideas that could perform well as gift items or viral e-commerce products.`;
+}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -128,6 +112,7 @@ export async function POST(request: NextRequest) {
     }
 
     // If proposalId + productId provided, save images to server and persist to proposal JSON
+    const generationId = Date.now().toString(36); // unique ID per generation run for cache busting
     if (proposalId && productId) {
       for (let i = 0; i < enrichedAlternatives.length; i++) {
         const alt: any = enrichedAlternatives[i];
@@ -136,7 +121,7 @@ export async function POST(request: NextRequest) {
             // Use startIndex offset so new images don't overwrite existing saved ones
             enrichedAlternatives[i] = {
               ...alt,
-              generated_image_url: saveImageToServer(alt.generated_image_url as string, proposalId, productId, startIndex + i),
+              generated_image_url: saveImageToServer(alt.generated_image_url as string, proposalId, productId, startIndex + i, generationId),
             };
           } catch (err) {
             console.error(`Failed to save image ${i} to server:`, err);
@@ -279,7 +264,7 @@ async function generateImageWithGemini(prompt: string, imageUrl: string, maxRetr
       contents: [{
         parts: [
           imagePart,
-          { text: `Generate a product photo variation: ${prompt}. Clean white background, professional e-commerce style, studio lighting.` }
+          { text: `You are generating a professional product photo for e-commerce.\n\nTASK: Create a photorealistic product image matching this design brief exactly:\n${prompt}\n\nREQUIREMENTS:\n- The generated product MUST be the same type/category as the reference image shown above\n- Apply ALL the specific design changes described in the brief\n- Pure white background\n- Professional studio lighting, sharp focus\n- No text overlays, no watermarks, no people, no hands\n- Product fills most of the frame` }
         ]
       }],
       generationConfig: { responseModalities: ['IMAGE', 'TEXT'], temperature: 0.8 },
