@@ -30,6 +30,7 @@ export function Navbar() {
                   width={240} 
                   height={56}
                   className="h-full w-auto object-contain"
+                  style={{ width: 'auto', height: '100%' }}
                 />
               </div>
             </Link>
