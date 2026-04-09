@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import PptxGenJS from 'pptxgenjs';
+import JSZip from 'jszip';
 import {
   prefetchAllProposalImages,
   getProcessedImage,
@@ -33,6 +34,34 @@ function addProcessedImageToSlide(
     x, y, w: maxWidth, h: maxHeight,
     fill: { color: 'F0F0F0' }
   });
+}
+
+// Post-process a PPTX buffer to ensure Transitional (not Strict) OOXML conformance.
+// PowerPoint 2013 can reject files with conformance="strict" generated on Linux.
+async function ensureTransitionalConformance(buffer: Buffer): Promise<Buffer> {
+  try {
+    const zip = await JSZip.loadAsync(buffer);
+    const presFile = zip.file('ppt/presentation.xml');
+    if (presFile) {
+      let xml = await presFile.async('string');
+      if (xml.includes('conformance="strict"')) {
+        xml = xml.replace(/conformance="strict"/g, 'conformance="transitional"');
+        zip.file('ppt/presentation.xml', xml);
+        return await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: 6 } }) as Buffer;
+      }
+    }
+  } catch (e) {
+    console.error('PPTX conformance post-processing failed, using original buffer:', e);
+  }
+  return buffer;
+}
+
+// Strip characters that are illegal in XML 1.0 (causes PowerPoint 2013 strict parser to reject the file)
+function sanitizeText(text: any): string {
+  if (text === null || text === undefined) return '';
+  return String(text)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Remove XML-invalid control chars
+    .trim();
 }
 
 // Helper to get AI image metadata (title, description) from product.aiEnrichment
@@ -114,7 +143,7 @@ export async function POST(request: NextRequest) {
     const titleWidth = 8;
     const titleX = (10 - titleWidth) / 2; // Center horizontally
     
-    titleSlide.addText(proposal.name, {
+    titleSlide.addText(sanitizeText(proposal.name), {
       x: titleX,
       y: 1.5,
       w: titleWidth,
@@ -126,7 +155,7 @@ export async function POST(request: NextRequest) {
     });
     
     if (proposal.client_name) {
-      titleSlide.addText(`Client: ${proposal.client_name}`, {
+      titleSlide.addText(`Client: ${sanitizeText(proposal.client_name)}`, {
         x: titleX,
         y: 2.8,
         w: titleWidth,
@@ -176,7 +205,7 @@ export async function POST(request: NextRequest) {
       // Category header - same line as item number
       const categoryHeaderName = detailsToUse?.category || detailsToUse?.category_id || '';
       if (categoryHeaderName) {
-        slide.addText(String(categoryHeaderName), {
+        slide.addText(sanitizeText(categoryHeaderName), {
           x: 0,
           y: 0.3,
           w: 10,
@@ -249,7 +278,7 @@ export async function POST(request: NextRequest) {
             const metadata = getAIImageMetadata(product, aiUrls[i]);
             
             // Concept label above each frame - centered horizontally
-            slide.addText(`Concept ${i + 1}`, {
+            slide.addText(sanitizeText(`Concept ${i + 1}`), {
               x: frameX,
               y: frameY,
               w: frameWidth,
@@ -274,7 +303,7 @@ export async function POST(request: NextRequest) {
             });
             
             // Title at top - 10px font
-            slide.addText(metadata.title, {
+            slide.addText(sanitizeText(metadata.title), {
               x: frameX + 0.05,
               y: aiFrameY + 0.05,
               w: frameWidth - 0.1,
@@ -294,7 +323,7 @@ export async function POST(request: NextRequest) {
             addProcessedImageToSlide(slide, aiImg, frameX + 0.075, imgY, imgMaxWidth, imgMaxHeight);
             
             // Description - bottom of text box is 0.1" (10px) above frame bottom
-            slide.addText(metadata.description, {
+            slide.addText(sanitizeText(metadata.description), {
               x: frameX + 0.05,
               y: aiFrameY + frameHeight - 0.6,
               w: frameWidth - 0.1,
@@ -316,7 +345,7 @@ export async function POST(request: NextRequest) {
       let currentY = 1.0; // Aligned with image startY (with 1 line spacing)
       
       // Product title - reduced to 11px, auto shrink to fit
-      slide.addText(product.title, {
+      slide.addText(sanitizeText(product.title), {
         x: rightSectionX,
         y: currentY,
         w: rightSectionWidth,
@@ -365,7 +394,7 @@ export async function POST(request: NextRequest) {
         currentY += 0.28;
         
         // Shortened description for 4:3 layout, auto shrink to fit
-        slide.addText(description.substring(0, 250), {
+        slide.addText(sanitizeText(description).substring(0, 250), {
           x: rightSectionX,
           y: currentY,
           w: rightSectionWidth,
@@ -390,7 +419,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const pptxBuffer = await pptx.write({ outputType: 'nodebuffer' }) as Buffer;
+    const pptxOutput = await pptx.write({ outputType: 'nodebuffer' });
+    let pptxBuffer: Buffer = Buffer.isBuffer(pptxOutput)
+      ? pptxOutput
+      : Buffer.from(pptxOutput as string, 'base64');
+
+    pptxBuffer = await ensureTransitionalConformance(pptxBuffer);
 
     return new NextResponse(new Uint8Array(pptxBuffer), {
       headers: {
