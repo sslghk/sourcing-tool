@@ -93,25 +93,19 @@ export async function POST(request: NextRequest) {
     // Call Gemini API to get concept descriptions — pass URL directly, no server-side fetch
     const result = await callGemini(normalizedUrl, prompt);
 
-    // Generate images with max 2 concurrent requests (preview model concurrency limit)
-    const MAX_CONCURRENT = 2;
-    console.log(`Generating ${result.design_alternatives.length} images (max ${MAX_CONCURRENT} concurrent)...`);
-    const enrichedAlternatives: any[] = [];
-    for (let i = 0; i < result.design_alternatives.length; i += MAX_CONCURRENT) {
-      const batch = result.design_alternatives.slice(i, i + MAX_CONCURRENT);
-      const batchResults = await Promise.all(
-        batch.map(async (alt: any) => {
-          try {
-            const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, normalizedUrl);
-            return { ...alt, generated_image_url: generatedUrl };
-          } catch (error) {
-            console.error(`Failed to generate image for concept "${alt.concept_title}":`, error);
-            return alt;
-          }
-        })
-      );
-      enrichedAlternatives.push(...batchResults);
-    }
+    // Generate images for all design alternatives in parallel
+    console.log(`Generating ${result.design_alternatives.length} images in parallel...`);
+    const enrichedAlternatives = await Promise.all(
+      result.design_alternatives.map(async (alt: any) => {
+        try {
+          const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, normalizedUrl);
+          return { ...alt, generated_image_url: generatedUrl };
+        } catch (error) {
+          console.error(`Failed to generate image for concept "${alt.concept_title}":`, error);
+          return alt;
+        }
+      })
+    );
 
     // If proposalId + productId provided, save images to server and persist to proposal JSON
     const generationId = Date.now().toString(36); // unique ID per generation run for cache busting
