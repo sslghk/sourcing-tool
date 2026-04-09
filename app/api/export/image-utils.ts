@@ -38,7 +38,7 @@ export async function fetchAndProcessImage(
       const fileBuffer = fs.readFileSync(filePath);
       const outputBuffer = await sharp(fileBuffer)
         .resize(maxDimension, maxDimension, { fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 75, mozjpeg: true })
+        .jpeg({ quality: 75 })
         .toBuffer();
       const metadata = await sharp(outputBuffer).metadata();
       const result: ProcessedImage = {
@@ -62,7 +62,7 @@ export async function fetchAndProcessImage(
       const inputBuffer = Buffer.from(base64Data, 'base64');
       const processed = sharp(inputBuffer)
         .resize(maxDimension, maxDimension, { fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 75, mozjpeg: true });
+        .jpeg({ quality: 75 });
       const outputBuffer = await processed.toBuffer();
       const metadata = await sharp(outputBuffer).metadata();
       return {
@@ -96,9 +96,13 @@ export async function fetchAndProcessImage(
         fit: 'inside',           // Maintain aspect ratio, fit within box
         withoutEnlargement: true // Don't upscale small images
       })
-      .jpeg({ quality: 75, mozjpeg: true }); // Compress to JPEG
+      .jpeg({ quality: 75 }); // Compress to JPEG
 
     const outputBuffer = await processed.toBuffer();
+    if (!outputBuffer || outputBuffer.length === 0) {
+      console.error(`sharp returned empty buffer for ${url}`);
+      return null;
+    }
     const metadata = await sharp(outputBuffer).metadata();
 
     const result: ProcessedImage = {
