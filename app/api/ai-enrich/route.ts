@@ -93,23 +93,19 @@ export async function POST(request: NextRequest) {
     // Call Gemini API to get concept descriptions — pass URL directly, no server-side fetch
     const result = await callGemini(normalizedUrl, prompt);
 
-    // Generate images for each design alternative (sequentially to avoid rate limits)
-    console.log('Generating images for design alternatives...');
-    const enrichedAlternatives = [];
-    for (const alt of result.design_alternatives) {
-      try {
-        const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, normalizedUrl);
-        enrichedAlternatives.push({
-          ...alt,
-          generated_image_url: generatedUrl
-        });
-      } catch (error) {
-        console.error(`Failed to generate image for concept "${alt.concept_title}":`, error);
-        enrichedAlternatives.push(alt);
-      }
-      // Small delay between image generation requests
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+    // Generate images for all design alternatives in parallel
+    console.log(`Generating ${result.design_alternatives.length} images in parallel...`);
+    const enrichedAlternatives = await Promise.all(
+      result.design_alternatives.map(async (alt: any) => {
+        try {
+          const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, normalizedUrl);
+          return { ...alt, generated_image_url: generatedUrl };
+        } catch (error) {
+          console.error(`Failed to generate image for concept "${alt.concept_title}":`, error);
+          return alt;
+        }
+      })
+    );
 
     // If proposalId + productId provided, save images to server and persist to proposal JSON
     const generationId = Date.now().toString(36); // unique ID per generation run for cache busting
