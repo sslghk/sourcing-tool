@@ -202,7 +202,7 @@ function buildImagePart(imageUrl: string, base64?: string, mimeType?: string) {
   return { file_data: { mime_type: guessMimeType(imageUrl), file_uri: imageUrl } };
 }
 
-async function callGemini(imageUrl: string, prompt: string) {
+async function callGemini(imageUrl: string, prompt: string, maxRetries = 4) {
   const apiKey = process.env.GEMINI_API_KEY;
   
   if (!apiKey) {
@@ -211,8 +211,9 @@ async function callGemini(imageUrl: string, prompt: string) {
 
   let base64Fallback: string | undefined;
   let mimeTypeFallback: string | undefined;
+  let lastError: Error | null = null;
 
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     const imagePart = buildImagePart(imageUrl, base64Fallback, mimeTypeFallback);
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -242,8 +243,19 @@ async function callGemini(imageUrl: string, prompt: string) {
     }
 
     const errorBody = await response.text();
+
+    if (response.status === 429) {
+      const baseDelay = Math.min(20000, 5000 * attempt);
+      const jitter = Math.floor(Math.random() * 3000);
+      const delayMs = baseDelay + jitter;
+      console.warn(`Gemini text call rate-limited (429) — attempt ${attempt}/${maxRetries}, retrying in ${(delayMs / 1000).toFixed(1)}s...`);
+      lastError = new Error(`Gemini API error (429): ${errorBody}`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      continue;
+    }
+
     const canFallback = response.status === 400 && errorBody.includes('Cannot fetch content');
-    if (canFallback && attempt === 1) {
+    if (canFallback && !base64Fallback) {
       console.warn('Gemini cannot fetch URL, falling back to base64 inline upload...');
       const fetched = await fetchImageAsBase64(imageUrl);
       base64Fallback = fetched.base64;
@@ -255,7 +267,7 @@ async function callGemini(imageUrl: string, prompt: string) {
     throw new Error(`Gemini API error (${response.status}): ${response.statusText} - ${errorBody}`);
   }
 
-  throw new Error('callGemini failed after fallback');
+  throw lastError ?? new Error('callGemini failed after retries');
 }
 
 async function generateImageWithGemini(prompt: string, imageUrl: string, maxRetries = 4): Promise<string> {
