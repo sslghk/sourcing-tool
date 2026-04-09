@@ -1,6 +1,30 @@
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
+import { createHash } from 'crypto';
+
+// Disk cache for external images so exports work after first successful fetch
+const DISK_CACHE_DIR = path.join(process.cwd(), 'data', 'image-cache');
+
+function getDiskCachePath(url: string): string {
+  const hash = createHash('sha256').update(url).digest('hex').substring(0, 48);
+  return path.join(DISK_CACHE_DIR, `${hash}.jpg`);
+}
+
+function readDiskCache(url: string): Buffer | null {
+  try {
+    const cachePath = getDiskCachePath(url);
+    if (fs.existsSync(cachePath)) return fs.readFileSync(cachePath);
+  } catch { /* ignore */ }
+  return null;
+}
+
+function writeDiskCache(url: string, jpegBuffer: Buffer): void {
+  try {
+    fs.mkdirSync(DISK_CACHE_DIR, { recursive: true });
+    fs.writeFileSync(getDiskCachePath(url), jpegBuffer);
+  } catch { /* ignore cache write errors */ }
+}
 
 export interface ProcessedImage {
   base64: string;       // data:image/jpeg;base64,... ready for embedding
@@ -76,19 +100,42 @@ export async function fetchAndProcessImage(
     }
   }
 
-  try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(30000),
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-        'Referer': 'https://www.taobao.com/',
-      },
-    });
-    if (!response.ok) return null;
+  // Check disk cache before fetching externally
+  const cachedBuffer = readDiskCache(url);
+  if (cachedBuffer) {
+    try {
+      const metadata = await sharp(cachedBuffer).metadata();
+      const result: ProcessedImage = {
+        base64: `data:image/jpeg;base64,${cachedBuffer.toString('base64')}`,
+        width: metadata.width || 300,
+        height: metadata.height || 300,
+      };
+      processedImageCache.set(cacheKey, result);
+      return result;
+    } catch { /* fall through to re-fetch */ }
+  }
 
-    const arrayBuffer = await response.arrayBuffer();
-    const inputBuffer = Buffer.from(arrayBuffer);
+  // Fetch with up to 2 retries
+  let inputBuffer: Buffer | null = null;
+  for (let attempt = 0; attempt < 2 && !inputBuffer; attempt++) {
+    try {
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(20000),
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+          'Referer': 'https://www.taobao.com/',
+        },
+      });
+      if (!response.ok) break;
+      inputBuffer = Buffer.from(await response.arrayBuffer());
+    } catch (e) {
+      if (attempt === 1) console.error(`Fetch failed after retries for ${url}:`, e);
+    }
+  }
+  if (!inputBuffer) return null;
+
+  try {
 
     // Use sharp to resize + compress in one pipeline
     const processed = sharp(inputBuffer)
@@ -111,6 +158,8 @@ export async function fetchAndProcessImage(
       height: metadata.height || 300,
     };
 
+    // Persist to disk so future exports work even if CDN is unreachable
+    writeDiskCache(url, outputBuffer);
     processedImageCache.set(cacheKey, result);
     return result;
   } catch (error) {
@@ -252,8 +301,18 @@ export function getSecondaryImageUrls(product: any): string[] {
  * Extract selected AI-generated image URLs from a product object.
  */
 export function getAIImageUrls(product: any): string[] {
-  const selectedAIImages = product.selectedAIImages || [];
-  return selectedAIImages.slice(0, 4);
+  const selected = product.selectedAIImages || [];
+  if (selected.length === 0) return [];
+  if (typeof selected[0] === 'number') {
+    // Index-based: resolve URLs from design_alternatives
+    const alternatives = product.aiEnrichment?.design_alternatives || [];
+    return (selected as number[])
+      .map((idx: number) => alternatives[idx]?.generated_image_url)
+      .filter(Boolean)
+      .slice(0, 4);
+  }
+  // Legacy: direct URL strings
+  return selected.slice(0, 4);
 }
 
 /**
