@@ -93,19 +93,25 @@ export async function POST(request: NextRequest) {
     // Call Gemini API to get concept descriptions — pass URL directly, no server-side fetch
     const result = await callGemini(normalizedUrl, prompt);
 
-    // Generate images for all design alternatives in parallel
-    console.log(`Generating ${result.design_alternatives.length} images in parallel...`);
-    const enrichedAlternatives = await Promise.all(
-      result.design_alternatives.map(async (alt: any) => {
-        try {
-          const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, normalizedUrl);
-          return { ...alt, generated_image_url: generatedUrl };
-        } catch (error) {
-          console.error(`Failed to generate image for concept "${alt.concept_title}":`, error);
-          return alt;
-        }
-      })
-    );
+    // Generate images with max 2 concurrent requests (preview model concurrency limit)
+    const MAX_CONCURRENT = 2;
+    console.log(`Generating ${result.design_alternatives.length} images (max ${MAX_CONCURRENT} concurrent)...`);
+    const enrichedAlternatives: any[] = [];
+    for (let i = 0; i < result.design_alternatives.length; i += MAX_CONCURRENT) {
+      const batch = result.design_alternatives.slice(i, i + MAX_CONCURRENT);
+      const batchResults = await Promise.all(
+        batch.map(async (alt: any) => {
+          try {
+            const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, normalizedUrl);
+            return { ...alt, generated_image_url: generatedUrl };
+          } catch (error) {
+            console.error(`Failed to generate image for concept "${alt.concept_title}":`, error);
+            return alt;
+          }
+        })
+      );
+      enrichedAlternatives.push(...batchResults);
+    }
 
     // If proposalId + productId provided, save images to server and persist to proposal JSON
     const generationId = Date.now().toString(36); // unique ID per generation run for cache busting
@@ -308,8 +314,15 @@ async function generateImageWithGemini(prompt: string, imageUrl: string, maxRetr
     const errorBody = await response.text();
 
     if (response.status === 429) {
-      const delayMs = Math.min(15000, 5000 * attempt); // 5s, 10s, 15s, 15s
-      console.warn(`Gemini image generation rate-limited (429) — attempt ${attempt}/${maxRetries}, retrying in ${delayMs / 1000}s...`);
+      const isQuotaExhausted = errorBody.includes('quota') && errorBody.includes('daily');
+      if (isQuotaExhausted) {
+        throw new Error('Daily Gemini quota exhausted. Try again tomorrow or upgrade to a paid API tier.');
+      }
+      // Add random jitter (0–3s) so parallel retries don't all fire simultaneously
+      const baseDelay = Math.min(20000, 5000 * attempt);
+      const jitter = Math.floor(Math.random() * 3000);
+      const delayMs = baseDelay + jitter;
+      console.warn(`Gemini image generation rate-limited (429) — attempt ${attempt}/${maxRetries}, retrying in ${(delayMs / 1000).toFixed(1)}s...`);
       lastError = new Error(`Gemini image generation error (429): ${errorBody}`);
       await new Promise(resolve => setTimeout(resolve, delayMs));
       continue;
