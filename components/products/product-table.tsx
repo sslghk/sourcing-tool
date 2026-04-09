@@ -326,11 +326,17 @@ export function ProductTable({ products, onAddToProposal, selectedProducts, setS
                     <td className="px-4 py-4">
                       <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         {product.image_urls[0] ? (
-                          <img
-                            src={product.image_urls[0]}
-                            alt={product.title}
-                            className="w-full h-full object-cover"
-                          />
+                          <button
+                            className="w-full h-full cursor-zoom-in"
+                            onClick={() => openImageCarousel(product.image_urls.map(u => ({ url: u })), 0)}
+                            title="Click to view full size"
+                          >
+                            <img
+                              src={product.image_urls[0]}
+                              alt={product.title}
+                              className="w-full h-full object-cover hover:brightness-90 transition-all"
+                            />
+                          </button>
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400">
                             No image

@@ -660,10 +660,11 @@ export default function ProposalDetailPage() {
 
   const toggleAIImageSelection = async (productId: string, imageUrl: string) => {
     const currentSelection = selectedAIImages[productId] || [];
+    console.log('[AI Select] productId:', productId, 'imageUrl:', imageUrl?.slice(0, 60), 'currentSelection:', currentSelection.length);
     const newSelection = currentSelection.includes(imageUrl)
       ? currentSelection.filter((url: string) => url !== imageUrl)
       : [...currentSelection, imageUrl].slice(0, 4); // Max 4 images
-    
+    console.log('[AI Select] newSelection:', newSelection.length);
     setSelectedAIImages(prev => ({
       ...prev,
       [productId]: newSelection
@@ -902,8 +903,14 @@ export default function ProposalDetailPage() {
       const existingAlts = (product.aiEnrichment?.design_alternatives || []).filter(
         (alt: any) => alt.generated_image_url && selectedUrls.includes(alt.generated_image_url)
       );
-      const generateCount = Math.max(1, maxAIImages - existingAlts.length);
+      const generateCount = maxAIImages - existingAlts.length;
       const startIndex = existingAlts.length;
+
+      if (generateCount <= 0) {
+        alert(`You already have ${existingAlts.length} selected AI images (maximum is ${maxAIImages}). Deselect some to regenerate new alternatives.`);
+        setLoadingAIEnrich(null);
+        return;
+      }
 
       const response = await fetch('/api/ai-enrich', {
         method: 'POST',
@@ -1443,32 +1450,39 @@ export default function ProposalDetailPage() {
                                   return (
                                     <div
                                       key={idx}
-                                      className="relative cursor-grab active:cursor-grabbing"
+                                      className="flex-shrink-0 flex flex-col items-center gap-1"
                                       draggable
                                       onDragStart={(e) => {
                                         e.dataTransfer.setData('text/plain', imageUrl);
                                         e.dataTransfer.effectAllowed = 'copy';
                                       }}
                                     >
-                                      <input
-                                        type="checkbox"
-                                        checked={isSelected}
-                                        onChange={() => toggleSecondaryImageSelection(product.id, imageUrl)}
-                                        className="absolute top-1 left-1 w-4 h-4 text-purple-600 rounded focus:ring-purple-500 z-10"
-                                        id={`secondary-img-${product.id}-${idx}`}
-                                      />
-                                      <button
-                                        onClick={() => openImageCarousel(details.item_imgs || [], idx)}
-                                        className={`w-16 h-16 rounded overflow-hidden hover:ring-2 hover:ring-sky-500 transition-all cursor-grab flex-shrink-0 ${
-                                          isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300'
+                                      <div
+                                        className={`relative w-16 h-16 rounded cursor-pointer transition-all ${
+                                          isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300 hover:border-purple-400'
                                         }`}
+                                        onClick={() => toggleSecondaryImageSelection(product.id, imageUrl)}
                                       >
-                                        <img 
+                                        <img
                                           src={imageUrl}
                                           alt={`Product ${idx + 1}`}
-                                          className="w-full h-full object-cover pointer-events-none"
+                                          className="w-full h-full object-cover rounded pointer-events-none"
                                         />
-                                      </button>
+                                        <div
+                                          className={`absolute top-1 left-1 w-4 h-4 rounded border-2 flex items-center justify-center pointer-events-none ${
+                                            isSelected ? 'bg-purple-600 border-purple-600' : 'bg-white border-gray-400'
+                                          }`}
+                                        >
+                                          {isSelected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                                        </div>
+                                        <button
+                                          className="absolute bottom-1 right-1 w-5 h-5 bg-black/40 hover:bg-black/70 rounded flex items-center justify-center transition-colors"
+                                          onClick={(e) => { e.stopPropagation(); openImageCarousel(details.item_imgs || [], idx); }}
+                                          title="View full size"
+                                        >
+                                          <svg className="w-3 h-3 text-white pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                        </button>
+                                      </div>
                                     </div>
                                   );
                                 })}
@@ -1490,29 +1504,18 @@ export default function ProposalDetailPage() {
                                   if (!alt.generated_image_url) return null;
                                   const isSelected = selectedAIImages[product.id]?.includes(alt.generated_image_url) || false;
                                   return (
-                                    <div key={idx} className="relative flex-shrink-0" draggable={false} onDragStart={(e) => e.preventDefault()}>
-                                      <input
-                                        type="checkbox"
-                                        checked={isSelected}
-                                        onChange={() => toggleAIImageSelection(product.id, alt.generated_image_url!)}
-                                        className="absolute top-1 left-1 w-4 h-4 text-purple-600 rounded focus:ring-purple-500 z-10"
-                                      />
-                                      <button
-                                        onClick={() => openImageCarousel(
-                                          product.aiEnrichment!.design_alternatives
-                                            .filter(a => a.generated_image_url)
-                                            .map(a => ({ url: a.generated_image_url! })),
-                                          idx
-                                        )}
-                                        title={alt.concept_title}
-                                        className={`w-16 h-16 rounded overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all cursor-pointer ${
-                                          isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300'
+                                    <div key={idx} className="flex-shrink-0 flex flex-col items-center gap-1">
+                                      <div
+                                        className={`relative w-16 h-16 rounded cursor-pointer transition-all ${
+                                          isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300 hover:border-purple-400'
                                         }`}
+                                        onClick={() => toggleAIImageSelection(product.id, alt.generated_image_url!)}
+                                        title={alt.concept_title}
                                       >
                                         <img
                                           src={alt.generated_image_url}
                                           alt={alt.concept_title}
-                                          className="w-full h-full object-cover bg-purple-50 pointer-events-none"
+                                          className="w-full h-full object-cover bg-purple-50 rounded pointer-events-none"
                                           draggable={false}
                                           referrerPolicy="no-referrer"
                                           onError={(e) => {
@@ -1521,14 +1524,33 @@ export default function ProposalDetailPage() {
                                             const parent = t.parentElement;
                                             if (parent && !parent.querySelector('.img-fallback')) {
                                               const fb = document.createElement('div');
-                                              fb.className = 'img-fallback w-full h-full flex items-center justify-center bg-purple-100 text-purple-500 text-xs text-center p-1';
+                                              fb.className = 'img-fallback w-full h-full flex items-center justify-center bg-purple-100 text-purple-500 text-xs text-center p-1 rounded';
                                               fb.textContent = alt.concept_title;
                                               parent.appendChild(fb);
                                             }
                                           }}
                                         />
-                                      </button>
-                                      <p className="text-xs text-gray-500 mt-1 text-center w-16 truncate">{alt.concept_title}</p>
+                                        <div
+                                          className={`absolute top-1 left-1 w-4 h-4 rounded border-2 flex items-center justify-center pointer-events-none ${
+                                            isSelected ? 'bg-purple-600 border-purple-600' : 'bg-white border-gray-400'
+                                          }`}
+                                        >
+                                          {isSelected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                                        </div>
+                                        <button
+                                          className="absolute bottom-1 right-1 w-5 h-5 bg-black/40 hover:bg-black/70 rounded flex items-center justify-center transition-colors"
+                                          onClick={(e) => { e.stopPropagation(); openImageCarousel(
+                                            product.aiEnrichment!.design_alternatives
+                                              .filter(a => a.generated_image_url)
+                                              .map(a => ({ url: a.generated_image_url! })),
+                                            idx
+                                          ); }}
+                                          title="View full size"
+                                        >
+                                          <svg className="w-3 h-3 text-white pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                        </button>
+                                      </div>
+                                      <p className="text-xs text-gray-500 text-center w-16 truncate">{alt.concept_title}</p>
                                     </div>
                                   );
                                 })}

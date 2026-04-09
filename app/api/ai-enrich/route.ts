@@ -135,14 +135,22 @@ export async function POST(request: NextRequest) {
         try {
           const proposalData = JSON.parse(fs.readFileSync(proposalFilePath, 'utf-8'));
           if (!proposalData.aiEnrichments) proposalData.aiEnrichments = {};
+
+          // Preserve existing alternatives at indices 0..startIndex-1 (the ones the user
+          // previously selected and chose to keep). This ensures regeneration doesn't wipe
+          // out previously-selected images on the next reload.
+          const existingAlts: any[] = proposalData.aiEnrichments[productId]?.design_alternatives || [];
+          const keptAlts = startIndex > 0 ? existingAlts.slice(0, startIndex) : [];
+          const mergedAlternatives = [...keptAlts, ...enrichedAlternatives];
+
           proposalData.aiEnrichments[productId] = {
             ...result,
-            design_alternatives: enrichedAlternatives,
+            design_alternatives: mergedAlternatives,
             enriched_at: new Date().toISOString(),
           };
           proposalData.updatedAt = new Date().toISOString();
           fs.writeFileSync(proposalFilePath, JSON.stringify(proposalData, null, 2));
-          console.log(`Saved AI enrichment for product ${productId} in proposal ${proposalId}`);
+          console.log(`Saved AI enrichment for product ${productId} in proposal ${proposalId} (${keptAlts.length} kept + ${enrichedAlternatives.length} new = ${mergedAlternatives.length} total)`);
         } catch (err) {
           console.error('Failed to update proposal JSON with AI enrichment:', err);
         }
