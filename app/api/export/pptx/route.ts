@@ -123,7 +123,6 @@ export async function POST(request: NextRequest) {
       bold: true,
       color: 'FFFFFF',
       align: 'center',
-      line: { width: 0 }
     });
     
     if (proposal.client_name) {
@@ -135,7 +134,6 @@ export async function POST(request: NextRequest) {
         fontSize: 20,
         color: 'FFFFFF',
         align: 'center',
-        line: { width: 0 }
       });
     }
     
@@ -147,7 +145,6 @@ export async function POST(request: NextRequest) {
       fontSize: 16,
       color: 'FFFFFF',
       align: 'center',
-      line: { width: 0 }
     });
     
     titleSlide.addText(`Created: ${new Date(proposal.created_at).toLocaleDateString()}`, {
@@ -158,7 +155,6 @@ export async function POST(request: NextRequest) {
       fontSize: 16,
       color: 'FFFFFF',
       align: 'center',
-      line: { width: 0 }
     });
     
     titleSlide.addText(`Total Items: ${proposal.products.length}`, {
@@ -169,7 +165,6 @@ export async function POST(request: NextRequest) {
       fontSize: 16,
       color: 'FFFFFF',
       align: 'center',
-      line: { width: 0 }
     });
 
     // ===== PRODUCT SLIDES (1 per product) =====
@@ -185,11 +180,11 @@ export async function POST(request: NextRequest) {
           x: 0,
           y: 0.3,
           w: 10,
+          h: 0.3,
           fontSize: 14,
           bold: true,
           color: '1e293b',
           align: 'center',
-          line: { width: 0 }
         });
       }
       
@@ -202,10 +197,11 @@ export async function POST(request: NextRequest) {
       slide.addText(itemNumber, {
         x: 0.3,
         y: 0.3,
+        w: 2,
+        h: 0.3,
         fontSize: 14,
         bold: true,
         color: '1e293b',
-        line: { width: 0 }
       });
       
       // Left section: Images - scaled for 4:3 layout (10x7.5 inches) - enlarged 15%
@@ -262,7 +258,6 @@ export async function POST(request: NextRequest) {
               bold: true,
               color: '1e293b',
               align: 'center',
-              line: { width: 0 }
             });
             
             // Frame starts below concept label
@@ -289,7 +284,6 @@ export async function POST(request: NextRequest) {
               color: '1e293b',
               align: 'center',
               wrap: true,
-              line: { width: 0 }
             });
             
             // Image in middle (fitted to frame)
@@ -310,7 +304,6 @@ export async function POST(request: NextRequest) {
               align: 'center',
               wrap: true,
               shrinkText: true,
-              line: { width: 0 }
             });
           }
         }
@@ -333,7 +326,6 @@ export async function POST(request: NextRequest) {
         color: '1e293b',
         wrap: true,
         shrinkText: true,
-        line: { width: 0 }
       });
       currentY += 0.6;
       
@@ -346,16 +338,16 @@ export async function POST(request: NextRequest) {
       const rowH = 0.22;
       const rowSpacing = 0.22;
 
-      slide.addText('Pricing:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b', line: { width: 0 } });
-      slide.addText(`${priceValue} ${priceCurrency}`.trim(), { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, bold: true, color: '0ea5e9', line: { width: 0 } });
+      slide.addText('Pricing:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b' });
+      slide.addText(`${priceValue} ${priceCurrency}`.trim(), { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, bold: true, color: '0ea5e9' });
       currentY += rowSpacing;
 
-      slide.addText('FOB:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b', line: { width: 0 } });
-      slide.addText(product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, color: '1e293b', line: { width: 0 } });
+      slide.addText('FOB:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b' });
+      slide.addText(product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, color: '1e293b' });
       currentY += rowSpacing;
 
-      slide.addText('ELC:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b', line: { width: 0 } });
-      slide.addText(product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, color: '1e293b', line: { width: 0 } });
+      slide.addText('ELC:', { x: rightSectionX, y: currentY, w: labelW, h: rowH, fontSize: 9, bold: true, color: '1e293b' });
+      slide.addText(product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', { x: valueX, y: currentY, w: valueW, h: rowH, fontSize: 9, color: '1e293b' });
       currentY += rowSpacing + 0.06;
       
       // Description - shortened for 4:3 layout
@@ -369,7 +361,6 @@ export async function POST(request: NextRequest) {
           fontSize: 9,
           bold: true,
           color: '1e293b',
-          line: { width: 0 }
         });
         currentY += 0.28;
         
@@ -384,7 +375,6 @@ export async function POST(request: NextRequest) {
           wrap: true,
           valign: 'top',
           shrinkText: true,
-          line: { width: 0 }
         });
       }
       
@@ -397,7 +387,6 @@ export async function POST(request: NextRequest) {
         fontSize: 9,
         color: '999999',
         align: 'center',
-        line: { width: 0 }
       });
     }
 
