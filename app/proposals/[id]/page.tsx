@@ -186,6 +186,16 @@ export default function ProposalDetailPage() {
             }
           }
         });
+
+        // Restore image translations (keyed by source_id on server, product.id in state)
+        const newTranslations: Record<string, any> = {};
+        Object.entries(data.imageTranslations || {}).forEach(([sourceId, translation]) => {
+          const product = proposal.products.find(p => p.source_id === sourceId);
+          if (product) newTranslations[product.id] = translation;
+        });
+        if (Object.keys(newTranslations).length > 0) {
+          setTranslations(newTranslations);
+        }
         
         setProductDetails(newDetails);
         setSelectedSecondaryImages(newSelectedImages);
@@ -999,6 +1009,15 @@ export default function ProposalDetailPage() {
       const data = await response.json();
       setTranslations(prev => ({ ...prev, [productId]: data }));
       setShowTranslation(prev => new Set(prev).add(productId));
+      // Persist to server keyed by source_id
+      const sourceId = proposal?.products.find(p => p.id === productId)?.source_id;
+      if (sourceId && proposal?.id) {
+        fetch('/api/proposal-details', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ proposalId: proposal.id, imageTranslations: { [sourceId]: data } }),
+        }).catch(err => console.error('Failed to save translation:', err));
+      }
     } catch (error) {
       console.error('Translation error:', error);
       alert(error instanceof Error ? error.message : 'Failed to translate image text');

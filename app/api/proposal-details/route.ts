@@ -18,67 +18,71 @@ function getProposalFilePath(proposalId: string) {
   return path.join(DATA_DIR, `${proposalId}.json`);
 }
 
-// Translate a single text string from Chinese to English
-async function translateText(text: string): Promise<string> {
-  if (!text || typeof text !== 'string' || text.trim() === '') return text;
-  // Skip if text is already mostly English/numbers/URLs
-  if (/^[a-zA-Z0-9\s\-_.,\/:;!?@#$%^&*()+=<>\[\]{}|~`'"]+$/.test(text)) return text;
-  try {
-    const result = await translate(text, { from: 'zh-CN', to: 'en' });
-    return result.text || text;
-  } catch (error) {
-    console.error(`Translation failed for text: "${text.substring(0, 50)}..."`, error);
-    return text;
-  }
+// Returns true if text contains Chinese characters and needs translation
+function needsTranslation(text: string): boolean {
+  if (!text || typeof text !== 'string' || text.trim() === '') return false;
+  return /[\u4e00-\u9fff\u3400-\u4dbf]/.test(text);
 }
 
-// Batch translate an array of strings (uses separator trick for fewer API calls)
-async function batchTranslate(texts: string[]): Promise<string[]> {
-  if (texts.length === 0) return [];
-  
-  // Filter out empty/non-translatable texts, keeping track of indices
-  const SEPARATOR = ' ||| ';
-  const nonEmpty = texts.filter(t => t && typeof t === 'string' && t.trim() !== '');
-  
-  if (nonEmpty.length === 0) return texts;
-  
-  // For small batches, translate individually to avoid separator issues
-  if (nonEmpty.length <= 3) {
-    const results = [...texts];
-    for (let i = 0; i < texts.length; i++) {
-      if (texts[i] && typeof texts[i] === 'string' && texts[i].trim() !== '') {
-        results[i] = await translateText(texts[i]);
-      }
+// Translate a batch of texts using Gemini (reliable on server IPs unlike web-scraped Google Translate)
+async function translateTextsWithGemini(texts: string[]): Promise<string[]> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey || texts.length === 0) return texts;
+
+  const indicesToTranslate: number[] = [];
+  const textsToSend: string[] = [];
+  for (let i = 0; i < texts.length; i++) {
+    if (needsTranslation(texts[i])) {
+      indicesToTranslate.push(i);
+      textsToSend.push(texts[i]);
     }
-    return results;
   }
-  
-  // For larger batches, join with separator for a single API call
+  if (textsToSend.length === 0) return texts;
+
+  const prompt = `Translate the following texts from Chinese to English. Return ONLY a JSON array of translated strings in the same order. Preserve numbers, brand names, URLs, units, and technical terms exactly as-is.\n\n${JSON.stringify(textsToSend)}`;
+
   try {
-    const joined = nonEmpty.join(SEPARATOR);
-    const result = await translate(joined, { from: 'zh-CN', to: 'en' });
-    const translated = (result.text || joined).split(/\s*\|\|\|\s*/);
-    
-    // Map back to original positions
-    const results = [...texts];
-    let tIdx = 0;
-    for (let i = 0; i < texts.length; i++) {
-      if (texts[i] && typeof texts[i] === 'string' && texts[i].trim() !== '') {
-        results[i] = (tIdx < translated.length) ? translated[tIdx].trim() : texts[i];
-        tIdx++;
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 4096 },
+        }),
+        signal: AbortSignal.timeout(60000),
       }
+    );
+    if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('No JSON array in Gemini response');
+    const translated: string[] = JSON.parse(jsonMatch[0]);
+
+    const resultTexts = [...texts];
+    for (let i = 0; i < indicesToTranslate.length; i++) {
+      if (translated[i] !== undefined) resultTexts[indicesToTranslate[i]] = String(translated[i]);
     }
-    return results;
+    console.log(`Gemini translated ${textsToSend.length} text fields`);
+    return resultTexts;
   } catch (error) {
-    console.error('Batch translation failed, falling back to individual:', error);
-    // Fallback: translate individually
-    const results = [...texts];
-    for (let i = 0; i < texts.length; i++) {
-      if (texts[i] && typeof texts[i] === 'string' && texts[i].trim() !== '') {
-        results[i] = await translateText(texts[i]);
+    console.error('Gemini translation failed, falling back to google-translate-api-x:', error);
+    // Fallback: google-translate-api-x
+    try {
+      const result = [...texts];
+      for (let i = 0; i < indicesToTranslate.length; i++) {
+        const idx = indicesToTranslate[i];
+        try {
+          const r = await translate(texts[idx], { from: 'zh-CN', to: 'en' });
+          result[idx] = r.text || texts[idx];
+        } catch { /* keep original */ }
       }
+      return result;
+    } catch {
+      return texts;
     }
-    return results;
   }
 }
 
@@ -136,7 +140,7 @@ async function translateProductDetails(details: any): Promise<any> {
   console.log(`Translating ${textsToTranslate.length} text fields...`);
   
   // Batch translate all collected text
-  const translatedTexts = await batchTranslate(textsToTranslate);
+  const translatedTexts = await translateTextsWithGemini(textsToTranslate);
   
   // Store originals and apply translations
   for (const mapping of fieldMap) {
@@ -515,6 +519,8 @@ export async function PUT(request: NextRequest) {
       selectedSecondaryImages,
       // Batch save: all AI image selections at once { [sourceId]: string[] }
       allSelectedAIImages,
+      // Image translations: { [productId]: { translations: [...], summary: string } }
+      imageTranslations,
       // Proposal metadata
       proposalName,
       clientName,
@@ -580,6 +586,13 @@ export async function PUT(request: NextRequest) {
       data.products = updatedProducts;
       data.totalItems = updatedProducts.length;
       console.log(`Updated product list: ${updatedProducts.length} items`);
+    }
+
+    // ── Image translations (per product, keyed by source_id) ────────────
+    if (imageTranslations && typeof imageTranslations === 'object') {
+      if (!data.imageTranslations) data.imageTranslations = {};
+      Object.assign(data.imageTranslations, imageTranslations);
+      console.log(`Saved image translations for ${Object.keys(imageTranslations).length} products`);
     }
 
     // ── Proposal metadata ─────────────────────────────────────────────────
