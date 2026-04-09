@@ -98,7 +98,7 @@ export default function ProposalDetailPage() {
   const [aiEnrichRemarksOpen, setAiEnrichRemarksOpen] = useState<string | null>(null);
   const [aiEnrichRemarks, setAiEnrichRemarks] = useState<Record<string, string>>({});
   const [selectedSecondaryImages, setSelectedSecondaryImages] = useState<Record<string, string[]>>({});
-  const [selectedAIImages, setSelectedAIImages] = useState<Record<string, string[]>>({});
+  const [selectedAIImages, setSelectedAIImages] = useState<Record<string, number[]>>({});
   const [dragOverMain, setDragOverMain] = useState<string | null>(null);
   const [translatingProduct, setTranslatingProduct] = useState<string | null>(null);
   const [translations, setTranslations] = useState<Record<string, { translations: Array<{ original: string; english: string }>; summary: string } | null>>({});
@@ -160,7 +160,7 @@ export default function ProposalDetailPage() {
         // Load item details from storage into productDetails map
         const newDetails = new Map<string, ProductDetails>();
         const newSelectedImages: Record<string, string[]> = {};
-        const newSelectedAIImages: Record<string, string[]> = {};
+        const newSelectedAIImages: Record<string, number[]> = {};
         
         Object.entries(data.itemDetails || {}).forEach(([key, details]: [string, any]) => {
           // Use the key directly as productId (it's the source_id / num_iid)
@@ -668,13 +668,11 @@ export default function ProposalDetailPage() {
     }
   };
 
-  const toggleAIImageSelection = async (productId: string, imageUrl: string) => {
+  const toggleAIImageSelection = async (productId: string, altIndex: number) => {
     const currentSelection = selectedAIImages[productId] || [];
-    console.log('[AI Select] productId:', productId, 'imageUrl:', imageUrl?.slice(0, 60), 'currentSelection:', currentSelection.length);
-    const newSelection = currentSelection.includes(imageUrl)
-      ? currentSelection.filter((url: string) => url !== imageUrl)
-      : [...currentSelection, imageUrl].slice(0, 4); // Max 4 images
-    console.log('[AI Select] newSelection:', newSelection.length);
+    const newSelection = currentSelection.includes(altIndex)
+      ? currentSelection.filter(i => i !== altIndex)
+      : [...currentSelection, altIndex].slice(0, 4); // Max 4 images
     setSelectedAIImages(prev => ({
       ...prev,
       [productId]: newSelection
@@ -908,10 +906,10 @@ export default function ProposalDetailPage() {
       const userRemarks = aiEnrichRemarks[productId] || '';
       const maxAIImages = parseInt(process.env.NEXT_PUBLIC_MAX_AI_IMAGES || '4', 10) || 4;
 
-      // Find existing selected AI alternatives to preserve them
-      const selectedUrls = selectedAIImages[productId] || [];
+      // Find existing selected AI alternatives to preserve them (by index)
+      const selectedIndices = selectedAIImages[productId] || [];
       const existingAlts = (product.aiEnrichment?.design_alternatives || []).filter(
-        (alt: any) => alt.generated_image_url && selectedUrls.includes(alt.generated_image_url)
+        (_: any, i: number) => selectedIndices.includes(i)
       );
       const generateCount = maxAIImages - existingAlts.length;
       const startIndex = existingAlts.length;
@@ -975,6 +973,9 @@ export default function ProposalDetailPage() {
           proposals[index] = stripBase64Images(updatedProposal);
           localStorage.setItem('proposals', JSON.stringify(proposals));
           setProposal(updatedProposal);
+          // Kept alts are now at positions 0..n-1 in the new array
+          const keptIndices = existingAlts.map((_: any, i: number) => i);
+          setSelectedAIImages(prev => ({ ...prev, [productId]: keptIndices }));
         }
       }
 
@@ -1521,14 +1522,14 @@ export default function ProposalDetailPage() {
                               <div className="flex gap-2 overflow-x-auto pb-1">
                                 {product.aiEnrichment.design_alternatives.map((alt, idx) => {
                                   if (!alt.generated_image_url) return null;
-                                  const isSelected = selectedAIImages[product.id]?.includes(alt.generated_image_url) || false;
+                                  const isSelected = (selectedAIImages[product.id] || []).includes(idx);
                                   return (
                                     <div key={idx} className="flex-shrink-0 flex flex-col items-center gap-1">
                                       <div
                                         className={`relative w-16 h-16 rounded cursor-pointer transition-all ${
                                           isSelected ? 'ring-2 ring-purple-500 border-2 border-purple-500' : 'border-2 border-gray-300 hover:border-purple-400'
                                         }`}
-                                        onClick={() => toggleAIImageSelection(product.id, alt.generated_image_url!)}
+                                        onClick={() => toggleAIImageSelection(product.id, idx)}
                                         title={alt.concept_title}
                                       >
                                         <img
@@ -1543,7 +1544,7 @@ export default function ProposalDetailPage() {
                                             const parent = t.parentElement;
                                             if (parent && !parent.querySelector('.img-fallback')) {
                                               const fb = document.createElement('div');
-                                              fb.className = 'img-fallback w-full h-full flex items-center justify-center bg-purple-100 text-purple-500 text-xs text-center p-1 rounded';
+                                              fb.className = 'img-fallback w-full h-full flex items-center justify-center bg-purple-100 text-purple-500 text-xs text-center p-1 rounded pointer-events-none';
                                               fb.textContent = alt.concept_title;
                                               parent.appendChild(fb);
                                             }
