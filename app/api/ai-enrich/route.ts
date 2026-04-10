@@ -93,25 +93,19 @@ export async function POST(request: NextRequest) {
     // Call Gemini API to get concept descriptions — pass URL directly, no server-side fetch
     const result = await callGemini(normalizedUrl, prompt);
 
-    // Generate images with max 2 concurrent requests (preview model concurrency limit)
-    const MAX_CONCURRENT = 2;
-    console.log(`Generating ${result.design_alternatives.length} images (max ${MAX_CONCURRENT} concurrent)...`);
-    const enrichedAlternatives: any[] = [];
-    for (let i = 0; i < result.design_alternatives.length; i += MAX_CONCURRENT) {
-      const batch = result.design_alternatives.slice(i, i + MAX_CONCURRENT);
-      const batchResults = await Promise.all(
-        batch.map(async (alt: any) => {
-          try {
-            const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, normalizedUrl);
-            return { ...alt, generated_image_url: generatedUrl };
-          } catch (error) {
-            console.error(`Failed to generate image for concept "${alt.concept_title}":`, error);
-            return alt;
-          }
-        })
-      );
-      enrichedAlternatives.push(...batchResults);
-    }
+    // Generate images for all design alternatives in parallel
+    console.log(`Generating ${result.design_alternatives.length} images in parallel...`);
+    const enrichedAlternatives = await Promise.all(
+      result.design_alternatives.map(async (alt: any) => {
+        try {
+          const generatedUrl = await generateImageWithGemini(alt.generated_image_prompt, normalizedUrl);
+          return { ...alt, generated_image_url: generatedUrl };
+        } catch (error) {
+          console.error(`Failed to generate image for concept "${alt.concept_title}":`, error);
+          return alt;
+        }
+      })
+    );
 
     // If proposalId + productId provided, save images to server and persist to proposal JSON
     const generationId = Date.now().toString(36); // unique ID per generation run for cache busting
@@ -202,7 +196,7 @@ function buildImagePart(imageUrl: string, base64?: string, mimeType?: string) {
   return { file_data: { mime_type: guessMimeType(imageUrl), file_uri: imageUrl } };
 }
 
-async function callGemini(imageUrl: string, prompt: string) {
+async function callGemini(imageUrl: string, prompt: string, maxRetries = 4) {
   const apiKey = process.env.GEMINI_API_KEY;
   
   if (!apiKey) {
@@ -211,8 +205,9 @@ async function callGemini(imageUrl: string, prompt: string) {
 
   let base64Fallback: string | undefined;
   let mimeTypeFallback: string | undefined;
+  let lastError: Error | null = null;
 
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     const imagePart = buildImagePart(imageUrl, base64Fallback, mimeTypeFallback);
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -242,8 +237,19 @@ async function callGemini(imageUrl: string, prompt: string) {
     }
 
     const errorBody = await response.text();
+
+    if (response.status === 429) {
+      const baseDelay = Math.min(20000, 5000 * attempt);
+      const jitter = Math.floor(Math.random() * 3000);
+      const delayMs = baseDelay + jitter;
+      console.warn(`Gemini text call rate-limited (429) — attempt ${attempt}/${maxRetries}, retrying in ${(delayMs / 1000).toFixed(1)}s...`);
+      lastError = new Error(`Gemini API error (429): ${errorBody}`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      continue;
+    }
+
     const canFallback = response.status === 400 && errorBody.includes('Cannot fetch content');
-    if (canFallback && attempt === 1) {
+    if (canFallback && !base64Fallback) {
       console.warn('Gemini cannot fetch URL, falling back to base64 inline upload...');
       const fetched = await fetchImageAsBase64(imageUrl);
       base64Fallback = fetched.base64;
@@ -255,7 +261,7 @@ async function callGemini(imageUrl: string, prompt: string) {
     throw new Error(`Gemini API error (${response.status}): ${response.statusText} - ${errorBody}`);
   }
 
-  throw new Error('callGemini failed after fallback');
+  throw lastError ?? new Error('callGemini failed after retries');
 }
 
 async function generateImageWithGemini(prompt: string, imageUrl: string, maxRetries = 4): Promise<string> {
