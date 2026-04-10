@@ -215,12 +215,17 @@ export async function POST(request: NextRequest) {
             }
             doc.text(titleLines.slice(0, 2), frameX + frameWidth / 2, frameY + 6, { align: 'center' });
             
-            // Image in middle (fitted to frame)
+            // Image in middle (fitted to frame, scaled to 93% with center preserved)
             const imgMaxWidth = frameWidth - 4;
             const imgMaxHeight = 1.8 * 25.4;
             const imgY = frameY + 10;
+            const scale = 0.93;
+            const scaledW = imgMaxWidth * scale;
+            const scaledH = imgMaxHeight * scale;
+            const scaledX = frameX + 2 + (imgMaxWidth - scaledW) / 2;
+            const scaledY = imgY + (imgMaxHeight - scaledH) / 2;
             const aiImg = getProcessedImage(imageMap, aiUrls[i], SECONDARY_IMG_MAX);
-            addProcessedImageToPDF(doc, aiImg, frameX + 2, imgY, imgMaxWidth, imgMaxHeight);
+            addProcessedImageToPDF(doc, aiImg, scaledX, scaledY, scaledW, scaledH);
             
             // Description at bottom - auto fit font size
             const descMaxWidth = frameWidth - 4;
