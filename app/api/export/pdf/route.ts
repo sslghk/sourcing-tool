@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
       const categoryHeaderName = product.cachedDetails?.category || product.cachedDetails?.category_id || '';
       if (categoryHeaderName) {
         doc.setFontSize(14);
-        doc.setFont('calibri', 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.setTextColor(30, 41, 59);
         doc.text(String(categoryHeaderName), pageWidth / 2, margin + 2, { align: 'center' });
       }
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
       
       // Item number in top left - moved up to avoid overlap
       doc.setFontSize(12);
-      doc.setFont('calibri', 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text(itemNumber, margin, margin + 2);
       
       // Left section: Images (convert PPTX coordinates to PDF mm)
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
             
             // Concept label above each frame - centered horizontally
             doc.setFontSize(11);
-            doc.setFont('calibri', 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.setTextColor(30, 41, 59);
             doc.text(`Concept ${i + 1}`, frameX + frameWidth / 2, labelY, { align: 'center' });
             
@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
             const titleMaxWidth = frameWidth - 4;
             let titleFontSize = 10;
             doc.setFontSize(titleFontSize);
-            doc.setFont('calibri', 'bold');
+            doc.setFont('helvetica', 'bold');
             doc.setTextColor(30, 41, 59);
             let titleLines = doc.splitTextToSize(metadata.title, titleMaxWidth);
             // Reduce font size if too many lines
@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
             const descMaxWidth = frameWidth - 4;
             let descFontSize = 10;
             doc.setFontSize(descFontSize);
-            doc.setFont('calibri', 'normal');
+            doc.setFont('helvetica', 'normal');
             doc.setTextColor(100, 116, 139);
             let descLines = doc.splitTextToSize(metadata.description, descMaxWidth);
             // Reduce font size if too many lines to fit in frame
@@ -261,7 +261,7 @@ export async function POST(request: NextRequest) {
       // Product title - auto fit to box size
       let titleFontSize = 11;
       doc.setFontSize(titleFontSize);
-      doc.setFont('calibri', 'bold');
+      doc.setFont('helvetica', 'bold');
       let titleLines = doc.splitTextToSize(product.title, rightSectionWidth);
       // Reduce font size if too many lines
       while (titleLines.length > 3 && titleFontSize > 8) {
@@ -274,43 +274,43 @@ export async function POST(request: NextRequest) {
       
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(9);
-      doc.setFont('calibri', 'normal');
+      doc.setFont('helvetica', 'normal');
       
       // Pricing - label and price on same line, aligned left
       const priceValue = product.price?.current ?? product.price ?? 'N/A';
       const priceCurrency = product.price?.currency ?? '';
       const priceText = `${priceValue} ${priceCurrency}`.trim();
       currentY += 3.5; // single line spacing above Pricing
-      doc.setFont('calibri', 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text('Pricing:', rightSectionX, currentY);
-      doc.setFont('calibri', 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.setTextColor(14, 165, 233);
       doc.text(priceText, rightSectionX + 18, currentY);
       doc.setTextColor(0, 0, 0);
       currentY += 0.25 * 25.4;
       
       // FOB
-      doc.setFont('calibri', 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text('FOB:', rightSectionX, currentY);
-      doc.setFont('calibri', 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.text(product.fob ? `${product.fob} ${priceCurrency}` : 'N/A', rightSectionX + 18, currentY);
       currentY += 0.15 * 25.4;
       
       // ELC
-      doc.setFont('calibri', 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text('ELC:', rightSectionX, currentY);
-      doc.setFont('calibri', 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.text(product.elc ? `${product.elc} ${priceCurrency}` : 'N/A', rightSectionX + 18, currentY);
       currentY += 0.15 * 25.4;
 
       // Description - auto fit to box size
       const description = product.cachedDetails?.desc_short || product.description_short || product.description;
       if (description) {
-        doc.setFont('calibri', 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.setFontSize(9);
         doc.text('Description:', rightSectionX, currentY);
         currentY += 0.28 * 25.4;
-        doc.setFont('calibri', 'normal');
+        doc.setFont('helvetica', 'normal');
         
         // Auto fit description text
         let descFontSize = 8;
