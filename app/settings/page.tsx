@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { User, Lock, Save, Loader2, ArrowLeft, CheckCircle2, UserPlus, Users } from 'lucide-react';
+import { User, Lock, Save, Loader2, ArrowLeft, CheckCircle2, UserPlus, Users, ShieldOff, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SettingsPage() {
@@ -36,10 +36,11 @@ export default function SettingsPage() {
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const isAdmin = email === 'admin@example.com';
+  const [togglingUserId, setTogglingUserId] = useState<string | null>(null);
+  const isAdmin = session?.user?.isAdmin === true;
 
   // User list state
-  const [users, setUsers] = useState<Array<{id: string, email: string, name: string, createdAt: string}>>([]);
+  const [users, setUsers] = useState<Array<{id: string, email: string, name: string, disabled: boolean, isEnvAdmin: boolean, createdAt: string}>>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function SettingsPage() {
       setName(session.user.name || '');
       setEmail(session.user.email || '');
       // Load users if admin - use session email directly
-      if (session.user.email === 'admin@example.com') {
+      if (session.user.isAdmin) {
         fetchUsers();
       }
     }
@@ -144,6 +145,25 @@ export default function SettingsPage() {
     }
   };
 
+  const handleToggleUser = async (userId: string, currentDisabled: boolean) => {
+    setTogglingUserId(userId);
+    try {
+      const adminEmail = session?.user?.email;
+      const response = await fetch(`/api/user/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-user-email': adminEmail || '' },
+        body: JSON.stringify({ disabled: !currentDisabled }),
+      });
+      if (response.ok) {
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error('Failed to toggle user:', error);
+    } finally {
+      setTogglingUserId(null);
+    }
+  };
+
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreateUserMessage('');
@@ -188,7 +208,8 @@ export default function SettingsPage() {
     setIsLoadingUsers(true);
     try {
       // Use session email directly to avoid state timing issues
-      const adminEmail = session?.user?.email || 'admin@example.com';
+      const adminEmail = session?.user?.email;
+      if (!adminEmail) return;
       console.log('Fetching users for admin:', adminEmail);
       const response = await fetch('/api/user/list', {
         headers: {
@@ -520,21 +541,45 @@ export default function SettingsPage() {
                 ) : (
                   <div className="space-y-3">
                     {users.map((user) => (
-                      <div 
-                        key={user.id} 
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      <div
+                        key={user.id}
+                        className={`flex items-center justify-between p-3 rounded-lg ${user.disabled ? 'bg-red-50' : 'bg-gray-50'}`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center">
-                            <User className="h-4 w-4 text-sky-600" />
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${user.disabled ? 'bg-red-100' : 'bg-sky-100'}`}>
+                            <User className={`h-4 w-4 ${user.disabled ? 'text-red-400' : 'text-sky-600'}`} />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{user.name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className={`font-medium ${user.disabled ? 'text-gray-400 line-through' : 'text-gray-900'}`}>{user.name}</p>
+                              {user.isEnvAdmin && <span className="text-xs bg-sky-100 text-sky-700 px-1.5 py-0.5 rounded font-medium">Admin</span>}
+                              {user.disabled && <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">Disabled</span>}
+                            </div>
                             <p className="text-sm text-gray-500">{user.email}</p>
                           </div>
                         </div>
-                        <div className="text-xs text-gray-400">
-                          {new Date(user.createdAt).toLocaleDateString()}
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</span>
+                          {!user.isEnvAdmin && (
+                            <button
+                              onClick={() => handleToggleUser(user.id, user.disabled)}
+                              disabled={togglingUserId === user.id}
+                              className={`flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors ${
+                                user.disabled
+                                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                  : 'bg-red-100 text-red-600 hover:bg-red-200'
+                              }`}
+                              title={user.disabled ? 'Enable user' : 'Disable user'}
+                            >
+                              {togglingUserId === user.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : user.disabled ? (
+                                <><ShieldCheck className="h-3 w-3" /> Enable</>
+                              ) : (
+                                <><ShieldOff className="h-3 w-3" /> Disable</>
+                              )}
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}

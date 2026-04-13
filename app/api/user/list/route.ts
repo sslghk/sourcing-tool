@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const admin = await userStore.findByEmail(adminEmail);
     console.log('Admin found:', !!admin);
     
-    if (!admin || admin.email !== 'admin@example.com') {
+    if (!admin || !userStore.isAdminUser(admin)) {
       console.log('Not admin user');
       return NextResponse.json(
         { error: 'Only admin can view user list' },
@@ -68,6 +68,8 @@ export async function GET(request: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
+      disabled: user.disabled ?? false,
+      isEnvAdmin: user.isEnvAdmin ?? false,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }));

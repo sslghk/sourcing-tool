@@ -34,8 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Only allow admin@example.com to create users for now
-    if (admin.email !== 'admin@example.com') {
+    if (!userStore.isAdminUser(admin)) {
       return NextResponse.json(
         { error: 'Only admin can create users' },
         { status: 403 }
