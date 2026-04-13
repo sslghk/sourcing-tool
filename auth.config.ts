@@ -10,6 +10,7 @@ const credentialsSchema = z.object({
 
 const nextAuthConfig = NextAuth({
   secret: process.env.AUTH_SECRET || 'development-secret-do-not-use-in-production',
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
