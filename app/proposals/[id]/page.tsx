@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw, GripVertical, Languages } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw, GripVertical, Languages, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +41,8 @@ interface Proposal {
   totalItems?: number;
   totalValue?: number;
   createdBy?: { email: string; name: string } | null;
+  locked?: boolean;
+  batchJobId?: string | null;
 }
 
 interface ProductDetails {
@@ -97,6 +99,9 @@ export default function ProposalDetailPage() {
   const [metadataPopupOpen, setMetadataPopupOpen] = useState<string | null>(null);
   const [aiEnrichRemarksOpen, setAiEnrichRemarksOpen] = useState<string | null>(null);
   const [aiEnrichRemarks, setAiEnrichRemarks] = useState<Record<string, string>>({});
+  const [batchJobState, setBatchJobState] = useState<{ overallState: string; phase: number; error?: string; productCount?: number } | null>(null);
+  const [isBatchStarting, setIsBatchStarting] = useState(false);
+  const batchPollRef = useRef<NodeJS.Timeout | null>(null);
   const [selectedSecondaryImages, setSelectedSecondaryImages] = useState<Record<string, string[]>>({});
   const [selectedAIImages, setSelectedAIImages] = useState<Record<string, number[]>>({});
   const [dragOverMain, setDragOverMain] = useState<string | null>(null);
@@ -297,6 +302,7 @@ export default function ProposalDetailPage() {
   // Save secondary image selection to JSON file
   const saveSecondaryImageSelection = async (productId: string, images: string[]) => {
     if (!proposal) return;
+    if (proposal.locked) return;
     
     try {
       const response = await fetch('/api/proposal-details', {
@@ -829,6 +835,7 @@ export default function ProposalDetailPage() {
 
   const saveProductOrder = async (orderedProducts: ProductDTO[]) => {
     if (!proposal) return;
+    if (proposal.locked) return;
     try {
       await fetch('/api/proposal-details', {
         method: 'PUT',
@@ -889,6 +896,61 @@ export default function ProposalDetailPage() {
         } : undefined
       }))
     };
+  };
+
+  const stopBatchPoll = () => {
+    if (batchPollRef.current) { clearInterval(batchPollRef.current); batchPollRef.current = null; }
+  };
+
+  const pollBatchStatus = async () => {
+    if (!params.id) return;
+    try {
+      const res = await fetch(`/api/ai-enrich-batch/status?proposalId=${params.id}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setBatchJobState(data);
+      if (data.overallState === 'COMPLETED' || data.overallState === 'FAILED') {
+        stopBatchPoll();
+        if (data.overallState === 'COMPLETED') {
+          // Reload proposal to pick up newly saved AI enrichments
+          await loadProposal();
+        }
+      }
+    } catch { /* ignore poll errors */ }
+  };
+
+  const handleBatchAIEnrich = async () => {
+    if (!proposal) return;
+    const products = proposal.products
+      .filter(p => (aiEnrichRemarks[p.id] || '').trim() && p.image_urls?.length > 0)
+      .map(p => ({
+        productId: p.id,
+        sourceId: p.source_id || p.id,
+        imageUrl: p.image_urls[0],
+        userNotes: aiEnrichRemarks[p.id] || '',
+      }));
+    if (products.length === 0) {
+      alert('Enter AI enrichment notes for at least one product first.');
+      return;
+    }
+    setIsBatchStarting(true);
+    try {
+      const res = await fetch('/api/ai-enrich-batch/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proposalId: params.id, proposalTitle: proposal.name, products }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error ?? 'Batch start failed');
+      }
+      // Lock acknowledged — redirect to AI Jobs dashboard
+      router.push('/batch-jobs');
+    } catch (e: any) {
+      alert(`Failed to start batch: ${e.message}`);
+    } finally {
+      setIsBatchStarting(false);
+    }
   };
 
   const handleAIEnrich = async (productId: string) => {
@@ -1119,6 +1181,19 @@ export default function ProposalDetailPage() {
           </Button>
         </div>
 
+        {/* Locked banner */}
+        {proposal.locked && (
+          <div className="mb-4 flex items-center gap-3 px-5 py-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+            <Loader2 className="h-4 w-4 animate-spin text-amber-600 shrink-0" />
+            <span className="flex-1">
+              <strong>Proposal locked</strong> — a batch AI enrichment job is in progress.
+              You can view progress on the{' '}
+              <a href="/batch-jobs" className="underline font-medium">AI Jobs dashboard</a>.
+              Editing is disabled until the job completes.
+            </span>
+          </div>
+        )}
+
         {/* Proposal Info Card */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
           <div className="flex items-start justify-between mb-6">
@@ -1244,6 +1319,21 @@ export default function ProposalDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={handleBatchAIEnrich}
+                    disabled={isBatchStarting || proposal.locked || (batchJobState?.overallState === 'PHASE1_RUNNING' || batchJobState?.overallState === 'PHASE2_RUNNING')}
+                    className="border-purple-300 text-purple-600 hover:bg-purple-50 text-xs px-3 h-9 rounded-full gap-1"
+                    title="Batch AI Enrich all products with notes using Vertex AI"
+                  >
+                    {(isBatchStarting || batchJobState?.overallState === 'PHASE1_RUNNING' || batchJobState?.overallState === 'PHASE2_RUNNING') ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-3 w-3" />
+                    )}
+                    Batch AI
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={forceReloadAllProductDetails}
                     className="border-sky-300 text-sky-600 hover:bg-sky-50 rounded-full h-9 w-9 p-0"
                     disabled={loadingDetails.size > 0}
@@ -1341,6 +1431,7 @@ export default function ProposalDetailPage() {
                   placeholder="Add any notes or special requirements..."
                   rows={3}
                   className="w-full"
+                  disabled={!!proposal.locked}
                 />
               </div>
             ) : (
@@ -1705,13 +1796,14 @@ export default function ProposalDetailPage() {
                             placeholder="Guide AI designs (e.g., eco-friendly, modern)"
                             rows={3}
                             className="flex-1 text-xs bg-white border border-purple-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-300 focus:border-transparent transition-all placeholder:text-gray-400 resize-none"
+                            disabled={!!proposal.locked}
                           />
                           <Button
                             size="sm"
                             onClick={() => handleAIEnrich(product.id)}
-                            disabled={loadingAIEnrich === product.id}
+                            disabled={loadingAIEnrich === product.id || !!proposal.locked}
                             className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-sm hover:shadow transition-all h-9 w-9 p-0 rounded-full flex-shrink-0"
-                            title="Generate AI Designs"
+                            title={proposal.locked ? 'Proposal locked during batch job' : 'Generate AI Designs'}
                           >
                             {loadingAIEnrich === product.id ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -1851,6 +1943,29 @@ export default function ProposalDetailPage() {
         open={isTemplateDialogOpen}
         onOpenChange={setIsTemplateDialogOpen}
       />
+
+      {/* Batch AI Enrich Status Banner */}
+      {batchJobState && batchJobState.overallState !== 'COMPLETED' && (
+        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-full shadow-xl text-sm font-medium
+          ${batchJobState.overallState === 'FAILED' ? 'bg-red-600 text-white' : 'bg-purple-600 text-white'}`}>
+          {batchJobState.overallState === 'FAILED' ? (
+            <>
+              <span>Batch AI failed: {batchJobState.error ?? 'Unknown error'}</span>
+              <button onClick={() => setBatchJobState(null)} className="ml-1 underline text-white/80">Dismiss</button>
+            </>
+          ) : (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>
+                Batch AI — Phase {batchJobState.phase}/2{' '}
+                ({batchJobState.phase === 1 ? 'generating concepts' : 'generating images'})
+                {batchJobState.productCount ? ` for ${batchJobState.productCount} products` : ''}
+              </span>
+              <span className="text-purple-200 text-xs">Polling every 30s…</span>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Export Progress Overlay */}
       {(isExportingPDF || isExportingPPTX) && (

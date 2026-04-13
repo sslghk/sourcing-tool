@@ -4,13 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Search, FileText } from "lucide-react";
+import { Search, FileText, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/auth/user-menu";
 
 const navItems = [
   { href: "/", label: "Search", icon: Search },
   { href: "/proposals", label: "Proposals", icon: FileText },
+  { href: "/batch-jobs", label: "AI Jobs", icon: Layers },
 ];
 
 export function Navbar() {

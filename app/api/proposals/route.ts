@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
           successfulItems: data.successfulItems || 0,
           totalValue: data.products?.reduce((sum: number, p: any) => sum + (p.price?.current || 0), 0) || 0,
           currency: 'CNY',
+          locked: data.locked === true,
           products: data.products || [],
         });
       } catch (e) {
