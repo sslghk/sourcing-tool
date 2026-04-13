@@ -191,10 +191,6 @@ export default function LoginPage() {
                     </Button>
                   </form>
 
-                  <div className="mt-6 text-center text-sm text-gray-500">
-                    <p>Default credentials:</p>
-                    <p className="font-mono text-xs mt-1">admin@example.com / admin123</p>
-                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -335,12 +331,6 @@ export default function LoginPage() {
 
         </AnimatePresence>
 
-        {resetStep === 'idle' && (
-          <p className="text-center mt-6 text-sm text-gray-500">
-            Don&apos;t have an account?{' '}
-            <Link href="/auth/register" className="text-sky-600 hover:text-sky-700 font-medium">Register</Link>
-          </p>
-        )}
       </motion.div>
     </div>
   );

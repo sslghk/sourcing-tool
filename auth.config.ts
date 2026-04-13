@@ -39,6 +39,7 @@ const nextAuthConfig = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
+          isAdmin: userStore.isAdminUser(user),
         };
       },
     }),
@@ -48,6 +49,12 @@ const nextAuthConfig = NextAuth({
     error: '/auth/error',
   },
   callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.isAdmin = user.isAdmin ?? false;
+      }
+      return token;
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnProtected = nextUrl.pathname.startsWith('/proposals') && 
@@ -61,7 +68,14 @@ const nextAuthConfig = NextAuth({
     },
     session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.sub as string;
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: token.sub as string,
+            isAdmin: (token.isAdmin ?? false) as boolean,
+          },
+        };
       }
       return session;
     },

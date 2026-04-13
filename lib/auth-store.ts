@@ -102,6 +102,13 @@ export const userStore = {
     return users[userIndex];
   },
 
+  isAdminUser(user: User): boolean {
+    if (process.env.ADMIN_EMAIL) {
+      return user.isEnvAdmin === true;
+    }
+    return user.email === 'admin@example.com';
+  },
+
   async initDefaultUser(): Promise<void> {
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
