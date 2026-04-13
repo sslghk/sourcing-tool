@@ -535,6 +535,17 @@ export async function PUT(request: NextRequest) {
     const filePath = getProposalFilePath(proposalId);
     const { updatedProducts } = body;
 
+    // Reject user-initiated edits while a batch job is running
+    if (fs.existsSync(filePath)) {
+      const current = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      if (current.locked) {
+        return NextResponse.json(
+          { error: 'This proposal is locked while a batch AI job is in progress. Please wait for the job to complete.' },
+          { status: 423 }
+        );
+      }
+    }
+
     if (!fs.existsSync(filePath)) {
       // Bootstrap a minimal file if we're given a product list (e.g. adding to older proposal)
       if (Array.isArray(updatedProducts)) {

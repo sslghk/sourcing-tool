@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { buildEnrichmentPrompt } from '@/lib/ai-enrich-prompts';
+import { getAI, ApiError } from '@/lib/gemini-ai';
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'proposals');
 const AI_IMAGES_DIR = path.join(process.cwd(), 'public', 'ai-images');
@@ -20,51 +22,6 @@ function saveImageToServer(dataUrl: string, proposalId: string, productId: strin
   return `/ai-images/${proposalId}/${safeProductId}/${filename}`;
 }
 
-function buildEnrichmentPrompt(count: number, userNotes: string): string {
-  const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
-  const examples = Array.from({ length: count }, (_, i) => `    {
-      "concept_title": "<short distinctive name for Variant ${labels[i] || i + 1}>",
-      "generated_image_prompt": "<MUST start with: 'Product photo of [exact product type from original image]:' then describe the specific design changes — color, material, texture, pattern, finish, style. End with: 'White background, professional e-commerce studio lighting, no text, no people, product fills frame.'>",
-      "short_description": "<under 20 words>",
-      "design_rationale": "<why this variant is commercially compelling>"
-    }`).join(',\n');
-
-  return `You are a senior industrial designer for a global product sourcing company. Analyze the product image and generate ${count} DISTINCT design variants.
-
-⚠️ CRITICAL RULES (violations will be rejected):
-1. ALL variants MUST be the EXACT SAME product type/category as the original (e.g., if original is a USB cable, ALL variants must be USB cables — not accessories, not cases, not other products)
-2. Each variant must look VISUALLY DIFFERENT from the others and from the original
-3. The generated_image_prompt must be self-contained and specific enough to recreate the design from text alone — include product type, all key visual features, colors, materials
-4. User Notes below MUST be incorporated into the design directions
-
-INPUTS:
-- Product Image: (attached)
-- User Notes: ${userNotes}
-
-DESIGN DIMENSIONS TO VARY (stay within same product category):
-- Color palette / gradient / finish (matte, glossy, metallic, translucent)
-- Material texture (braided, silicone, leather-look, frosted)
-- Pattern / graphic / motif (geometric, floral, character, minimal)
-- Style target (luxury, kids, sporty, eco, retro, futuristic)
-- Functional accent (ergonomic grip, extra indicator light, unique connector style)
-
-OUTPUT FORMAT (valid JSON only, no markdown fences):
-{
-  "original_product": {
-    "title": "<short title under 8 words>",
-    "description": "<short description under 20 words>",
-    "specifications": {
-      "dimensions": "<estimated dimensions or N/A>",
-      "weight": "<estimated weight or N/A>",
-      "materials": "<primary materials or N/A>",
-      "other_specs": "<other specs or N/A>"
-    }
-  },
-  "design_alternatives": [
-${examples}
-  ]
-}`;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -189,85 +146,56 @@ function guessMimeType(url: string): string {
   return map[ext ?? ''] ?? 'image/jpeg';
 }
 
-function buildImagePart(imageUrl: string, base64?: string, mimeType?: string) {
-  if (base64) {
-    return { inline_data: { mime_type: mimeType || 'image/jpeg', data: base64 } };
-  }
-  return { file_data: { mime_type: guessMimeType(imageUrl), file_uri: imageUrl } };
-}
-
 async function callGemini(imageUrl: string, prompt: string, maxRetries = 4) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY not configured');
-  }
-
+  const ai = getAI();
   let base64Fallback: string | undefined;
   let mimeTypeFallback: string | undefined;
   let lastError: Error | null = null;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    const imagePart = buildImagePart(imageUrl, base64Fallback, mimeTypeFallback);
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: prompt + '\n\nPlease respond with valid JSON only, no additional text.' },
-              imagePart,
-            ],
-          }],
-          generationConfig: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 8192 },
-        }),
-      }
-    );
+    const imagePart = base64Fallback
+      ? { inlineData: { mimeType: mimeTypeFallback ?? 'image/jpeg', data: base64Fallback } }
+      : { fileData: { mimeType: guessMimeType(imageUrl), fileUri: imageUrl } };
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Gemini API response:', JSON.stringify(data, null, 2));
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    try {
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: [{ parts: [imagePart, { text: prompt + '\n\nPlease respond with valid JSON only, no additional text.' }] }],
+        config: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 8192 },
+      });
+      const text = result.text ?? result.candidates?.[0]?.content?.parts?.find((p: any) => p.text)?.text;
       if (!text) throw new Error('No response from Gemini');
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error('No JSON found in Gemini response');
       return JSON.parse(jsonMatch[0]);
+    } catch (e) {
+      if (e instanceof ApiError) {
+        if (e.status === 429 || e.status === 503) {
+          const baseDelay = Math.min(30000, 6000 * attempt);
+          const jitter = Math.floor(Math.random() * 3000);
+          const delayMs = baseDelay + jitter;
+          console.warn(`Gemini text call ${e.status === 429 ? 'rate-limited (429)' : 'unavailable (503)'} — attempt ${attempt}/${maxRetries}, retrying in ${(delayMs / 1000).toFixed(1)}s...`);
+          lastError = e;
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          continue;
+        }
+        if (e.status === 400 && e.message.includes('Cannot fetch content') && !base64Fallback) {
+          console.warn('Gemini cannot fetch URL, falling back to base64 inline upload...');
+          const fetched = await fetchImageAsBase64(imageUrl);
+          base64Fallback = fetched.base64;
+          mimeTypeFallback = fetched.mimeType;
+          continue;
+        }
+      }
+      throw e;
     }
-
-    const errorBody = await response.text();
-
-    if (response.status === 429) {
-      const baseDelay = Math.min(20000, 5000 * attempt);
-      const jitter = Math.floor(Math.random() * 3000);
-      const delayMs = baseDelay + jitter;
-      console.warn(`Gemini text call rate-limited (429) — attempt ${attempt}/${maxRetries}, retrying in ${(delayMs / 1000).toFixed(1)}s...`);
-      lastError = new Error(`Gemini API error (429): ${errorBody}`);
-      await new Promise(resolve => setTimeout(resolve, delayMs));
-      continue;
-    }
-
-    const canFallback = response.status === 400 && errorBody.includes('Cannot fetch content');
-    if (canFallback && !base64Fallback) {
-      console.warn('Gemini cannot fetch URL, falling back to base64 inline upload...');
-      const fetched = await fetchImageAsBase64(imageUrl);
-      base64Fallback = fetched.base64;
-      mimeTypeFallback = fetched.mimeType;
-      continue;
-    }
-
-    console.error('Gemini API error response:', errorBody);
-    throw new Error(`Gemini API error (${response.status}): ${response.statusText} - ${errorBody}`);
   }
 
   throw lastError ?? new Error('callGemini failed after retries');
 }
 
 async function generateImageWithGemini(prompt: string, imageUrl: string, maxRetries = 4): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
-
+  const ai = getAI();
   console.log(`Generating image with gemini-2.5-flash-image for: ${prompt.substring(0, 80)}...`);
 
   let base64Fallback: string | undefined;
@@ -275,77 +203,59 @@ async function generateImageWithGemini(prompt: string, imageUrl: string, maxRetr
   let lastError: Error | null = null;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    const imagePart = buildImagePart(imageUrl, base64Fallback, mimeTypeFallback);
-    const body = JSON.stringify({
-      contents: [{
-        parts: [
+    const imagePart = base64Fallback
+      ? { inlineData: { mimeType: mimeTypeFallback ?? 'image/jpeg', data: base64Fallback } }
+      : { fileData: { mimeType: guessMimeType(imageUrl), fileUri: imageUrl } };
+
+    try {
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-image',
+        contents: [{ parts: [
           imagePart,
-          { text: `You are generating a professional product photo for e-commerce.\n\nTASK: Create a photorealistic product image matching this design brief exactly:\n${prompt}\n\nREQUIREMENTS:\n- The generated product MUST be the same type/category as the reference image shown above\n- Apply ALL the specific design changes described in the brief\n- Pure white background\n- Professional studio lighting, sharp focus\n- No text overlays, no watermarks, no people, no hands\n- Product fills most of the frame` }
-        ]
-      }],
-      generationConfig: { responseModalities: ['IMAGE', 'TEXT'], temperature: 0.8 },
-    });
+          { text: `You are generating a professional product photo for e-commerce.\n\nTASK: Create a photorealistic product image matching this design brief exactly:\n${prompt}\n\nREQUIREMENTS:\n- The generated product MUST be the same type/category as the reference image shown above\n- Apply ALL the specific design changes described in the brief\n- Pure white background\n- Professional studio lighting, sharp focus\n- No text overlays, no watermarks, no people, no hands\n- Product fills most of the frame` },
+        ]}],
+        config: { responseModalities: ['IMAGE', 'TEXT'] as any, temperature: 0.8 },
+      });
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }
-    );
-
-    if (response.ok) {
-      // Success — fall through to parsing
-      const data = await response.json();
-      const parts = data.candidates?.[0]?.content?.parts ?? [];
-
+      const parts = result.candidates?.[0]?.content?.parts ?? [];
       console.log('Gemini image response parts summary:', parts.map((p: any) => ({
-        keys: Object.keys(p),
-        hasInlineData: !!(p.inlineData ?? p.inline_data),
-        textSnippet: p.text ? p.text.substring(0, 80) : undefined,
-        mimeType: (p.inlineData ?? p.inline_data)?.mimeType ?? (p.inlineData ?? p.inline_data)?.mime_type,
-        dataLength: (p.inlineData ?? p.inline_data)?.data?.length,
+        hasInlineData: !!p.inlineData, textSnippet: p.text?.substring(0, 80),
+        mimeType: p.inlineData?.mimeType, dataLength: p.inlineData?.data?.length,
       })));
 
-      const imagePart = parts.find((p: any) => p.inlineData ?? p.inline_data);
-
-      if (!imagePart) {
-        console.error('No image part found. Full candidate:', JSON.stringify(data.candidates?.[0], null, 2).substring(0, 500));
-        throw new Error('No image returned by Gemini 2.5 Flash');
+      const imgPart = parts.find((p: any) => p.inlineData);
+      if (!imgPart?.inlineData) {
+        console.error('No image part found. Full candidate:', JSON.stringify(result.candidates?.[0]).substring(0, 500));
+        throw new Error('No image returned by Gemini image model');
       }
+      const { mimeType = 'image/png', data } = imgPart.inlineData as { mimeType?: string; data: string };
+      console.log(`Image generated — mimeType: ${mimeType}, base64 length: ${data?.length}`);
+      return `data:${mimeType};base64,${data}`;
 
-      const inlineData = imagePart.inlineData ?? imagePart.inline_data;
-      const mimeType = inlineData.mimeType ?? inlineData.mime_type ?? 'image/png';
-      console.log(`Image generated successfully — mimeType: ${mimeType}, base64 length: ${inlineData.data?.length}`);
-      return `data:${mimeType};base64,${inlineData.data}`;
-    }
-
-    const errorBody = await response.text();
-
-    if (response.status === 429) {
-      const isQuotaExhausted = errorBody.includes('quota') && errorBody.includes('daily');
-      if (isQuotaExhausted) {
-        throw new Error('Daily Gemini quota exhausted. Try again tomorrow or upgrade to a paid API tier.');
+    } catch (e) {
+      if (e instanceof ApiError) {
+        if (e.status === 429) {
+          const isQuotaExhausted = e.message.includes('quota') && e.message.includes('daily');
+          if (isQuotaExhausted) throw new Error('Daily Gemini quota exhausted. Try again tomorrow or upgrade your API tier.');
+          const baseDelay = Math.min(20000, 5000 * attempt);
+          const jitter = Math.floor(Math.random() * 3000);
+          const delayMs = baseDelay + jitter;
+          console.warn(`Gemini image rate-limited (429) — attempt ${attempt}/${maxRetries}, retrying in ${(delayMs / 1000).toFixed(1)}s...`);
+          lastError = e;
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          continue;
+        }
+        if (e.status === 400 && e.message.includes('Cannot fetch content') && !base64Fallback) {
+          console.warn('Gemini image cannot fetch URL, falling back to base64...');
+          const fetched = await fetchImageAsBase64(imageUrl);
+          base64Fallback = fetched.base64;
+          mimeTypeFallback = fetched.mimeType;
+          lastError = e;
+          continue;
+        }
       }
-      // Add random jitter (0–3s) so parallel retries don't all fire simultaneously
-      const baseDelay = Math.min(20000, 5000 * attempt);
-      const jitter = Math.floor(Math.random() * 3000);
-      const delayMs = baseDelay + jitter;
-      console.warn(`Gemini image generation rate-limited (429) — attempt ${attempt}/${maxRetries}, retrying in ${(delayMs / 1000).toFixed(1)}s...`);
-      lastError = new Error(`Gemini image generation error (429): ${errorBody}`);
-      await new Promise(resolve => setTimeout(resolve, delayMs));
-      continue;
+      throw e;
     }
-
-    if (response.status === 400 && errorBody.includes('Cannot fetch content') && !base64Fallback) {
-      console.warn('Gemini image generation cannot fetch URL, falling back to base64 inline upload...');
-      const fetched = await fetchImageAsBase64(imageUrl);
-      base64Fallback = fetched.base64;
-      mimeTypeFallback = fetched.mimeType;
-      lastError = new Error(`Gemini image generation error (400): ${errorBody}`);
-      continue;
-    }
-
-    // Non-retryable error
-    console.error('Gemini image generation error:', errorBody);
-    throw new Error(`Gemini image generation error (${response.status}): ${errorBody}`);
   }
 
   throw lastError ?? new Error('Gemini image generation failed after retries');

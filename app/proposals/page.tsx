@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,7 @@ interface Proposal {
   totalValue?: number;
   successfulItems?: number;
   products?: ProductDTO[];
+  locked?: boolean;
 }
 
 export default function ProposalsPage() {
@@ -738,15 +739,23 @@ export default function ProposalsPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="bg-white border-gray-200 hover:border-sky-300 hover:shadow-md transition-all duration-200 group">
+                <Card className={`bg-white border-gray-200 transition-all duration-200 group ${proposal.locked ? 'opacity-70 cursor-not-allowed' : 'hover:border-sky-300 hover:shadow-md'}`}>
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-gray-900 group-hover:text-sky-600 transition-colors">
+                      <CardTitle className={`text-gray-900 transition-colors ${proposal.locked ? '' : 'group-hover:text-sky-600'}`}>
                         {proposal.name}
                       </CardTitle>
-                      <Badge className={getStatusColor(proposal.status)}>
-                        {proposal.status}
-                      </Badge>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {proposal.locked && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200">
+                            <Lock className="h-3 w-3" />
+                            Processing
+                          </span>
+                        )}
+                        <Badge className={getStatusColor(proposal.status)}>
+                          {proposal.status}
+                        </Badge>
+                      </div>
                     </div>
                     {proposal.client_name && (
                       <p className="text-sm text-gray-600">
@@ -800,16 +809,31 @@ export default function ProposalsPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      <Link href={`/proposals/${proposal.id}`} className="flex-1">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full border-gray-300 hover:bg-gray-50"
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
-                      </Link>
+                      {proposal.locked ? (
+                        <div className="flex-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled
+                            className="w-full border-gray-300 cursor-not-allowed"
+                            title="Locked while batch AI job is in progress"
+                          >
+                            <Lock className="h-4 w-4 mr-1" />
+                            Locked
+                          </Button>
+                        </div>
+                      ) : (
+                        <Link href={`/proposals/${proposal.id}`} className="flex-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full border-gray-300 hover:bg-gray-50"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                        </Link>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"

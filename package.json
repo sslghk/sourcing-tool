@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/genai": "^1.49.0",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
     "@radix-ui/react-select": "^2.1.2",
@@ -23,6 +24,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.0.6",
     "framer-motion": "^11.11.17",
+    "google-auth-library": "^10.6.2",
     "google-translate-api-x": "^10.7.2",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
