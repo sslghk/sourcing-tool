@@ -71,7 +71,7 @@ async def translate_to_english(client: httpx.AsyncClient, text: str) -> str:
     if not text or not GEMINI_API_KEY:
         return text
     try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
         payload = {
             "contents": [{"parts": [{"text": f"Translate this product category name to English. Return only the translated text, nothing else: {text}"}]}]
         }
