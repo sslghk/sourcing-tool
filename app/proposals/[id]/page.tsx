@@ -247,8 +247,8 @@ export default function ProposalDetailPage() {
     setLoadingDetails(prev => new Set(prev).add(productId));
     
     try {
-      // Try to fetch from storage with fetch=true to trigger API call if not cached
-      const response = await fetch(`/api/proposal-details?proposalId=${proposal.id}&productId=${productId}&fetch=true`);
+      // Use refresh=true to bypass cache and force a fresh API call
+      const response = await fetch(`/api/proposal-details?proposalId=${proposal.id}&productId=${productId}&fetch=true&refresh=true`);
       
       if (response.ok) {
         const details = await response.json();
@@ -268,11 +268,11 @@ export default function ProposalDetailPage() {
           };
         });
         
-        // Auto-select first 4 secondary images if not already selected
-        if (details.item_imgs && !selectedSecondaryImages[product.id]) {
-          const imageUrls = details.item_imgs.slice(0, 4).map((img: { url: string }) => {
-            const url = img.url.startsWith('//') ? `https:${img.url}` : img.url;
-            return url;
+        // Always update secondary images with fresh API data
+        if (details.item_imgs) {
+          const normalized = normalizeItemImgs(details.item_imgs);
+          const imageUrls = normalized.slice(0, 4).map((img: { url: string }) => {
+            return img.url.startsWith('//') ? `https:${img.url}` : img.url;
           });
           
           setSelectedSecondaryImages(prev => ({
@@ -1334,20 +1334,6 @@ export default function ProposalDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={forceReloadAllProductDetails}
-                    className="border-sky-300 text-sky-600 hover:bg-sky-50 rounded-full h-9 w-9 p-0"
-                    disabled={loadingDetails.size > 0}
-                    title="Reload All Secondary Photos"
-                  >
-                    {loadingDetails.size > 0 ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <RefreshCw className="h-4 w-4" />
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
                     onClick={() => setIsEditing(true)}
                     className="rounded-full h-9 w-9 p-0"
                     title="Edit proposal details"
@@ -1392,30 +1378,6 @@ export default function ProposalDetailPage() {
               <p className="text-lg font-semibold text-sky-600">
                 {formatCurrency(totalValue, proposal.currency)}
               </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Details Status</p>
-              {(() => {
-                const loadedCount = proposalData?.successfulItems || 0;
-                const totalCount = proposal?.products.length || 0;
-                const allHaveDetails = loadedCount === totalCount && totalCount > 0;
-                return allHaveDetails ? (
-                  <div className="flex items-center text-green-600">
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    <span className="text-sm font-medium">All loaded</span>
-                  </div>
-                ) : loadedCount > 0 ? (
-                  <div className="flex items-center text-amber-600">
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    <span className="text-sm font-medium">{loadedCount}/{totalCount} loaded</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center text-gray-500">
-                    <Loader2 className="h-4 w-4 mr-2" />
-                    <span className="text-sm font-medium">None loaded</span>
-                  </div>
-                );
-              })()}
             </div>
           </div>
 
@@ -1879,8 +1841,8 @@ export default function ProposalDetailPage() {
                             </button>
                           </div>
                           <div className="flex gap-0">
-                            {/* Product image with translation overlay */}
-                            <div className="relative flex-shrink-0 w-48 h-48 bg-gray-100">
+                            {/* Product image */}
+                            <div className="flex-shrink-0 w-48 h-48 bg-gray-100">
                               {product.image_urls?.[0] && (
                                 <img
                                   src={product.image_urls[0]}
@@ -1888,21 +1850,6 @@ export default function ProposalDetailPage() {
                                   className="w-full h-full object-cover"
                                 />
                               )}
-                              {/* Translation overlay strip at bottom of image */}
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/75 px-2 py-1.5 max-h-24 overflow-y-auto">
-                                {translations[product.id]!.translations.length === 0 ? (
-                                  <p className="text-white text-xs">{translations[product.id]!.summary}</p>
-                                ) : (
-                                  <div className="space-y-0.5">
-                                    {translations[product.id]!.translations.map((t, i) => (
-                                      <div key={i} className="text-xs leading-tight">
-                                        <span className="text-gray-400 line-through mr-1">{t.original}</span>
-                                        <span className="text-white font-medium">{t.english}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
                             </div>
                             {/* Summary panel */}
                             <div className="flex-1 p-3 bg-white text-xs">

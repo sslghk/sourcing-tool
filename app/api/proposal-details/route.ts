@@ -25,7 +25,7 @@ function needsTranslation(text: string): boolean {
 }
 
 // Translate a batch of texts using Gemini (reliable on server IPs unlike web-scraped Google Translate)
-async function translateTextsWithGemini(texts: string[]): Promise<string[]> {
+async function translateTextsWithGemini(texts: string[], maxRetries = 3): Promise<string[]> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey || texts.length === 0) return texts;
 
@@ -41,48 +41,67 @@ async function translateTextsWithGemini(texts: string[]): Promise<string[]> {
 
   const prompt = `Translate the following texts from Chinese to English. Return ONLY a JSON array of translated strings in the same order. Preserve numbers, brand names, URLs, units, and technical terms exactly as-is.\n\n${JSON.stringify(textsToSend)}`;
 
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 4096 },
-        }),
-        signal: AbortSignal.timeout(60000),
-      }
-    );
-    if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) throw new Error('No JSON array in Gemini response');
-    const translated: string[] = JSON.parse(jsonMatch[0]);
-
-    const resultTexts = [...texts];
-    for (let i = 0; i < indicesToTranslate.length; i++) {
-      if (translated[i] !== undefined) resultTexts[indicesToTranslate[i]] = String(translated[i]);
-    }
-    console.log(`Gemini translated ${textsToSend.length} text fields`);
-    return resultTexts;
-  } catch (error) {
-    console.error('Gemini translation failed, falling back to google-translate-api-x:', error);
-    // Fallback: google-translate-api-x
+  let lastError: Error | null = null;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const result = [...texts];
-      for (let i = 0; i < indicesToTranslate.length; i++) {
-        const idx = indicesToTranslate[i];
-        try {
-          const r = await translate(texts[idx], { from: 'zh-CN', to: 'en' });
-          result[idx] = r.text || texts[idx];
-        } catch { /* keep original */ }
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 4096 },
+          }),
+          signal: AbortSignal.timeout(60000),
+        }
+      );
+      if (!response.ok) {
+        const status = response.status;
+        if ((status === 429 || status === 503) && attempt < maxRetries) {
+          const delayMs = Math.min(20000, 3000 * attempt) + Math.floor(Math.random() * 2000);
+          console.warn(`Gemini API ${status} — attempt ${attempt}/${maxRetries}, retrying in ${(delayMs / 1000).toFixed(1)}s...`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          continue;
+        }
+        throw new Error(`Gemini API error: ${status}`);
       }
-      return result;
-    } catch {
-      return texts;
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      const jsonMatch = text.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error('No JSON array in Gemini response');
+      const translated: string[] = JSON.parse(jsonMatch[0]);
+
+      const resultTexts = [...texts];
+      for (let i = 0; i < indicesToTranslate.length; i++) {
+        if (translated[i] !== undefined) resultTexts[indicesToTranslate[i]] = String(translated[i]);
+      }
+      console.log(`Gemini translated ${textsToSend.length} text fields`);
+      return resultTexts;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      if (attempt < maxRetries) {
+        const delayMs = Math.min(15000, 2000 * attempt) + Math.floor(Math.random() * 1000);
+        console.warn(`Translation attempt ${attempt}/${maxRetries} failed — retrying in ${(delayMs / 1000).toFixed(1)}s...`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
     }
+  }
+
+  console.error('Gemini translation failed after retries, falling back to google-translate-api-x:', lastError);
+  // Fallback: google-translate-api-x
+  try {
+    const result = [...texts];
+    for (let i = 0; i < indicesToTranslate.length; i++) {
+      const idx = indicesToTranslate[i];
+      try {
+        const r = await translate(texts[idx], { from: 'zh-CN', to: 'en' });
+        result[idx] = r.text || texts[idx];
+      } catch { /* keep original */ }
+    }
+    return result;
+  } catch {
+    return texts;
   }
 }
 
@@ -328,6 +347,7 @@ export async function GET(request: NextRequest) {
     const proposalId = searchParams.get('proposalId');
     const productId = searchParams.get('productId');
     const shouldFetch = searchParams.get('fetch') === 'true';
+    const shouldRefresh = searchParams.get('refresh') === 'true';
     
     if (!proposalId) {
       return NextResponse.json(
@@ -352,16 +372,21 @@ export async function GET(request: NextRequest) {
     if (productId) {
       const numIid = productId; // productId is now the num_iid (source_id)
       
-      // Return cached details if available (using num_iid as key)
-      if (data.itemDetails[numIid]) {
+      // Return cached details if available (unless refresh=true forces a re-fetch)
+      if (data.itemDetails[numIid] && !shouldRefresh) {
         return NextResponse.json({
           ...data.itemDetails[numIid],
           cached: true
         });
       }
-      
-      // If shouldFetch=true, fetch from API and cache
-      if (shouldFetch) {
+
+      // If refresh=true, clear existing cache entry so we fetch fresh data
+      if (shouldRefresh && data.itemDetails[numIid]) {
+        delete data.itemDetails[numIid];
+      }
+
+      // If shouldFetch=true (or refresh=true), fetch from API and cache
+      if (shouldFetch || shouldRefresh) {
         const product = data.products?.find((p: any) => p.source_id === productId || p.id === productId);
         if (!product) {
           return NextResponse.json(

@@ -659,19 +659,33 @@ export default function ProposalsPage() {
                   </p>
                 </div>
               </div>
-              <Button
-                onClick={() => {
-                  setShowCreateForm(true);
-                  setUserDismissedForm(false);
-                }}
-                className="bg-sky-600 hover:bg-sky-700 text-white relative"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add to New Proposal
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {proposalProducts.length}
-                </span>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setProposalProducts([]);
+                    localStorage.removeItem('proposalProducts');
+                    router.push('/');
+                  }}
+                  className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowCreateForm(true);
+                    setUserDismissedForm(false);
+                  }}
+                  className="bg-sky-600 hover:bg-sky-700 text-white relative"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add to New Proposal
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {proposalProducts.length}
+                  </span>
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -782,30 +796,6 @@ export default function ProposalsPage() {
                         <DollarSign className="h-4 w-4 mr-2" />
                         {proposal.totalValue ? formatCurrency(proposal.totalValue, proposal.currency) : proposal.currency}
                       </div>
-                      {proposal.products && proposal.products.length > 0 && (
-                        <div className="flex items-center text-sm">
-                          {(() => {
-                            const productsWithDetails = proposal.products.filter(p => p.cachedDetails);
-                            const allHaveDetails = productsWithDetails.length === proposal.products.length;
-                            return allHaveDetails ? (
-                              <div className="flex items-center text-green-600">
-                                <CheckCircle2 className="h-4 w-4 mr-2" />
-                                All details loaded
-                              </div>
-                            ) : productsWithDetails.length > 0 ? (
-                              <div className="flex items-center text-amber-600">
-                                <Loader2 className="h-4 w-4 mr-2" />
-                                {productsWithDetails.length}/{proposal.products.length} details loaded
-                              </div>
-                            ) : (
-                              <div className="flex items-center text-gray-500">
-                                <Loader2 className="h-4 w-4 mr-2" />
-                                No details loaded
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      )}
                     </div>
 
                     <div className="flex gap-2">
