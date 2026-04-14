@@ -86,9 +86,11 @@ export default function Home() {
   const [proposalName, setProposalName] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const abortBatchRef = useRef(false);
-  
+  const saveTabsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Batch summary report
   const [showBatchSummary, setShowBatchSummary] = useState(false);
+  const [previewImage, setPreviewImage] = useState<{ src: string; name: string } | null>(null);
   const [batchSummary, setBatchSummary] = useState<{
     successful: number;
     failed: { name: string; reason: string; thumbnail?: string }[];
@@ -203,10 +205,11 @@ export default function Home() {
     if (stored) {
       setProposalProducts(JSON.parse(stored));
     }
-    
-    // Load search tabs from sessionStorage
-    const storedTabs = sessionStorage.getItem('searchTabs');
-    const storedActiveTabId = sessionStorage.getItem('activeTabId');
+
+    // Load search tabs: prefer sessionStorage (current session), fall back to localStorage (saved)
+    const storedTabs = sessionStorage.getItem('searchTabs') || localStorage.getItem('savedSearchTabs');
+    const storedActiveTabId = sessionStorage.getItem('activeTabId') || localStorage.getItem('savedActiveTabId');
+    const storedSelection = sessionStorage.getItem('selectedProducts') || localStorage.getItem('savedSelectedProducts');
     if (storedTabs) {
       const tabs = JSON.parse(storedTabs);
       setSearchTabs(tabs.map((tab: any) => ({
@@ -217,6 +220,9 @@ export default function Home() {
     if (storedActiveTabId) {
       setActiveTabId(storedActiveTabId);
     }
+    if (storedSelection) {
+      setSelectedProducts(new Set(JSON.parse(storedSelection)));
+    }
   }, []);
 
   // Save to localStorage whenever proposalProducts changes
@@ -226,17 +232,30 @@ export default function Home() {
     }
   }, [proposalProducts]);
 
-  // Save search tabs to sessionStorage whenever they change
+  // Autosave search tabs: instant to sessionStorage, debounced 1s to localStorage
   useEffect(() => {
     if (searchTabs.length > 0) {
       sessionStorage.setItem('searchTabs', JSON.stringify(searchTabs));
+      if (saveTabsTimerRef.current) clearTimeout(saveTabsTimerRef.current);
+      saveTabsTimerRef.current = setTimeout(() => {
+        const serializable = searchTabs.map(t => ({ ...t, timestamp: t.timestamp.toISOString() }));
+        localStorage.setItem('savedSearchTabs', JSON.stringify(serializable));
+      }, 1000);
     }
   }, [searchTabs]);
 
-  // Save active tab ID to sessionStorage
+  // Autosave selected products instantly to both storages
+  useEffect(() => {
+    const json = JSON.stringify([...selectedProducts]);
+    sessionStorage.setItem('selectedProducts', json);
+    localStorage.setItem('savedSelectedProducts', json);
+  }, [selectedProducts]);
+
+  // Autosave active tab ID instantly to both storages
   useEffect(() => {
     if (activeTabId) {
       sessionStorage.setItem('activeTabId', activeTabId);
+      localStorage.setItem('savedActiveTabId', activeTabId);
     }
   }, [activeTabId]);
 
@@ -823,7 +842,14 @@ export default function Home() {
                     {batchSummary.failed.map((item, idx) => (
                       <div key={idx} className="flex items-start gap-3 p-3 bg-red-50 border border-red-100 rounded-lg">
                         {item.thumbnail ? (
-                          <img src={item.thumbnail} alt={item.name} className="flex-shrink-0 w-10 h-10 rounded object-cover border border-red-200" />
+                          <button
+                            type="button"
+                            onClick={() => setPreviewImage({ src: item.thumbnail!, name: item.name })}
+                            className="flex-shrink-0 w-10 h-10 rounded overflow-hidden border border-red-200 hover:border-sky-400 hover:ring-2 hover:ring-sky-300 transition-all cursor-zoom-in"
+                            title="Click to view full image"
+                          >
+                            <img src={item.thumbnail} alt={item.name} className="w-full h-full object-cover" />
+                          </button>
                         ) : (
                           <div className="flex-shrink-0 w-10 h-10 bg-red-200 rounded flex items-center justify-center">
                             <X className="h-4 w-4 text-red-700" />
@@ -1013,12 +1039,21 @@ export default function Home() {
         {/* Search Tabs */}
         {searchTabs.length > 0 && (
           <div className="max-w-5xl mx-auto mb-6">
-            <div className="flex justify-end mb-2">
+            <div className="flex justify-end items-center gap-3 mb-2">
               <button
-                onClick={() => setSearchTabs([])}
+                onClick={() => {
+                  setSearchTabs([]);
+                  setSelectedProducts(new Set());
+                  localStorage.removeItem('savedSearchTabs');
+                  localStorage.removeItem('savedActiveTabId');
+                  localStorage.removeItem('savedSelectedProducts');
+                  sessionStorage.removeItem('searchTabs');
+                  sessionStorage.removeItem('activeTabId');
+                  sessionStorage.removeItem('selectedProducts');
+                }}
                 className="text-xs text-gray-400 hover:text-red-500 transition-colors"
               >
-                Clear all search results
+                Clear all
               </button>
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -1496,6 +1531,29 @@ export default function Home() {
         })()}
       </DialogContent>
     </Dialog>
+
+      {/* Image preview lightbox */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div className="relative max-w-3xl max-h-[90vh] mx-4" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-3 -right-3 z-10 w-7 h-7 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-gray-900"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <img
+              src={previewImage.src}
+              alt={previewImage.name}
+              className="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain"
+            />
+            <p className="mt-2 text-center text-sm text-white/80 truncate">{previewImage.name}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
