@@ -327,10 +327,11 @@ export async function POST(request: NextRequest) {
         doc.text(descLines.slice(0, maxLines), rightSectionX, currentY);
       }
       
-      // Footer with page number (bottom of page)
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text(`Page ${index + 2} of ${proposal.products.length + 1}`, margin, pageHeight - 5);
+      // Page number - right-justified, bottom right (title page = 0, products start at 1)
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(153, 153, 153);
+      doc.text(`${index + 1}`, pageWidth - margin, pageHeight - 5, { align: 'right' });
     }
 
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
