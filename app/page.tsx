@@ -286,7 +286,7 @@ export default function Home() {
   }
 
   // Helper function to create a new tab
-  const createNewTab = (query: string, type: 'text' | 'image' | 'similar', products: ProductDTO[], platforms: Platform[]) => {
+  const createNewTab = (query: string, type: 'text' | 'image' | 'similar', products: ProductDTO[], platforms: Platform[], noFocus = false) => {
     const newTab: SearchTab = {
       id: `tab-${Date.now()}`,
       label: query.length > 30 ? query.substring(0, 30) + '...' : query,
@@ -298,7 +298,7 @@ export default function Home() {
     };
     
     setSearchTabs(prev => [...prev, newTab]);
-    setActiveTabId(newTab.id);
+    if (!noFocus) setActiveTabId(newTab.id);
   };
 
   // Helper function to close a tab
@@ -688,7 +688,7 @@ export default function Home() {
             } else {
               // Create tab for this image
               const tabLabel = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
-              createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao']);
+              createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao'], true);
               successfulCount++;
             }
             
@@ -770,7 +770,7 @@ export default function Home() {
               stillFailedFiles.push(file);
             } else {
               const tabLabel = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
-              createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao']);
+              createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao'], true);
               newSuccessCount++;
             }
             
