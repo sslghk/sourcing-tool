@@ -44,8 +44,20 @@ async function ensureTransitionalConformance(buffer: Buffer): Promise<Buffer> {
     const presFile = zip.file('ppt/presentation.xml');
     if (presFile) {
       let xml = await presFile.async('string');
+      let modified = false;
       if (xml.includes('conformance="strict"')) {
         xml = xml.replace(/conformance="strict"/g, 'conformance="transitional"');
+        modified = true;
+      }
+      // Set slide numbering to start at 0
+      if (xml.includes('firstSlideNum=')) {
+        xml = xml.replace(/firstSlideNum="\d+"/g, 'firstSlideNum="0"');
+        modified = true;
+      } else {
+        xml = xml.replace(/<p:presentation\b/, '<p:presentation firstSlideNum="0"');
+        modified = true;
+      }
+      if (modified) {
         zip.file('ppt/presentation.xml', xml);
         return await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: 6 } }) as Buffer;
       }
@@ -407,16 +419,8 @@ export async function POST(request: NextRequest) {
         });
       }
       
-      // Footer with page number (bottom of slide for 4:3)
-      slide.addText(`Page ${index + 2} of ${proposal.products.length + 1}`, {
-        x: 4,
-        y: 7.2,
-        w: 2,
-        h: 0.25,
-        fontSize: 9,
-        color: '999999',
-        align: 'center',
-      });
+      // Native PowerPoint slide number in footer
+      slide.slideNumber = { x: 8.0, y: 7.2, w: 1.7, h: 0.25, fontSize: 9, color: '999999', align: 'right' };
     }
 
     const pptxOutput = await pptx.write({ outputType: 'nodebuffer' });
