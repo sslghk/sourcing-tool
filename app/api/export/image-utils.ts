@@ -43,6 +43,7 @@ export async function fetchAndProcessImage(
   imageUrl: string,
   maxDimension: number = 600
 ): Promise<ProcessedImage | null> {
+  if (!imageUrl || typeof imageUrl !== 'string') return null;
   // Normalize URL
   let url = imageUrl;
   if (url.startsWith('//')) {
@@ -274,6 +275,7 @@ export function calculateFitDimensions(
  * Normalize URL: add https: prefix if needed.
  */
 export function normalizeUrl(url: string): string {
+  if (!url || typeof url !== 'string') return '';
   if (url.startsWith('//')) return `https:${url}`;
   return url;
 }

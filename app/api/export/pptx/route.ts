@@ -407,16 +407,8 @@ export async function POST(request: NextRequest) {
         });
       }
       
-      // Footer with page number (bottom of slide for 4:3)
-      slide.addText(`Page ${index + 2} of ${proposal.products.length + 1}`, {
-        x: 4,
-        y: 7.2,
-        w: 2,
-        h: 0.25,
-        fontSize: 9,
-        color: '999999',
-        align: 'center',
-      });
+      // Native PowerPoint slide number in footer
+      slide.slideNumber = { x: 4, y: 7.2, w: 2, h: 0.25, fontSize: 9, color: '999999', align: 'center' };
     }
 
     const pptxOutput = await pptx.write({ outputType: 'nodebuffer' });
