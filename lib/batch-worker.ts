@@ -2,10 +2,54 @@ import fs from 'fs';
 import path from 'path';
 import { getBatchJob, uploadBuffer, createBatchJob, downloadFileContent } from './gemini-ai';
 import { JobState } from '@google/genai';
+import { sendMail } from './mailer';
 
 export const BATCH_JOBS_DIR = path.join(process.cwd(), 'data', 'batch-jobs');
 const DATA_DIR    = path.join(process.cwd(), 'data', 'proposals');
 const AI_IMAGES_DIR = path.join(process.cwd(), 'public', 'ai-images');
+
+// ─── Email notification ───────────────────────────────────────────────────────
+
+async function sendJobNotification(state: any): Promise<void> {
+  const email: string | undefined = state.initiatedBy?.email;
+  if (!email) return;
+  const name: string = state.initiatedBy?.name || email;
+  const title: string = state.proposalTitle || state.proposalId;
+  const isComplete = state.overallState === 'COMPLETED';
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000').replace(/\/$/, '');
+  const proposalUrl = `${baseUrl}/proposals/${state.proposalId}`;
+  const subject = isComplete
+    ? `✅ AI Batch Job Completed – ${title}`
+    : `❌ AI Batch Job Failed – ${title}`;
+  const statusLine = isComplete
+    ? 'Your batch AI enrichment job has <strong>completed successfully</strong>.'
+    : `Your batch AI enrichment job has <strong>failed</strong>.<br>Reason: ${state.error ?? 'Unknown error'}`;
+  const html = `
+    <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
+      <h2 style="color:${isComplete ? '#16a34a' : '#dc2626'}">${isComplete ? '✅ Batch AI Job Completed' : '❌ Batch AI Job Failed'}</h2>
+      <p>Hi ${name},</p>
+      <p>${statusLine}</p>
+      <table style="border-collapse:collapse;width:100%;margin:16px 0">
+        <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Proposal</td><td style="padding:6px 12px;border:1px solid #e5e7eb"><a href="${proposalUrl}" style="color:#0284c7">${title}</a></td></tr>
+        <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Products</td><td style="padding:6px 12px;border:1px solid #e5e7eb">${state.productMap?.length ?? 0}</td></tr>
+        <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Started</td><td style="padding:6px 12px;border:1px solid #e5e7eb">${new Date(state.startedAt).toLocaleString()}</td></tr>
+        <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Finished</td><td style="padding:6px 12px;border:1px solid #e5e7eb">${new Date().toLocaleString()}</td></tr>
+      </table>
+      <a href="${proposalUrl}" style="display:inline-block;padding:10px 20px;background:#0284c7;color:#fff;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px">View Proposal →</a>
+      <p style="color:#6b7280;font-size:12px;margin-top:16px">${proposalUrl}</p>
+    </div>`;
+  const text = `Hi ${name},\n\n${
+    isComplete
+      ? `Your batch AI enrichment job for "${title}" has completed successfully.`
+      : `Your batch AI enrichment job for "${title}" has failed.\nReason: ${state.error ?? 'Unknown error'}`
+  }\n\nProducts: ${state.productMap?.length ?? 0}\nStarted: ${new Date(state.startedAt).toLocaleString()}\nFinished: ${new Date().toLocaleString()}\n\nView proposal: ${proposalUrl}`;
+  try {
+    await sendMail({ to: email, subject, text, html });
+    console.log(`[batch-worker] Notification sent to ${email} (${state.overallState})`);
+  } catch (e) {
+    console.warn(`[batch-worker] Failed to send notification email to ${email}:`, e);
+  }
+}
 
 const FAILED_STATES = new Set<JobState>([
   JobState.JOB_STATE_FAILED,
@@ -195,6 +239,7 @@ export async function advanceJobState(state: any): Promise<any> {
       state.error = `Phase 1 job ended with state: ${job.state}`;
       unlockProposal(proposalId);
       writeJobState(proposalId, state);
+      await sendJobNotification(state);
     }
   }
 
@@ -209,6 +254,7 @@ export async function advanceJobState(state: any): Promise<any> {
         state.error = 'Phase 2 completed but no output file name returned';
         unlockProposal(proposalId);
         writeJobState(proposalId, state);
+        await sendJobNotification(state);
         return state;
       }
 
@@ -261,12 +307,14 @@ export async function advanceJobState(state: any): Promise<any> {
       state.completedAt = new Date().toISOString();
       unlockProposal(proposalId);
       writeJobState(proposalId, state);
+      await sendJobNotification(state);
 
     } else if (job.state && FAILED_STATES.has(job.state)) {
       state.overallState = 'FAILED';
       state.error = `Phase 2 job ended with state: ${job.state}`;
       unlockProposal(proposalId);
       writeJobState(proposalId, state);
+      await sendJobNotification(state);
     }
   }
 

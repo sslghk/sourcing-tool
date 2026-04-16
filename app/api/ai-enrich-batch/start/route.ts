@@ -16,7 +16,7 @@ export interface BatchProduct {
 
 export async function POST(request: NextRequest) {
   try {
-    const { proposalId, proposalTitle = proposalId, products }: { proposalId: string; proposalTitle?: string; products: BatchProduct[] } = await request.json();
+    const { proposalId, proposalTitle = proposalId, products, initiatedBy }: { proposalId: string; proposalTitle?: string; products: BatchProduct[]; initiatedBy?: { email: string; name: string } } = await request.json();
 
     if (!proposalId || !products?.length) {
       return NextResponse.json({ error: 'proposalId and products are required' }, { status: 400 });
@@ -113,6 +113,7 @@ export async function POST(request: NextRequest) {
       completedAt: null as string | null,
       startedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      initiatedBy: initiatedBy ?? null,
     };
 
     fs.writeFileSync(path.join(BATCH_JOBS_DIR, `${proposalId}.json`), JSON.stringify(state, null, 2));
