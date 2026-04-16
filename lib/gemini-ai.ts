@@ -65,6 +65,12 @@ export async function getBatchJob(name: string) {
   return ai.batches.get({ name });
 }
 
+/** Cancel a running batch job by its resource name. */
+export async function cancelBatchJob(name: string) {
+  const ai = getAI();
+  return ai.batches.cancel({ name });
+}
+
 // ─── Re-exports ───────────────────────────────────────────────────────────────
 
 export { ApiError };

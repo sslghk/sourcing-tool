@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { RefreshCw, Play, CheckCircle, XCircle, Clock, Loader2, ArrowLeft, ExternalLink, RotateCcw } from 'lucide-react';
+import { RefreshCw, Play, CheckCircle, XCircle, Clock, Loader2, ArrowLeft, ExternalLink, RotateCcw, Ban } from 'lucide-react';
 
 interface BatchJobSummary {
   proposalId: string;
@@ -21,6 +21,7 @@ const STATE_CONFIG: Record<string, { label: string; badge: string; icon: React.E
   PHASE2_RUNNING: { label: 'Phase 2 – Images',   badge: 'bg-purple-100 text-purple-700 border-purple-200', icon: Loader2 },
   COMPLETED:      { label: 'Completed',           badge: 'bg-green-100 text-green-700 border-green-200',   icon: CheckCircle },
   FAILED:         { label: 'Failed',              badge: 'bg-red-100 text-red-700 border-red-200',         icon: XCircle },
+  ABORTED:        { label: 'Aborted',             badge: 'bg-orange-100 text-orange-700 border-orange-200', icon: Ban },
 };
 
 function elapsed(from: string, to?: string | null): string {
@@ -44,6 +45,7 @@ export default function BatchJobsPage() {
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [workerResult, setWorkerResult] = useState<string | null>(null);
   const [resetting, setResetting] = useState<string | null>(null);
+  const [aborting, setAborting] = useState<string | null>(null);
 
   const fetchJobs = useCallback(async () => {
     try {
@@ -98,6 +100,24 @@ export default function BatchJobsPage() {
     return () => clearInterval(id);
   }, [autoRefresh, jobs, tickWorker]);
 
+  const handleAbort = async (proposalId: string) => {
+    if (!confirm('Abort this batch job? The proposal will be unlocked for editing. This cannot be undone.')) return;
+    setAborting(proposalId);
+    try {
+      const res = await fetch('/api/ai-enrich-batch/abort', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proposalId }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? 'Abort failed');
+      await fetchJobs();
+    } catch (e) {
+      alert(`Abort failed: ${String(e)}`);
+    } finally {
+      setAborting(null);
+    }
+  };
+
   const handleResubmit = async (proposalId: string) => {
     setResetting(proposalId);
     try {
@@ -116,7 +136,7 @@ export default function BatchJobsPage() {
   };
 
   const pending = jobs.filter(j => j.overallState === 'PHASE1_RUNNING' || j.overallState === 'PHASE2_RUNNING');
-  const done    = jobs.filter(j => j.overallState === 'COMPLETED' || j.overallState === 'FAILED');
+  const done    = jobs.filter(j => j.overallState === 'COMPLETED' || j.overallState === 'FAILED' || j.overallState === 'ABORTED');
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -186,7 +206,14 @@ export default function BatchJobsPage() {
                 In Progress ({pending.length})
               </h2>
               <div className="space-y-3">
-                {pending.map(job => <JobRow key={job.proposalId} job={job} />)}
+                {pending.map(job => (
+                  <JobRow
+                    key={job.proposalId}
+                    job={job}
+                    onAbort={() => handleAbort(job.proposalId)}
+                    aborting={aborting === job.proposalId}
+                  />
+                ))}
               </div>
             </section>
           )}
@@ -217,11 +244,13 @@ export default function BatchJobsPage() {
 
 interface JobRowProps {
   job: BatchJobSummary;
+  onAbort?: () => void;
+  aborting?: boolean;
   onResubmit?: () => void;
   resetting?: boolean;
 }
 
-function JobRow({ job, onResubmit, resetting }: JobRowProps) {
+function JobRow({ job, onAbort, aborting, onResubmit, resetting }: JobRowProps) {
   const cfg = STATE_CONFIG[job.overallState] ?? { label: job.overallState, badge: 'bg-gray-100 text-gray-600 border-gray-200', icon: Clock };
   const Icon = cfg.icon;
   const isRunning = job.overallState === 'PHASE1_RUNNING' || job.overallState === 'PHASE2_RUNNING';
@@ -252,6 +281,19 @@ function JobRow({ job, onResubmit, resetting }: JobRowProps) {
         <p className="text-sm font-medium text-gray-700">{duration}</p>
         <p className="text-xs text-gray-400">{isRunning ? 'elapsed' : 'total'}</p>
       </div>
+
+      {/* Abort button (running jobs only) */}
+      {onAbort && (
+        <button
+          onClick={onAbort}
+          disabled={aborting}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 border border-orange-200 rounded-lg hover:bg-orange-50 disabled:opacity-50 transition-colors shrink-0"
+          title="Abort this job and unlock the proposal for editing"
+        >
+          {aborting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Ban className="h-3.5 w-3.5" />}
+          Abort
+        </button>
+      )}
 
       {/* Resubmit button (failed jobs only) */}
       {onResubmit && (

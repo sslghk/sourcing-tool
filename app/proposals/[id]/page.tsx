@@ -174,16 +174,9 @@ export default function ProposalDetailPage() {
           
           const product = proposal.products.find(p => p.source_id === productId);
           if (product) {
-            // Load saved secondary image selections
+            // Load saved secondary image selections (only if explicitly saved)
             if (details.selectedSecondaryImages && details.selectedSecondaryImages.length > 0) {
               newSelectedImages[product.id] = details.selectedSecondaryImages;
-            } else if (details.item_imgs && details.item_imgs.length > 0) {
-              // Auto-select first 4 secondary images from item_imgs
-              const imageUrls = details.item_imgs.slice(0, 4).map((img: any) => {
-                const url = typeof img === 'string' ? img : img.url;
-                return url.startsWith('//') ? `https:${url}` : url;
-              });
-              newSelectedImages[product.id] = imageUrls;
             }
             // Load saved AI image selections
             if (details.selectedAIImages && details.selectedAIImages.length > 0) {
@@ -268,21 +261,7 @@ export default function ProposalDetailPage() {
           };
         });
         
-        // Always update secondary images with fresh API data
-        if (details.item_imgs) {
-          const normalized = normalizeItemImgs(details.item_imgs);
-          const imageUrls = normalized.slice(0, 4).map((img: { url: string }) => {
-            return img.url.startsWith('//') ? `https:${img.url}` : img.url;
-          });
-          
-          setSelectedSecondaryImages(prev => ({
-            ...prev,
-            [product.id]: imageUrls
-          }));
-          
-          // Save to server
-          await saveSecondaryImageSelection(productId, imageUrls);
-        }
+        // Do not auto-select secondary images — user selects manually
         
         console.log(`Fetched details for ${productId}`);
       } else {

@@ -362,8 +362,8 @@ export default function Home() {
       const existing = existingProposals.find(p => p.id === proposalId);
       if (!existing) { alert('Proposal not found'); return; }
 
-      const existingIds = new Set((existing.products || []).map((p: any) => p.source_id || p.id));
-      const newProducts = allSelected.filter(p => !existingIds.has(p.source_id || p.id));
+      const existingIds = new Set((existing.products || []).map((p: any) => p.id));
+      const newProducts = allSelected.filter(p => !existingIds.has(p.id));
 
       if (newProducts.length === 0) {
         alert('All selected items are already in this proposal.');
@@ -417,10 +417,13 @@ export default function Home() {
       
       const newProposalProducts = [...proposalProducts];
       
-      // Add products WITHOUT fetching details - details will be fetched when saving proposal
-      const productsToAdd = allProducts.filter(
-        product => !newProposalProducts.some(p => p.id === product.id)
-      );
+      // Add products WITHOUT fetching details - deduplicate by id across tabs and against existing basket
+      const seenIds = new Set(newProposalProducts.map(p => p.id));
+      const productsToAdd = allProducts.filter(product => {
+        if (seenIds.has(product.id)) return false;
+        seenIds.add(product.id);
+        return true;
+      });
       
       newProposalProducts.push(...productsToAdd);
       setProposalProducts(newProposalProducts);
