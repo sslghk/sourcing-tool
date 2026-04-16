@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Calendar, DollarSign, Trash2, Edit, Download, FileText, ChevronDown, ChevronUp, Loader2, Upload, CheckCircle2, Package, Info, RefreshCw, GripVertical, Languages, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,6 +78,7 @@ interface ProductDetails {
 export default function ProposalDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { data: session } = useSession();
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
@@ -917,7 +919,12 @@ export default function ProposalDetailPage() {
       const res = await fetch('/api/ai-enrich-batch/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ proposalId: params.id, proposalTitle: proposal.name, products }),
+        body: JSON.stringify({
+        proposalId: params.id,
+        proposalTitle: proposal.name,
+        products,
+        initiatedBy: session?.user ? { email: session.user.email || '', name: session.user.name || '' } : undefined,
+      }),
       });
       if (!res.ok) {
         const err = await res.json();
