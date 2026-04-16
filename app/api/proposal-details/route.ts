@@ -285,7 +285,7 @@ async function fetchAndSaveItemDetails(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { products, proposalName, clientName, notes, proposalId: clientProposalId, createdBy } = body;
+    const { products, proposalName, clientName, notes, proposalId: clientProposalId, createdBy, skipDetailsFetch } = body;
 
     if (!products || !Array.isArray(products) || products.length === 0) {
       return NextResponse.json(
@@ -326,6 +326,14 @@ export async function POST(request: NextRequest) {
 
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
     console.log(`Created proposal file: ${filePath}`);
+
+    if (skipDetailsFetch) {
+      return NextResponse.json({
+        success: true, proposalId,
+        totalItems: uniqueProducts.length, successfulItems: 0,
+        message: `Proposal structure saved. Details will be fetched per-product.`,
+      });
+    }
 
     const successfulCount = await fetchAndSaveItemDetails(data, uniqueProducts, filePath);
     console.log(`POST complete: ${successfulCount}/${uniqueProducts.length} details fetched`);
@@ -456,7 +464,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { proposalId, newProducts } = body;
+    const { proposalId, newProducts, skipDetailsFetch } = body;
 
     if (!proposalId) {
       return NextResponse.json({ error: 'proposalId is required' }, { status: 400 });
@@ -517,16 +525,21 @@ export async function PATCH(request: NextRequest) {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
     console.log(`Appended ${toAdd.length} product(s) to proposal ${proposalId} (total: ${data.totalItems})`);
 
-    // Fetch item details in the background — don't block the response
-    fetchAndSaveItemDetails(data, toAdd, filePath)
-      .then(count => console.log(`PATCH background: ${count}/${toAdd.length} details fetched for ${proposalId}`))
-      .catch(err => console.error(`PATCH background fetch error for ${proposalId}:`, err));
+    if (!skipDetailsFetch) {
+      // Fetch item details in the background — don't block the response
+      fetchAndSaveItemDetails(data, toAdd, filePath)
+        .then(count => console.log(`PATCH background: ${count}/${toAdd.length} details fetched for ${proposalId}`))
+        .catch(err => console.error(`PATCH background fetch error for ${proposalId}:`, err));
+    }
 
     return NextResponse.json({
       success: true,
       added: toAdd.length,
+      addedProducts: toAdd,
       totalItems: data.totalItems,
-      message: `${toAdd.length} product(s) added. Details are being fetched in the background.`,
+      message: skipDetailsFetch
+        ? `${toAdd.length} product(s) added. Details will be fetched per-product.`
+        : `${toAdd.length} product(s) added. Details are being fetched in the background.`,
     });
 
   } catch (error) {
