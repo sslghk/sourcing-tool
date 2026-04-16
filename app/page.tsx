@@ -77,7 +77,9 @@ export default function Home() {
   const [dialogFilterMode, setDialogFilterMode] = useState<'my' | 'all'>('all');
   const [dialogSortField, setDialogSortField] = useState<'name' | 'date'>('date');
   const [dialogSortDir, setDialogSortDir] = useState<'asc' | 'desc'>('desc');
-  const [appendSuccess, setAppendSuccess] = useState<{ proposalName: string; count: number; duplicates: number } | null>(null);
+  const [appendProgress, setAppendProgress] = useState({ current: 0, total: 0 });
+  const [showAppendResult, setShowAppendResult] = useState(false);
+  const [appendResult, setAppendResult] = useState<{ successful: number; failed: number; total: number; error?: string } | null>(null);
   
   // Folder upload state
   const [isProcessingFolder, setIsProcessingFolder] = useState(false);
@@ -360,17 +362,22 @@ export default function Home() {
       if (allSelected.length === 0) return;
 
       const existing = existingProposals.find(p => p.id === proposalId);
-      if (!existing) { alert('Proposal not found'); return; }
+      if (!existing) {
+        setAppendResult({ successful: 0, failed: 0, total: 0, error: 'Proposal not found.' });
+        setShowAppendResult(true);
+        return;
+      }
 
       const existingIds = new Set((existing.products || []).map((p: any) => p.id));
       const newProducts = allSelected.filter(p => !existingIds.has(p.id));
 
       if (newProducts.length === 0) {
-        alert('All selected items are already in this proposal.');
+        setAppendResult({ successful: 0, failed: 0, total: 0, error: 'All selected items are already in this proposal.' });
+        setShowAppendResult(true);
         return;
       }
 
-      // Await PATCH so we get the server's authoritative added count (after server-side dedup)
+      // PATCH to append products (skip background detail fetch)
       const patchRes = await fetch('/api/proposal-details', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -381,26 +388,49 @@ export default function Home() {
           clientName: existing.client_name,
           notes: existing.notes,
           status: existing.status,
+          skipDetailsFetch: true,
         }),
       });
       if (!patchRes.ok) {
-        const errText = await patchRes.text();
-        console.error('PATCH failed:', errText);
-        alert('Failed to add items to proposal.');
+        console.error('PATCH failed:', await patchRes.text());
+        setAppendResult({ successful: 0, failed: 0, total: 0, error: 'Failed to add items to proposal.' });
+        setShowAppendResult(true);
         return;
       }
       const patchData = await patchRes.json();
-      const actualAdded = patchData.added ?? newProducts.length;
-      const duplicateCount = allSelected.length - actualAdded;
+      const addedProducts: any[] = patchData.addedProducts ?? newProducts;
+
       setSelectedProducts(new Set());
       setIsExistingProposalDialogOpen(false);
-      setAppendSuccess({ proposalName: existing.name, count: actualAdded, duplicates: duplicateCount });
-      setTimeout(() => setAppendSuccess(null), 5000);
+      setIsAddingToExisting(false);
+
+      // Fetch each added product's details with progress
+      const total = addedProducts.length;
+      setAppendProgress({ current: 0, total });
+      let successCount = 0;
+      for (let i = 0; i < total; i++) {
+        const product = addedProducts[i];
+        setAppendProgress({ current: i + 1, total });
+        try {
+          const res = await fetch(
+            `/api/proposal-details?proposalId=${proposalId}&productId=${product.source_id}&refresh=true`
+          );
+          if (res.ok) successCount++;
+        } catch {
+          // continue on error
+        }
+      }
+      setAppendProgress({ current: 0, total: 0 });
+      setAppendResult({ successful: successCount, failed: total - successCount, total });
+      setShowAppendResult(true);
+
     } catch (err) {
       console.error('Failed to add to existing proposal:', err);
-      alert('Failed to add items to proposal.');
+      setAppendResult({ successful: 0, failed: 0, total: 0, error: 'Failed to add items to proposal.' });
+      setShowAppendResult(true);
     } finally {
       setIsAddingToExisting(false);
+      setAppendProgress({ current: 0, total: 0 });
     }
   };
 
@@ -1112,16 +1142,18 @@ export default function Home() {
             </div>
           ) : searchResults.length > 0 ? (
             <>
-              {appendSuccess && (
-                <div className="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg bg-green-50 border border-green-300 text-green-800 text-sm">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />
-                  <span>
-                    <strong>{appendSuccess.count} item{appendSuccess.count !== 1 ? 's' : ''}</strong> added to <strong>{appendSuccess.proposalName}</strong>
-                    {appendSuccess.duplicates > 0 && (
-                      <span className="text-green-600"> · {appendSuccess.duplicates} duplicate{appendSuccess.duplicates !== 1 ? 's' : ''} skipped</span>
-                    )}. Details are being fetched in the background.
-                  </span>
-                  <button onClick={() => setAppendSuccess(null)} className="ml-auto text-green-600 hover:text-green-800">✕</button>
+              {appendProgress.total > 0 && (
+                <div className="mb-4 space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Fetching item details...</span>
+                    <span className="text-gray-900 font-medium">{appendProgress.current}/{appendProgress.total}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${(appendProgress.current / appendProgress.total) * 100}%` }}
+                    />
+                  </div>
                 </div>
               )}
               <div className="mb-6 flex items-center justify-between">
@@ -1554,6 +1586,43 @@ export default function Home() {
               className="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain"
             />
             <p className="mt-2 text-center text-sm text-white/80 truncate">{previewImage.name}</p>
+          </div>
+        </div>
+      )}
+      {showAppendResult && appendResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {appendResult.error ? 'Could Not Add Items' : 'Add to Proposal Summary'}
+              </h2>
+              <button onClick={() => setShowAppendResult(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              {appendResult.error ? (
+                <p className="text-sm text-red-600">{appendResult.error}</p>
+              ) : (
+                <div className="flex gap-4">
+                  <div className="flex-1 bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-green-700">{appendResult.successful}</p>
+                    <p className="text-xs text-green-600 mt-1">Successful</p>
+                  </div>
+                  <div className="flex-1 bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-red-700">{appendResult.failed}</p>
+                    <p className="text-xs text-red-600 mt-1">Failed</p>
+                  </div>
+                  <div className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-gray-700">{appendResult.total}</p>
+                    <p className="text-xs text-gray-600 mt-1">Total</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <Button onClick={() => setShowAppendResult(false)}>Close</Button>
+            </div>
           </div>
         </div>
       )}

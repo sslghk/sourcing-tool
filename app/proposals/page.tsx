@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown, Lock } from "lucide-react";
+import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown, Lock, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +43,8 @@ export default function ProposalsPage() {
   const [clientName, setClientName] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [showSaveResult, setShowSaveResult] = useState(false);
+  const [saveResult, setSaveResult] = useState<{ successful: number; failed: number; total: number; error?: string } | null>(null);
   const [filterMode, setFilterMode] = useState<'my' | 'all'>('all');
   const [sortField, setSortField] = useState<'name' | 'date'>('date');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
@@ -211,6 +213,7 @@ export default function ProposalsPage() {
   };
 
   const [savingProgress, setSavingProgress] = useState('');
+  const [detailsProgress, setDetailsProgress] = useState({ current: 0, total: 0 });
   
   const handleSaveProposal = async () => {
     console.log('Save proposal clicked');
@@ -248,34 +251,46 @@ export default function ProposalsPage() {
       existingProposals.unshift(proposal);
       localStorage.setItem('proposals', JSON.stringify(existingProposals));
       
-      // Step 2: Fetch and save all item details to server-side JSON
+      // Step 2: Create proposal structure on server (no detail fetching yet)
+      const structureResponse = await fetch('/api/proposal-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId,
+          proposalName,
+          clientName,
+          notes,
+          products: proposalProducts,
+          createdBy: session?.user ? {
+            email: session.user.email || '',
+            name: session.user.name || '',
+          } : null,
+          skipDetailsFetch: true,
+        }),
+      });
+      if (!structureResponse.ok) throw new Error('Failed to create proposal structure');
+
+      // Step 3: Fetch each product's details individually with progress tracking
       if (proposalProducts.length > 0) {
-        setSavingProgress(`Fetching item details for ${proposalProducts.length} products... This may take a few minutes.`);
-        console.log('Fetching item details for all products...');
-        const detailsResponse = await fetch('/api/proposal-details', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            proposalId,
-            proposalName,
-            clientName,
-            notes,
-            products: proposalProducts,
-            createdBy: session?.user ? {
-              email: session.user.email || '',
-              name: session.user.name || '',
-            } : null
-          })
-        });
-        
-        if (!detailsResponse.ok) {
-          console.error('Failed to fetch item details:', await detailsResponse.text());
-          setSavingProgress('Warning: Some item details may not have been saved.');
-        } else {
-          const result = await detailsResponse.json();
-          console.log('Item details saved:', result);
-          setSavingProgress(`Saved! ${result.successfulItems}/${result.totalItems} item details fetched.`);
+        const total = proposalProducts.length;
+        setDetailsProgress({ current: 0, total });
+        setSavingProgress(`Fetching item details...`);
+        let successCount = 0;
+        for (let i = 0; i < total; i++) {
+          const product = proposalProducts[i];
+          setDetailsProgress({ current: i + 1, total });
+          try {
+            const res = await fetch(
+              `/api/proposal-details?proposalId=${proposalId}&productId=${product.source_id}&refresh=true`
+            );
+            if (res.ok) successCount++;
+          } catch {
+            // continue on error — failedCount incremented via total - successCount
+          }
         }
+        setDetailsProgress({ current: 0, total: 0 });
+        setSaveResult({ successful: successCount, failed: total - successCount, total });
+        setShowSaveResult(true);
       }
       
       localStorage.removeItem('proposalProducts');
@@ -289,10 +304,14 @@ export default function ProposalsPage() {
       setClientName('');
       setNotes('');
       
-      alert('Proposal saved successfully!');
+      if (proposalProducts.length === 0) {
+        setSaveResult({ successful: 0, failed: 0, total: 0 });
+        setShowSaveResult(true);
+      }
     } catch (error) {
       console.error('Error saving proposal:', error);
-      alert('Failed to save proposal');
+      setSaveResult({ successful: 0, failed: 0, total: 0, error: 'Failed to save proposal. Please try again.' });
+      setShowSaveResult(true);
     } finally {
       setIsSaving(false);
       setSavingProgress('');
@@ -395,16 +414,26 @@ export default function ProposalsPage() {
                   {isSaving ? (
                     <span className="flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Saving...
+                      {detailsProgress.total > 0
+                        ? `Fetching ${detailsProgress.current}/${detailsProgress.total}...`
+                        : 'Saving...'}
                     </span>
                   ) : 'Save Proposal'}
                 </Button>
               </div>
-              {isSaving && savingProgress && (
-                <div className="mt-3 p-3 bg-sky-50 border border-sky-200 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Loader2 className="h-5 w-5 animate-spin text-sky-600 flex-shrink-0" />
-                    <p className="text-sm text-sky-700">{savingProgress}</p>
+              {isSaving && detailsProgress.total > 0 && (
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Fetching item details...</span>
+                    <span className="text-gray-900 font-medium">
+                      {detailsProgress.current}/{detailsProgress.total}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${(detailsProgress.current / detailsProgress.total) * 100}%` }}
+                    />
                   </div>
                 </div>
               )}
@@ -840,6 +869,43 @@ export default function ProposalsPage() {
           </div>
         )}
       </div>
+      {showSaveResult && saveResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {saveResult.error ? 'Save Failed' : 'Proposal Save Summary'}
+              </h2>
+              <button onClick={() => setShowSaveResult(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              {saveResult.error ? (
+                <p className="text-sm text-red-600">{saveResult.error}</p>
+              ) : (
+                <div className="flex gap-4">
+                  <div className="flex-1 bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-green-700">{saveResult.successful}</p>
+                    <p className="text-xs text-green-600 mt-1">Successful</p>
+                  </div>
+                  <div className="flex-1 bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-red-700">{saveResult.failed}</p>
+                    <p className="text-xs text-red-600 mt-1">Failed</p>
+                  </div>
+                  <div className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                    <p className="text-2xl font-bold text-gray-700">{saveResult.total}</p>
+                    <p className="text-xs text-gray-600 mt-1">Total</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <Button onClick={() => setShowSaveResult(false)}>Close</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
