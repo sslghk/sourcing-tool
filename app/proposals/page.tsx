@@ -985,7 +985,7 @@ export default function ProposalsPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            disabled={!!exportingProposalId || proposal.locked}
+                            disabled={!!exportingProposalId}
                             className="border-sky-300 text-sky-600 hover:bg-sky-50"
                             title="Export"
                           >
