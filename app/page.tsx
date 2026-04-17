@@ -165,32 +165,32 @@ export default function Home() {
           const existing = seenTitles.get(normalizedTitle)!;
           if (product.price.current < existing.price.current) {
             // Replace with cheaper version
-            uniqueProducts.delete(existing.id);
+            uniqueProducts.delete(existing.source_id);
             seenTitles.set(normalizedTitle, product);
             if (normalizedImage) seenImages.set(normalizedImage, product);
-            uniqueProducts.set(product.id, product);
+            uniqueProducts.set(product.source_id, product);
           }
           isDuplicate = true;
         }
-        
+
         // Check if image already seen
         if (normalizedImage && seenImages.has(normalizedImage)) {
           const existing = seenImages.get(normalizedImage)!;
           if (product.price.current < existing.price.current) {
             // Replace with cheaper version
-            uniqueProducts.delete(existing.id);
+            uniqueProducts.delete(existing.source_id);
             if (normalizedTitle) seenTitles.set(normalizedTitle, product);
             seenImages.set(normalizedImage, product);
-            uniqueProducts.set(product.id, product);
+            uniqueProducts.set(product.source_id, product);
           }
           isDuplicate = true;
         }
-        
+
         // If not a duplicate, add it
         if (!isDuplicate) {
           if (normalizedTitle) seenTitles.set(normalizedTitle, product);
           if (normalizedImage) seenImages.set(normalizedImage, product);
-          uniqueProducts.set(product.id, product);
+          uniqueProducts.set(product.source_id, product);
         }
       });
       
@@ -355,7 +355,7 @@ export default function Home() {
       const allSelected: any[] = [];
       searchTabs.forEach(tab => {
         tab.products.filter(p => selectedProducts.has(p.id)).forEach(p => {
-          if (!allSelected.some(x => x.id === p.id)) allSelected.push(p);
+          if (!allSelected.some(x => x.source_id === p.source_id)) allSelected.push(p);
         });
       });
 
@@ -368,14 +368,17 @@ export default function Home() {
         return;
       }
 
-      const existingIds = new Set((existing.products || []).map((p: any) => p.id));
-      const newProducts = allSelected.filter(p => !existingIds.has(p.id));
+      const existingIds = new Set((existing.products || []).map((p: any) => p.source_id));
+      const newProducts = allSelected.filter(p => !existingIds.has(p.source_id));
 
       if (newProducts.length === 0) {
         setAppendResult({ successful: 0, failed: 0, total: 0, error: 'All selected items are already in this proposal.' });
         setShowAppendResult(true);
         return;
       }
+
+      // Build source_id map for returning added products that match server dedupe
+      const existingSourceIds = new Set((existing.products || []).map((p: any) => p.source_id));
 
       // PATCH to append products (skip background detail fetch)
       const patchRes = await fetch('/api/proposal-details', {
@@ -398,7 +401,9 @@ export default function Home() {
         return;
       }
       const patchData = await patchRes.json();
-      const addedProducts: any[] = patchData.addedProducts ?? newProducts;
+      // Determine actually added products by comparing source_ids before/after
+      const addedCount = patchData.added ?? 0;
+      const addedProducts: any[] = newProducts.filter(p => !existingSourceIds.has(p.source_id));
 
       setSelectedProducts(new Set());
       setIsExistingProposalDialogOpen(false);
@@ -447,11 +452,11 @@ export default function Home() {
       
       const newProposalProducts = [...proposalProducts];
       
-      // Add products WITHOUT fetching details - deduplicate by id across tabs and against existing basket
-      const seenIds = new Set(newProposalProducts.map(p => p.id));
+      // Add products WITHOUT fetching details - deduplicate by source_id across tabs and against existing basket
+      const seenIds = new Set(newProposalProducts.map(p => p.source_id));
       const productsToAdd = allProducts.filter(product => {
-        if (seenIds.has(product.id)) return false;
-        seenIds.add(product.id);
+        if (seenIds.has(product.source_id)) return false;
+        seenIds.add(product.source_id);
         return true;
       });
       

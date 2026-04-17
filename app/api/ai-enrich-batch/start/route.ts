@@ -6,6 +6,7 @@ import { buildEnrichmentPrompt } from '@/lib/ai-enrich-prompts';
 import { lockProposal } from '@/lib/batch-worker';
 
 const BATCH_JOBS_DIR = path.join(process.cwd(), 'data', 'batch-jobs');
+const DATA_DIR = path.join(process.cwd(), 'data', 'proposals');
 
 export interface BatchProduct {
   productId: string;   // internal product.id
@@ -16,7 +17,7 @@ export interface BatchProduct {
 
 export async function POST(request: NextRequest) {
   try {
-    const { proposalId, proposalTitle = proposalId, products, initiatedBy }: { proposalId: string; proposalTitle?: string; products: BatchProduct[]; initiatedBy?: { email: string; name: string } } = await request.json();
+    const { proposalId, proposalTitle = proposalId, products, selectedAIImages, initiatedBy }: { proposalId: string; proposalTitle?: string; products: BatchProduct[]; selectedAIImages?: Record<string, number[]>; initiatedBy?: { email: string; name: string } } = await request.json();
 
     if (!proposalId || !products?.length) {
       return NextResponse.json({ error: 'proposalId and products are required' }, { status: 400 });
@@ -24,6 +25,44 @@ export async function POST(request: NextRequest) {
 
     const maxAIImages = Math.max(1, parseInt(process.env.MAX_AI_IMAGES ?? '4', 10));
     const jobId = `${proposalId}-${Date.now()}`;
+
+    // ── Read existing proposal data to check for prior enrichments ────────────
+    const proposalFile = path.join(DATA_DIR, `${proposalId}.json`);
+    let existingEnrichments: Record<string, any> = {};
+    if (fs.existsSync(proposalFile)) {
+      try {
+        const data = JSON.parse(fs.readFileSync(proposalFile, 'utf-8'));
+        existingEnrichments = data.aiEnrichments || {};
+      } catch { /* ignore read errors */ }
+    }
+
+    // ── Build keepMap: which alternatives to preserve vs regenerate ───────────
+    const keepMap: Record<string, {
+      keptAlternatives: Array<{ index: number; alt: any }>;
+      regenerateCount: number;
+      startIndex: number;
+    }> = {};
+
+    for (const product of products) {
+      const selectedIndices = selectedAIImages?.[product.productId] || [];
+      const existing = existingEnrichments[product.sourceId]?.design_alternatives || [];
+
+      // Keep selected alternatives that have generated images
+      const kept: Array<{ index: number; alt: any }> = [];
+      for (const idx of selectedIndices) {
+        const alt = existing[idx];
+        if (alt?.generated_image_url) {
+          kept.push({ index: kept.length, alt }); // Re-index starting from 0
+        }
+      }
+
+      const regenerateCount = Math.max(0, maxAIImages - kept.length);
+      keepMap[product.productId] = {
+        keptAlternatives: kept,
+        regenerateCount,
+        startIndex: kept.length,
+      };
+    }
 
     // ── Upload each product image to Gemini File API, build JSONL ─────────────
     const productMap: Array<{
@@ -109,6 +148,7 @@ export async function POST(request: NextRequest) {
       productMap,
       alternativeMap: [] as any[],
       concepts: {} as Record<string, any>,
+      keepMap, // Store which alternatives to keep vs regenerate
       error: null as string | null,
       completedAt: null as string | null,
       startedAt: new Date().toISOString(),

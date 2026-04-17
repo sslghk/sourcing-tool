@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown, Lock, X } from "lucide-react";
+import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown, Lock, X, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ProductDTO } from "@/types/product";
 import { formatCurrency } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { templateManager } from "@/lib/template-manager";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -48,6 +50,10 @@ export default function ProposalsPage() {
   const [filterMode, setFilterMode] = useState<'my' | 'all'>('all');
   const [sortField, setSortField] = useState<'name' | 'date'>('date');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+
+  // Export state
+  const [exportingProposalId, setExportingProposalId] = useState<string | null>(null);
+  const [exportProgress, setExportProgress] = useState<{ type: 'pdf' | 'pptx' | null; message: string }>({ type: null, message: '' });
   
   // Product details state
   const [productDetails, setProductDetails] = useState<Map<string, any>>(new Map());
@@ -315,6 +321,127 @@ export default function ProposalsPage() {
     } finally {
       setIsSaving(false);
       setSavingProgress('');
+    }
+  };
+
+  const handleExportPDF = async (proposalId: string, proposalName: string) => {
+    setExportingProposalId(proposalId);
+    setExportProgress({ type: 'pdf', message: 'Generating PDF...' });
+    try {
+      const res = await fetch(`/api/proposal-details?proposalId=${proposalId}`);
+      if (!res.ok) throw new Error('Failed to load proposal data');
+      const data = await res.json();
+
+      const proposalWithDetails = {
+        ...data,
+        name: data.proposalName || proposalName || 'Proposal',
+        client_name: data.clientName || data.client_name || '',
+        products: (data.products || []).map((product: any) => {
+          const details = data.itemDetails?.[product.source_id];
+          const enrichment = data.aiEnrichments?.[product.source_id];
+          return {
+            ...product,
+            aiEnrichment: enrichment,
+            selectedSecondaryImages: details?.selectedSecondaryImages || [],
+            selectedAIImages: details?.selectedAIImages || [],
+            cachedDetails: details ? {
+              desc: details.desc,
+              props: details.props,
+              sku: details.sku,
+              num: details.num,
+              shop_name: details.shop_name,
+              item_imgs: details.item_imgs,
+              category: details.category,
+              category_id: details.category_id,
+            } : undefined,
+          };
+        }),
+      };
+
+      const response = await fetch('/api/export/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proposal: proposalWithDetails, orientation: 'landscape' }),
+      });
+      if (!response.ok) throw new Error('Failed to generate PDF');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(proposalName || 'Proposal').replace(/[^a-z0-9]/gi, '_')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      alert('Failed to export PDF.');
+    } finally {
+      setExportingProposalId(null);
+      setExportProgress({ type: null, message: '' });
+    }
+  };
+
+  const handleExportPPTX = async (proposalId: string, proposalName: string, templateId?: string) => {
+    setExportingProposalId(proposalId);
+    setExportProgress({ type: 'pptx', message: 'Generating PowerPoint...' });
+    try {
+      const res = await fetch(`/api/proposal-details?proposalId=${proposalId}`);
+      if (!res.ok) throw new Error('Failed to load proposal data');
+      const data = await res.json();
+
+      const proposalWithDetails = {
+        ...data,
+        name: data.proposalName || proposalName || 'Proposal',
+        client_name: data.clientName || data.client_name || '',
+        products: (data.products || []).map((product: any) => {
+          const details = data.itemDetails?.[product.source_id];
+          const enrichment = data.aiEnrichments?.[product.source_id];
+          return {
+            ...product,
+            aiEnrichment: enrichment,
+            selectedSecondaryImages: details?.selectedSecondaryImages || [],
+            selectedAIImages: details?.selectedAIImages || [],
+            cachedDetails: details ? {
+              desc: details.desc,
+              props: details.props,
+              sku: details.sku,
+              num: details.num,
+              shop_name: details.shop_name,
+              item_imgs: details.item_imgs,
+              category: details.category,
+              category_id: details.category_id,
+            } : undefined,
+          };
+        }),
+      };
+
+      const response = await fetch('/api/export/pptx', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proposal: proposalWithDetails, orientation: 'landscape', templateId: templateId || 'default' }),
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.details || errData.error || `Server error ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(proposalName || 'Proposal').replace(/[^a-z0-9]/gi, '_')}.pptx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting PPTX:', error);
+      alert('Failed to export PPTX');
+    } finally {
+      setExportingProposalId(null);
+      setExportProgress({ type: null, message: '' });
     }
   };
 
@@ -853,6 +980,42 @@ export default function ProposalsPage() {
                           </Button>
                         </Link>
                       )}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!!exportingProposalId || proposal.locked}
+                            className="border-sky-300 text-sky-600 hover:bg-sky-50"
+                            title="Export"
+                          >
+                            {exportingProposalId === proposal.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Download className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuItem onClick={() => handleExportPDF(proposal.id, proposal.name)}>
+                            <FileText className="h-4 w-4 mr-2" />
+                            Export as PDF
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleExportPPTX(proposal.id, proposal.name, 'default')}>
+                            <FileText className="h-4 w-4 mr-2" />
+                            Export PPTX (Default Template)
+                          </DropdownMenuItem>
+                          {templateManager.getTemplates().map((template) => (
+                            <DropdownMenuItem
+                              key={template.id}
+                              onClick={() => handleExportPPTX(proposal.id, proposal.name, template.id)}
+                            >
+                              <FileText className="h-4 w-4 mr-2" />
+                              Export PPTX ({template.name})
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                       <Button
                         variant="outline"
                         size="sm"
@@ -869,6 +1032,26 @@ export default function ProposalsPage() {
           </div>
         )}
       </div>
+      {/* Export Progress Overlay */}
+      {exportingProposalId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl p-8 shadow-2xl flex flex-col items-center gap-4 max-w-sm mx-4">
+            <div className="relative">
+              <div className="h-16 w-16 rounded-full border-4 border-sky-100 border-t-sky-500 animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                {exportProgress.type === 'pdf' ? (
+                  <FileText className="h-6 w-6 text-sky-500" />
+                ) : (
+                  <Download className="h-6 w-6 text-sky-500" />
+                )}
+              </div>
+            </div>
+            <p className="text-gray-700 font-medium">{exportProgress.message}</p>
+            <p className="text-sm text-gray-500">Please wait...</p>
+          </div>
+        </div>
+      )}
+
       {showSaveResult && saveResult && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">

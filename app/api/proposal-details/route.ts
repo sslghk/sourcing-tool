@@ -297,11 +297,11 @@ export async function POST(request: NextRequest) {
     const proposalId = clientProposalId || randomUUID();
     ensureDataDir();
 
-    // Deduplicate incoming products by id (UUID) before saving
+    // Deduplicate incoming products by source_id before saving
     const seenIds = new Set<string>();
     const uniqueProducts = products.filter((p: any) => {
-      if (seenIds.has(p.id)) return false;
-      seenIds.add(p.id);
+      if (seenIds.has(p.source_id)) return false;
+      seenIds.add(p.source_id);
       return true;
     });
 
@@ -496,9 +496,9 @@ export async function PATCH(request: NextRequest) {
     if (!data.itemDetails) data.itemDetails = {};
     if (!data.products) data.products = [];
 
-    // Append only products not already present (deduplicate by id / UUID)
-    const existingIds = new Set(data.products.map((p: any) => p.id));
-    const toAdd = newProducts.filter((p: any) => !existingIds.has(p.id));
+    // Append only products not already present (deduplicate by source_id)
+    const existingIds = new Set(data.products.map((p: any) => p.source_id));
+    const toAdd = newProducts.filter((p: any) => !existingIds.has(p.source_id));
 
     if (toAdd.length === 0) {
       return NextResponse.json({ success: true, added: 0, message: 'No new products (all duplicates)' });
@@ -512,10 +512,10 @@ export async function PATCH(request: NextRequest) {
         url: p.url, moq: p.moq, seller: p.seller,
       })),
     ];
-    // Deduplicate the merged array by id (UUID) to ensure no double-counting
+    // Deduplicate the merged array by source_id to ensure no double-counting
     const seen = new Set<string>();
     data.products = data.products.filter((p: any) => {
-      const key = p.id;
+      const key = p.source_id;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;

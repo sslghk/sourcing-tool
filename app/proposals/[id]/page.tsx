@@ -920,11 +920,12 @@ export default function ProposalDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-        proposalId: params.id,
-        proposalTitle: proposal.name,
-        products,
-        initiatedBy: session?.user ? { email: session.user.email || '', name: session.user.name || '' } : undefined,
-      }),
+          proposalId: params.id,
+          proposalTitle: proposal.name,
+          products,
+          selectedAIImages, // Pass selected indices so backend can preserve them
+          initiatedBy: session?.user ? { email: session.user.email || '', name: session.user.name || '' } : undefined,
+        }),
       });
       if (!res.ok) {
         const err = await res.json();

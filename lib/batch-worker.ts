@@ -184,9 +184,10 @@ export async function advanceJobState(state: any): Promise<any> {
       });
       console.log(`[batch-worker] Phase 1 parsed concepts for ${Object.keys(concepts).length}/${lines.length} products`);
 
-      // Build Phase 2 JSONL
+      // Build Phase 2 JSONL - only generate for alternatives that need regeneration
       const alternativeMap: Array<{ productId: string; sourceId: string; altIndex: number; lineIndex: number }> = [];
       const phase2Lines: string[] = [];
+      const keepMap: Record<string, { keptAlternatives: Array<{ index: number; alt: any }>; regenerateCount: number; startIndex: number }> = state.keepMap || {};
 
       for (const productEntry of state.productMap as any[]) {
         const conceptResult = concepts[productEntry.productId];
@@ -196,13 +197,19 @@ export async function advanceJobState(state: any): Promise<any> {
           ? { file_data: { mime_type: productEntry.imageMimeType, file_uri: productEntry.imageFileUri } }
           : null;
 
-        for (let altIndex = 0; altIndex < conceptResult.design_alternatives.length; altIndex++) {
+        const productKeep = keepMap[productEntry.productId];
+        const startIndex = productKeep?.startIndex ?? 0;
+        const keptCount = productKeep?.keptAlternatives?.length ?? 0;
+
+        // Only generate images for indices >= startIndex (non-kept alternatives)
+        for (let altIndex = startIndex; altIndex < conceptResult.design_alternatives.length; altIndex++) {
           const alt = conceptResult.design_alternatives[altIndex];
           const imgPrompt = alt.generated_image_prompt ?? alt.concept_title ?? '';
           const parts: any[] = [];
           if (imagePart) parts.push(imagePart);
           parts.push({ text: `Generate a professional e-commerce product photo.\n\nDesign brief: ${imgPrompt}\n\nRequirements:\n- Same product type as reference\n- Apply ALL design changes in the brief\n- Pure white background, studio lighting\n- No text, no people, product fills the frame` });
 
+          // altIndex in alternativeMap is the FINAL array position (after merging)
           alternativeMap.push({ productId: productEntry.productId, sourceId: productEntry.sourceId, altIndex, lineIndex: phase2Lines.length });
           phase2Lines.push(JSON.stringify({
             request: {
@@ -280,24 +287,47 @@ export async function advanceJobState(state: any): Promise<any> {
         }
       });
 
-      // Persist enrichment into proposal JSON
+      // Persist enrichment into proposal JSON - merge kept + newly generated
       const proposalFile = path.join(DATA_DIR, `${proposalId}.json`);
       if (fs.existsSync(proposalFile)) {
         const proposalData = JSON.parse(fs.readFileSync(proposalFile, 'utf-8'));
         if (!proposalData.aiEnrichments) proposalData.aiEnrichments = {};
 
+        const keepMap: Record<string, { keptAlternatives: Array<{ index: number; alt: any }>; regenerateCount: number; startIndex: number }> = state.keepMap || {};
+
         for (const { productId, sourceId } of state.productMap as any[]) {
           const conceptResult = state.concepts[productId];
           if (!conceptResult) continue;
+
+          const productKeep = keepMap[productId];
+          const keptAlts = productKeep?.keptAlternatives || [];
+          const startIndex = productKeep?.startIndex ?? 0;
+
+          // Build merged array: kept alternatives (with their images) + newly generated
+          const mergedAlternatives: any[] = [];
+
+          // Add kept alternatives with their existing images
+          for (const { alt } of keptAlts) {
+            mergedAlternatives.push(alt);
+          }
+
+          // Add newly generated alternatives (from concept result, with saved images)
+          const newAlts = (conceptResult.design_alternatives ?? []).slice(startIndex);
           const imageUrls: string[] = savedImages[productId] ?? [];
+
+          for (let i = 0; i < newAlts.length; i++) {
+            mergedAlternatives.push({
+              ...newAlts[i],
+              generated_image_url: imageUrls[startIndex + i] ?? null,
+            });
+          }
+
           proposalData.aiEnrichments[sourceId] = {
             ...conceptResult,
-            design_alternatives: (conceptResult.design_alternatives ?? []).map((alt: any, i: number) => ({
-              ...alt,
-              generated_image_url: imageUrls[i] ?? null,
-            })),
+            design_alternatives: mergedAlternatives,
             enriched_at: new Date().toISOString(),
           };
+          console.log(`[batch-worker] Saved enrichment for ${sourceId}: ${keptAlts.length} kept + ${newAlts.length} new = ${mergedAlternatives.length} total`);
         }
         proposalData.updatedAt = new Date().toISOString();
         fs.writeFileSync(proposalFile, JSON.stringify(proposalData, null, 2));
