@@ -433,7 +433,7 @@ export async function POST(request: NextRequest) {
     return new NextResponse(new Uint8Array(pptxBuffer), {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'Content-Disposition': `attachment; filename="${proposal.name.replace(/[^a-z0-9]/gi, '_')}.pptx"`,
+        'Content-Disposition': `attachment; filename="${(proposal.name || (proposal as any).proposalName || 'Proposal').replace(/[^a-z0-9]/gi, '_')}.pptx"`,
       },
     });
   } catch (error) {

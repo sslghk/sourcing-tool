@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(36);
-    doc.text(proposal.name, pageWidth / 2, pageHeight / 2 - 20, { align: 'center' });
+    doc.text(proposal.name || (proposal as any).proposalName || 'Proposal', pageWidth / 2, pageHeight / 2 - 20, { align: 'center' });
     
     if (proposal.client_name) {
       doc.setFontSize(20);
