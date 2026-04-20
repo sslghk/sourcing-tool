@@ -695,6 +695,8 @@ export default function Home() {
     let wasAborted = false;
     const failedImages: { name: string; reason: string; thumbnail?: string }[] = [];
     const failedFileObjects: File[] = [];
+    const hadExistingTabs = searchTabs.length > 0;
+    let focusedFirstTab = false;
     
     try {
       for (let i = 0; i < folderImages.length; i++) {
@@ -724,9 +726,11 @@ export default function Home() {
               failedImages.push({ name: file.name, reason: 'No similar products found', thumbnail: URL.createObjectURL(file) });
               failedFileObjects.push(file);
             } else {
-              // Create tab for this image
+              // Create tab for this image; focus first tab only if no tabs existed before batch started
               const tabLabel = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name;
-              createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao'], true);
+              const shouldFocus = !hadExistingTabs && !focusedFirstTab;
+              createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao'], !shouldFocus);
+              if (shouldFocus) focusedFirstTab = true;
               successfulCount++;
             }
             
@@ -811,6 +815,7 @@ export default function Home() {
               createNewTab(`Folder: ${tabLabel}`, 'image', products, ['taobao'], true);
               newSuccessCount++;
             }
+            // Retry always keeps existing focus unchanged
             
             await new Promise(resolve => setTimeout(resolve, 1000));
           } else {
