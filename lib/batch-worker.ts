@@ -327,6 +327,13 @@ export async function advanceJobState(state: any): Promise<any> {
             design_alternatives: mergedAlternatives,
             enriched_at: new Date().toISOString(),
           };
+
+          // Update selectedAIImages in itemDetails to reflect new indices:
+          // kept alternatives are re-indexed to 0..keptCount-1; new ones are unselected.
+          if (!proposalData.itemDetails) proposalData.itemDetails = {};
+          if (!proposalData.itemDetails[sourceId]) proposalData.itemDetails[sourceId] = {};
+          proposalData.itemDetails[sourceId].selectedAIImages = keptAlts.map((_, i) => i);
+
           console.log(`[batch-worker] Saved enrichment for ${sourceId}: ${keptAlts.length} kept + ${newAlts.length} new = ${mergedAlternatives.length} total`);
         }
         proposalData.updatedAt = new Date().toISOString();
