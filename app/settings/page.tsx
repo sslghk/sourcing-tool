@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { User, Lock, Save, Loader2, ArrowLeft, CheckCircle2, UserPlus, Users, ShieldOff, ShieldCheck } from 'lucide-react';
+import { User, Lock, Save, Loader2, ArrowLeft, CheckCircle2, UserPlus, Users, ShieldOff, ShieldCheck, KeyRound, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SettingsPage() {
@@ -37,6 +37,12 @@ export default function SettingsPage() {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [togglingUserId, setTogglingUserId] = useState<string | null>(null);
+  const [adminPwUserId, setAdminPwUserId] = useState<string | null>(null);
+  const [adminNewPassword, setAdminNewPassword] = useState('');
+  const [adminConfirmPassword, setAdminConfirmPassword] = useState('');
+  const [adminPwError, setAdminPwError] = useState('');
+  const [adminPwMessage, setAdminPwMessage] = useState('');
+  const [isAdminChangingPw, setIsAdminChangingPw] = useState(false);
   const isAdmin = session?.user?.isAdmin === true;
 
   // User list state
@@ -201,6 +207,38 @@ export default function SettingsPage() {
       setCreateUserError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsCreatingUser(false);
+    }
+  };
+
+  const handleAdminChangePassword = async (userId: string) => {
+    setAdminPwError('');
+    setAdminPwMessage('');
+    if (adminNewPassword !== adminConfirmPassword) {
+      setAdminPwError('Passwords do not match');
+      return;
+    }
+    if (adminNewPassword.length < 6) {
+      setAdminPwError('Password must be at least 6 characters');
+      return;
+    }
+    setIsAdminChangingPw(true);
+    try {
+      const adminEmail = session?.user?.email;
+      const response = await fetch(`/api/user/${userId}/password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-email': adminEmail || '' },
+        body: JSON.stringify({ newPassword: adminNewPassword }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to update password');
+      setAdminPwMessage('Password updated successfully');
+      setAdminNewPassword('');
+      setAdminConfirmPassword('');
+      setTimeout(() => { setAdminPwUserId(null); setAdminPwMessage(''); }, 1500);
+    } catch (error) {
+      setAdminPwError(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsAdminChangingPw(false);
     }
   };
 
@@ -541,8 +579,8 @@ export default function SettingsPage() {
                 ) : (
                   <div className="space-y-3">
                     {users.map((user) => (
+                      <div key={user.id} className="space-y-0">
                       <div
-                        key={user.id}
                         className={`flex items-center justify-between p-3 rounded-lg ${user.disabled ? 'bg-red-50' : 'bg-gray-50'}`}
                       >
                         <div className="flex items-center gap-3">
@@ -558,8 +596,21 @@ export default function SettingsPage() {
                             <p className="text-sm text-gray-500">{user.email}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</span>
+                          <button
+                            onClick={() => {
+                              setAdminPwUserId(adminPwUserId === user.id ? null : user.id);
+                              setAdminNewPassword('');
+                              setAdminConfirmPassword('');
+                              setAdminPwError('');
+                              setAdminPwMessage('');
+                            }}
+                            className="flex items-center gap-1 text-xs px-2 py-1 rounded bg-sky-100 text-sky-700 hover:bg-sky-200 transition-colors"
+                            title="Change password"
+                          >
+                            <KeyRound className="h-3 w-3" /> Password
+                          </button>
                           {!user.isEnvAdmin && (
                             <button
                               onClick={() => handleToggleUser(user.id, user.disabled)}
@@ -581,6 +632,50 @@ export default function SettingsPage() {
                             </button>
                           )}
                         </div>
+                      </div>
+                      {adminPwUserId === user.id && (
+                        <div className="mt-3 p-3 bg-white border border-sky-200 rounded-lg">
+                          <p className="text-xs font-medium text-sky-700 mb-2">Set new password for {user.name}</p>
+                          {adminPwError && <p className="text-xs text-red-600 mb-2">{adminPwError}</p>}
+                          {adminPwMessage && <p className="text-xs text-green-600 mb-2">{adminPwMessage}</p>}
+                          <div className="flex gap-2 items-end">
+                            <div className="flex-1 space-y-1">
+                              <Input
+                                type="password"
+                                placeholder="New password"
+                                value={adminNewPassword}
+                                onChange={(e) => setAdminNewPassword(e.target.value)}
+                                className="h-8 text-sm"
+                                minLength={6}
+                              />
+                            </div>
+                            <div className="flex-1 space-y-1">
+                              <Input
+                                type="password"
+                                placeholder="Confirm password"
+                                value={adminConfirmPassword}
+                                onChange={(e) => setAdminConfirmPassword(e.target.value)}
+                                className="h-8 text-sm"
+                                minLength={6}
+                              />
+                            </div>
+                            <button
+                              onClick={() => handleAdminChangePassword(user.id)}
+                              disabled={isAdminChangingPw || !adminNewPassword}
+                              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded bg-sky-600 text-white hover:bg-sky-700 disabled:opacity-50 transition-colors h-8"
+                            >
+                              {isAdminChangingPw ? <Loader2 className="h-3 w-3 animate-spin" /> : <KeyRound className="h-3 w-3" />}
+                              Set
+                            </button>
+                            <button
+                              onClick={() => setAdminPwUserId(null)}
+                              className="flex items-center text-xs px-2 py-1.5 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors h-8"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       </div>
                     ))}
                   </div>
