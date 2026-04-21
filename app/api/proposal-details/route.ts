@@ -420,10 +420,7 @@ export async function GET(request: NextRequest) {
             productId: numIid,
             platform: product.source || 'taobao',
             fetchedAt: new Date().toISOString(),
-            selectedSecondaryImages: translatedDetails.item_imgs?.slice(0, 4).map((img: any) => {
-              const url = typeof img === 'string' ? img : img.url;
-              return url.startsWith('//') ? `https:${url}` : url;
-            }) || []
+            selectedSecondaryImages: []
           };
           
           data.successfulItems = Object.keys(data.itemDetails).length;
