@@ -393,5 +393,6 @@ export function jobStateSummary(state: any) {
     startedAt: state.startedAt,
     updatedAt: state.updatedAt,
     completedAt: state.completedAt ?? null,
+    initiatedBy: state.initiatedBy ?? null,
   };
 }
