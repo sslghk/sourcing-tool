@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { RefreshCw, Play, CheckCircle, XCircle, Clock, Loader2, ArrowLeft, ExternalLink, RotateCcw, Ban } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { RefreshCw, Play, CheckCircle, XCircle, Clock, Loader2, ArrowLeft, ExternalLink, RotateCcw, Ban, Trash2, User } from 'lucide-react';
 
 interface BatchJobSummary {
   proposalId: string;
@@ -14,6 +15,7 @@ interface BatchJobSummary {
   startedAt: string;
   updatedAt: string;
   completedAt: string | null;
+  initiatedBy: { email: string; name?: string } | null;
 }
 
 const STATE_CONFIG: Record<string, { label: string; badge: string; icon: React.ElementType }> = {
@@ -38,6 +40,10 @@ function fmt(iso: string) {
 }
 
 export default function BatchJobsPage() {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.isAdmin === true;
+  const myEmail = session?.user?.email ?? '';
+
   const [jobs, setJobs] = useState<BatchJobSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
@@ -46,6 +52,8 @@ export default function BatchJobsPage() {
   const [workerResult, setWorkerResult] = useState<string | null>(null);
   const [resetting, setResetting] = useState<string | null>(null);
   const [aborting, setAborting] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [jobFilter, setJobFilter] = useState<'all' | 'mine'>('mine');
 
   const fetchJobs = useCallback(async () => {
     try {
@@ -135,8 +143,30 @@ export default function BatchJobsPage() {
     }
   };
 
-  const pending = jobs.filter(j => j.overallState === 'PHASE1_RUNNING' || j.overallState === 'PHASE2_RUNNING');
-  const done    = jobs.filter(j => j.overallState === 'COMPLETED' || j.overallState === 'FAILED' || j.overallState === 'ABORTED');
+  const handleDelete = async (proposalId: string) => {
+    if (!confirm('Delete this job record from history? This cannot be undone.')) return;
+    setDeleting(proposalId);
+    try {
+      const res = await fetch('/api/ai-enrich-batch/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-user-email': myEmail },
+        body: JSON.stringify({ proposalId }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? 'Delete failed');
+      await fetchJobs();
+    } catch (e) {
+      alert(`Delete failed: ${String(e)}`);
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const filteredJobs = jobFilter === 'mine'
+    ? jobs.filter(j => j.initiatedBy?.email === myEmail)
+    : jobs;
+
+  const pending = filteredJobs.filter(j => j.overallState === 'PHASE1_RUNNING' || j.overallState === 'PHASE2_RUNNING');
+  const done    = filteredJobs.filter(j => j.overallState === 'COMPLETED' || j.overallState === 'FAILED' || j.overallState === 'ABORTED');
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -154,30 +184,34 @@ export default function BatchJobsPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={autoRefresh}
-              onChange={e => setAutoRefresh(e.target.checked)}
-              className="rounded"
-            />
-            Auto-refresh (30s)
-          </label>
-          <button
-            onClick={fetchJobs}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Refresh
-          </button>
-          <button
-            onClick={runWorker}
-            disabled={running}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-sky-500 rounded-lg hover:bg-sky-600 disabled:opacity-50 transition-colors"
-          >
-            {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-            {running ? 'Processing…' : 'Run Worker'}
-          </button>
+          {isAdmin && (
+            <>
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={autoRefresh}
+                  onChange={e => setAutoRefresh(e.target.checked)}
+                  className="rounded"
+                />
+                Auto-refresh (30s)
+              </label>
+              <button
+                onClick={fetchJobs}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Refresh
+              </button>
+              <button
+                onClick={runWorker}
+                disabled={running}
+                className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-sky-500 rounded-lg hover:bg-sky-600 disabled:opacity-50 transition-colors"
+              >
+                {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+                {running ? 'Processing…' : 'Run Worker'}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -186,6 +220,21 @@ export default function BatchJobsPage() {
           {workerResult}
         </div>
       )}
+
+      {/* My / All filter */}
+      <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
+        {(['mine', 'all'] as const).map(f => (
+          <button
+            key={f}
+            onClick={() => setJobFilter(f)}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              jobFilter === f ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {f === 'mine' ? 'My Jobs' : 'All Jobs'}
+          </button>
+        ))}
+      </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
@@ -210,7 +259,7 @@ export default function BatchJobsPage() {
                   <JobRow
                     key={job.proposalId}
                     job={job}
-                    onAbort={() => handleAbort(job.proposalId)}
+                    onAbort={isAdmin || job.initiatedBy?.email === myEmail ? () => handleAbort(job.proposalId) : undefined}
                     aborting={aborting === job.proposalId}
                   />
                 ))}
@@ -229,8 +278,10 @@ export default function BatchJobsPage() {
                   <JobRow
                     key={job.proposalId}
                     job={job}
-                    onResubmit={job.overallState === 'FAILED' ? () => handleResubmit(job.proposalId) : undefined}
+                    onResubmit={(isAdmin || job.initiatedBy?.email === myEmail) && job.overallState === 'FAILED' ? () => handleResubmit(job.proposalId) : undefined}
                     resetting={resetting === job.proposalId}
+                    onDelete={isAdmin ? () => handleDelete(job.proposalId) : undefined}
+                    deleting={deleting === job.proposalId}
                   />
                 ))}
               </div>
@@ -248,9 +299,11 @@ interface JobRowProps {
   aborting?: boolean;
   onResubmit?: () => void;
   resetting?: boolean;
+  onDelete?: () => void;
+  deleting?: boolean;
 }
 
-function JobRow({ job, onAbort, aborting, onResubmit, resetting }: JobRowProps) {
+function JobRow({ job, onAbort, aborting, onResubmit, resetting, onDelete, deleting }: JobRowProps) {
   const cfg = STATE_CONFIG[job.overallState] ?? { label: job.overallState, badge: 'bg-gray-100 text-gray-600 border-gray-200', icon: Clock };
   const Icon = cfg.icon;
   const isRunning = job.overallState === 'PHASE1_RUNNING' || job.overallState === 'PHASE2_RUNNING';
@@ -271,6 +324,12 @@ function JobRow({ job, onAbort, aborting, onResubmit, resetting }: JobRowProps) 
           {job.productCount} product{job.productCount !== 1 ? 's' : ''} · Started {fmt(job.startedAt)}
           {job.completedAt ? ` · Finished ${fmt(job.completedAt)}` : ''}
         </p>
+        {job.initiatedBy && (
+          <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+            <User className="h-3 w-3" />
+            {job.initiatedBy.name || job.initiatedBy.email}
+          </p>
+        )}
         {job.error && (
           <p className="text-xs text-red-600 mt-1 truncate" title={job.error}>{job.error}</p>
         )}
@@ -305,6 +364,19 @@ function JobRow({ job, onAbort, aborting, onResubmit, resetting }: JobRowProps) 
         >
           {resetting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
           Resubmit
+        </button>
+      )}
+
+      {/* Delete button (admin, history only) */}
+      {onDelete && (
+        <button
+          onClick={onDelete}
+          disabled={deleting}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 disabled:opacity-50 transition-colors shrink-0"
+          title="Delete this job record from history"
+        >
+          {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+          Delete
         </button>
       )}
 
