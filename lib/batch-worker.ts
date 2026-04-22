@@ -13,6 +13,17 @@ const AI_IMAGES_DIR = path.join(process.cwd(), 'public', 'ai-images');
 async function sendJobNotification(state: any): Promise<void> {
   const email: string | undefined = state.initiatedBy?.email;
   if (!email) return;
+
+  // Guard against concurrent workers: re-read disk state to check if email was
+  // already sent by another worker instance before we proceed.
+  if (state.jobId) {
+    const diskState = readJobState(state.jobId);
+    if (diskState?.emailSentAt) {
+      state.emailSentAt = diskState.emailSentAt; // sync in-memory
+      console.log(`[batch-worker] Email already sent for ${state.jobId}, skipping duplicate`);
+      return;
+    }
+  }
   const name: string = state.initiatedBy?.name || email;
   const title: string = state.proposalTitle || state.proposalId;
   const isComplete = state.overallState === 'COMPLETED';

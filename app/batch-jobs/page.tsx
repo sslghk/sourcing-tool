@@ -86,30 +86,19 @@ export default function BatchJobsPage() {
     }
   };
 
-  // Silently call the worker then refresh the job list
-  const tickWorker = useCallback(async () => {
-    try {
-      await fetch('/api/ai-enrich-batch/worker', { method: 'POST' });
-    } catch { /* silent */ }
-    await fetchJobs();
-  }, [fetchJobs]);
-
-  // On mount: load jobs, then immediately advance any pending ones
+  // On mount: just load job statuses
   useEffect(() => {
-    fetchJobs().then(() => {
-      // run worker once right away so opening the page advances jobs immediately
-      fetch('/api/ai-enrich-batch/worker', { method: 'POST' }).catch(() => {});
-    });
+    fetchJobs();
   }, [fetchJobs]);
 
-  // Auto-poll: call worker every 30s while there are pending jobs
+  // Auto-poll: refresh job statuses every 30s while there are pending jobs
   useEffect(() => {
     if (!autoRefresh) return;
     const hasPending = jobs.some(j => j.overallState === 'PHASE1_RUNNING' || j.overallState === 'PHASE2_RUNNING');
     if (!hasPending) return;
-    const id = setInterval(tickWorker, 30000);
+    const id = setInterval(fetchJobs, 30000);
     return () => clearInterval(id);
-  }, [autoRefresh, jobs, tickWorker]);
+  }, [autoRefresh, jobs, fetchJobs]);
 
   const handleAbort = async (jobId: string) => {
     if (!confirm('Abort this batch job? The proposal will be unlocked for editing. This cannot be undone.')) return;
