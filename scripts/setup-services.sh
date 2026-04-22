@@ -22,6 +22,7 @@ PROJECT_DIR="/opt/sourcing-tool"
 APP_USER="ubuntu"
 NEXTJS_PORT=3000
 TAOBAO_PORT=8001
+WG_INTERFACE="wg0"          # change if your WireGuard interface name differs
 NODE_BIN="$(which node || echo /usr/bin/node)"
 NPM_BIN="$(which npm || echo /usr/bin/npm)"
 PYTHON_BIN="$PROJECT_DIR/services/taobao/venv/bin/python"
@@ -31,11 +32,37 @@ echo "============================================="
 echo "  Sourcing Tool - Service Setup"
 echo "  Project dir : $PROJECT_DIR"
 echo "  App user    : $APP_USER"
+echo "  WireGuard   : $WG_INTERFACE"
 echo "============================================="
 echo ""
 
 # ---------------------------------------------------------------------------
-# 1. NEXT.JS SYSTEMD SERVICE
+# 1. WIREGUARD
+# ---------------------------------------------------------------------------
+print_status "Enabling WireGuard interface ($WG_INTERFACE) on boot..."
+
+if ! command -v wg &> /dev/null; then
+    print_status "WireGuard not installed — installing..."
+    apt-get update -qq && apt-get install -y -qq wireguard
+fi
+
+if [ ! -f "/etc/wireguard/${WG_INTERFACE}.conf" ]; then
+    print_error "/etc/wireguard/${WG_INTERFACE}.conf not found — skipping WireGuard setup."
+    print_error "Create the config first, then re-run this script or run:"
+    print_error "  sudo systemctl enable --now wg-quick@${WG_INTERFACE}"
+else
+    systemctl enable "wg-quick@${WG_INTERFACE}"
+    systemctl start  "wg-quick@${WG_INTERFACE}" 2>/dev/null || true
+    sleep 2
+    if systemctl is-active --quiet "wg-quick@${WG_INTERFACE}"; then
+        print_success "WireGuard ($WG_INTERFACE) is running"
+    else
+        print_error "WireGuard ($WG_INTERFACE) failed — check: journalctl -u wg-quick@${WG_INTERFACE} -n 30"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# 2. NEXT.JS SYSTEMD SERVICE
 # ---------------------------------------------------------------------------
 print_status "Creating Next.js systemd service..."
 
@@ -64,7 +91,7 @@ EOF
 print_success "Next.js service created: /etc/systemd/system/sourcing-nextjs.service"
 
 # ---------------------------------------------------------------------------
-# 2. TAOBAO PYTHON SERVICE
+# 3. TAOBAO PYTHON SERVICE
 # ---------------------------------------------------------------------------
 print_status "Creating Taobao Python service..."
 
@@ -91,7 +118,7 @@ EOF
 print_success "Taobao service created: /etc/systemd/system/sourcing-taobao.service"
 
 # ---------------------------------------------------------------------------
-# 3. ENSURE LOGS DIRECTORY EXISTS
+# 4. ENSURE LOGS DIRECTORY EXISTS
 # ---------------------------------------------------------------------------
 print_status "Creating logs directory..."
 mkdir -p "$PROJECT_DIR/logs"
@@ -99,7 +126,7 @@ chown "$APP_USER":"$APP_USER" "$PROJECT_DIR/logs"
 print_success "Logs directory ready: $PROJECT_DIR/logs"
 
 # ---------------------------------------------------------------------------
-# 4. ENABLE & START SERVICES
+# 5. ENABLE & START SERVICES
 # ---------------------------------------------------------------------------
 print_status "Reloading systemd daemon..."
 systemctl daemon-reload
@@ -127,7 +154,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 5. CRON JOB — batch AI worker every 5 minutes
+# 6. CRON JOB — batch AI worker every 5 minutes (fallback; instrumentation.ts also polls internally)
 # ---------------------------------------------------------------------------
 print_status "Setting up batch AI worker cron job..."
 
@@ -151,12 +178,15 @@ echo "  Setup Complete!"
 echo "============================================="
 echo ""
 echo "Services:"
-echo "  Next.js  → http://localhost:$NEXTJS_PORT"
-echo "  Taobao   → http://localhost:$TAOBAO_PORT"
+echo "  WireGuard → wg-quick@$WG_INTERFACE"
+echo "  Next.js   → http://localhost:$NEXTJS_PORT"
+echo "  Taobao    → http://localhost:$TAOBAO_PORT"
 echo ""
 echo "Useful commands:"
-echo "  sudo systemctl status sourcing-nextjs"
-echo "  sudo systemctl status sourcing-taobao"
+echo "  sudo systemctl status  wg-quick@$WG_INTERFACE"
+echo "  sudo systemctl restart wg-quick@$WG_INTERFACE"
+echo "  sudo systemctl status  sourcing-nextjs"
+echo "  sudo systemctl status  sourcing-taobao"
 echo "  sudo systemctl restart sourcing-nextjs"
 echo "  sudo systemctl restart sourcing-taobao"
 echo "  sudo journalctl -u sourcing-nextjs -f"
