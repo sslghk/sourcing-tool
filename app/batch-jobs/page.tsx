@@ -15,7 +15,10 @@ interface BatchJobSummary {
   startedAt: string;
   updatedAt: string;
   completedAt: string | null;
+  jobId: string;
   initiatedBy: { email: string; name?: string } | null;
+  emailSentAt: string | null;
+  emailError: string | null;
 }
 
 const STATE_CONFIG: Record<string, { label: string; badge: string; icon: React.ElementType }> = {
@@ -108,14 +111,14 @@ export default function BatchJobsPage() {
     return () => clearInterval(id);
   }, [autoRefresh, jobs, tickWorker]);
 
-  const handleAbort = async (proposalId: string) => {
+  const handleAbort = async (jobId: string) => {
     if (!confirm('Abort this batch job? The proposal will be unlocked for editing. This cannot be undone.')) return;
-    setAborting(proposalId);
+    setAborting(jobId);
     try {
       const res = await fetch('/api/ai-enrich-batch/abort', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ proposalId }),
+        body: JSON.stringify({ jobId }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? 'Abort failed');
       await fetchJobs();
@@ -126,13 +129,13 @@ export default function BatchJobsPage() {
     }
   };
 
-  const handleResubmit = async (proposalId: string) => {
-    setResetting(proposalId);
+  const handleResubmit = async (jobId: string) => {
+    setResetting(jobId);
     try {
       const res = await fetch('/api/ai-enrich-batch/resubmit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ proposalId }),
+        body: JSON.stringify({ jobId }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? 'Resubmit failed');
       await fetchJobs();
@@ -143,14 +146,14 @@ export default function BatchJobsPage() {
     }
   };
 
-  const handleDelete = async (proposalId: string) => {
+  const handleDelete = async (jobId: string) => {
     if (!confirm('Delete this job record from history? This cannot be undone.')) return;
-    setDeleting(proposalId);
+    setDeleting(jobId);
     try {
       const res = await fetch('/api/ai-enrich-batch/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', 'x-user-email': myEmail },
-        body: JSON.stringify({ proposalId }),
+        body: JSON.stringify({ jobId }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? 'Delete failed');
       await fetchJobs();
@@ -257,10 +260,10 @@ export default function BatchJobsPage() {
               <div className="space-y-3">
                 {pending.map(job => (
                   <JobRow
-                    key={job.proposalId}
+                    key={job.jobId}
                     job={job}
-                    onAbort={isAdmin || job.initiatedBy?.email === myEmail ? () => handleAbort(job.proposalId) : undefined}
-                    aborting={aborting === job.proposalId}
+                    onAbort={isAdmin || job.initiatedBy?.email === myEmail ? () => handleAbort(job.jobId) : undefined}
+                    aborting={aborting === job.jobId}
                   />
                 ))}
               </div>
@@ -276,12 +279,12 @@ export default function BatchJobsPage() {
               <div className="space-y-3">
                 {done.map(job => (
                   <JobRow
-                    key={job.proposalId}
+                    key={job.jobId}
                     job={job}
-                    onResubmit={(isAdmin || job.initiatedBy?.email === myEmail) && job.overallState === 'FAILED' ? () => handleResubmit(job.proposalId) : undefined}
-                    resetting={resetting === job.proposalId}
-                    onDelete={isAdmin ? () => handleDelete(job.proposalId) : undefined}
-                    deleting={deleting === job.proposalId}
+                    onResubmit={(isAdmin || job.initiatedBy?.email === myEmail) && job.overallState === 'FAILED' ? () => handleResubmit(job.jobId) : undefined}
+                    resetting={resetting === job.jobId}
+                    onDelete={isAdmin ? () => handleDelete(job.jobId) : undefined}
+                    deleting={deleting === job.jobId}
                   />
                 ))}
               </div>
@@ -328,6 +331,8 @@ function JobRow({ job, onAbort, aborting, onResubmit, resetting, onDelete, delet
           <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
             <User className="h-3 w-3" />
             {job.initiatedBy.name || job.initiatedBy.email}
+            {job.emailSentAt && <span className="text-green-500 ml-1" title={`Email sent ${fmt(job.emailSentAt)}`}>✉ sent</span>}
+            {job.emailError && <span className="text-red-400 ml-1" title={job.emailError}>✉ failed</span>}
           </p>
         )}
         {job.error && (
