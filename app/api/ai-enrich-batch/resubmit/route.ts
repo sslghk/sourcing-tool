@@ -9,11 +9,12 @@ import { buildEnrichmentPrompt } from '@/lib/ai-enrich-prompts';
  */
 export async function POST(request: NextRequest) {
   try {
-    const { proposalId } = await request.json();
-    if (!proposalId) return NextResponse.json({ error: 'proposalId required' }, { status: 400 });
+    const { jobId } = await request.json();
+    if (!jobId) return NextResponse.json({ error: 'jobId required' }, { status: 400 });
 
-    const state = readJobState(proposalId);
-    if (!state) return NextResponse.json({ error: 'No job found for this proposal' }, { status: 404 });
+    const state = readJobState(jobId);
+    if (!state) return NextResponse.json({ error: 'No job found' }, { status: 404 });
+    const { proposalId } = state;
 
     if (state.overallState === 'PHASE1_RUNNING' || state.overallState === 'PHASE2_RUNNING') {
       return NextResponse.json({ error: 'Job is still running' }, { status: 409 });
@@ -58,20 +59,25 @@ export async function POST(request: NextRequest) {
       `ai-enrich-phase1-${proposalId}`,
     );
 
-    // Reset state back to Phase 1
-    state.jobId = newJobId;
-    state.phase = 1;
-    state.overallState = 'PHASE1_RUNNING';
-    state.phase1JobName = phase1Job.name;
-    state.phase2JobName = null;
-    state.productMap = productMap;
-    state.alternativeMap = [];
-    state.concepts = {};
-    state.error = null;
-    state.completedAt = null;
-    state.startedAt = new Date().toISOString();
+    // Create a new job record (old job stays in history)
+    const newState = {
+      ...state,
+      jobId: newJobId,
+      phase: 1,
+      overallState: 'PHASE1_RUNNING',
+      phase1JobName: phase1Job.name,
+      phase2JobName: null,
+      productMap,
+      alternativeMap: [],
+      concepts: {},
+      error: null,
+      completedAt: null,
+      emailSentAt: null,
+      emailError: null,
+      startedAt: new Date().toISOString(),
+    };
 
-    writeJobState(proposalId, state);
+    writeJobState(newJobId, newState);
     lockProposal(proposalId, newJobId);
 
     return NextResponse.json({ ok: true, jobId: newJobId, productCount: phase1Lines.length });

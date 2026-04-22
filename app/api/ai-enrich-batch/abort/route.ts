@@ -13,15 +13,16 @@ import { cancelBatchJob } from '@/lib/gemini-ai';
  */
 export async function POST(request: NextRequest) {
   try {
-    const { proposalId } = await request.json();
-    if (!proposalId) {
-      return NextResponse.json({ error: 'proposalId required' }, { status: 400 });
+    const { jobId } = await request.json();
+    if (!jobId) {
+      return NextResponse.json({ error: 'jobId required' }, { status: 400 });
     }
 
-    const state = readJobState(proposalId);
+    const state = readJobState(jobId);
     if (!state) {
-      return NextResponse.json({ error: 'No batch job found for this proposal' }, { status: 404 });
+      return NextResponse.json({ error: 'No batch job found' }, { status: 404 });
     }
+    const { proposalId } = state;
 
     if (state.overallState !== 'PHASE1_RUNNING' && state.overallState !== 'PHASE2_RUNNING') {
       return NextResponse.json({ error: 'Job is not currently running' }, { status: 409 });
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     state.overallState = 'ABORTED';
     state.error = 'Aborted by user';
     state.completedAt = new Date().toISOString();
-    writeJobState(proposalId, state);
+    writeJobState(jobId, state);
     unlockProposal(proposalId);
 
     return NextResponse.json({ ok: true, message: 'Batch job aborted and proposal unlocked.' });

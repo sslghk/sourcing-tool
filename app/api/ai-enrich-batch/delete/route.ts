@@ -27,12 +27,12 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Only admin can delete batch job records' }, { status: 403 });
     }
 
-    const { proposalId } = await request.json();
-    if (!proposalId) {
-      return NextResponse.json({ error: 'proposalId is required' }, { status: 400 });
+    const { jobId } = await request.json();
+    if (!jobId) {
+      return NextResponse.json({ error: 'jobId is required' }, { status: 400 });
     }
 
-    const state = readJobState(proposalId);
+    const state = readJobState(jobId);
     if (!state) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
@@ -41,7 +41,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Cannot delete a running job. Abort it first.' }, { status: 409 });
     }
 
-    fs.unlinkSync(path.join(BATCH_JOBS_DIR, `${proposalId}.json`));
+    fs.unlinkSync(path.join(BATCH_JOBS_DIR, `${jobId}.json`));
     return NextResponse.json({ message: 'Job record deleted' });
   } catch (error) {
     console.error('Delete batch job error:', error);

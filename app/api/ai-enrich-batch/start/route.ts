@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
       initiatedBy: initiatedBy ?? null,
     };
 
-    fs.writeFileSync(path.join(BATCH_JOBS_DIR, `${proposalId}.json`), JSON.stringify(state, null, 2));
+    fs.writeFileSync(path.join(BATCH_JOBS_DIR, `${jobId}.json`), JSON.stringify(state, null, 2));
     lockProposal(proposalId, jobId);
 
     return NextResponse.json({

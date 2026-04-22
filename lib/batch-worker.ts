@@ -63,16 +63,16 @@ const FAILED_STATES = new Set<JobState>([
 
 // ─── State helpers ─────────────────────────────────────────────────────────────
 
-export function readJobState(proposalId: string): any | null {
-  const p = path.join(BATCH_JOBS_DIR, `${proposalId}.json`);
+export function readJobState(jobId: string): any | null {
+  const p = path.join(BATCH_JOBS_DIR, `${jobId}.json`);
   if (!fs.existsSync(p)) return null;
   return JSON.parse(fs.readFileSync(p, 'utf-8'));
 }
 
-export function writeJobState(proposalId: string, state: any): void {
+export function writeJobState(jobId: string, state: any): void {
   state.updatedAt = new Date().toISOString();
   fs.mkdirSync(BATCH_JOBS_DIR, { recursive: true });
-  fs.writeFileSync(path.join(BATCH_JOBS_DIR, `${proposalId}.json`), JSON.stringify(state, null, 2));
+  fs.writeFileSync(path.join(BATCH_JOBS_DIR, `${jobId}.json`), JSON.stringify(state, null, 2));
 }
 
 export function listAllJobStates(): any[] {
@@ -149,7 +149,7 @@ export async function advanceJobState(state: any): Promise<any> {
         state.overallState = 'FAILED';
         state.error = 'Phase 1 completed but no output file name returned';
         unlockProposal(proposalId);
-        writeJobState(proposalId, state);
+        writeJobState(state.jobId, state);
         return state;
       }
 
@@ -228,7 +228,7 @@ export async function advanceJobState(state: any): Promise<any> {
         state.overallState = 'FAILED';
         state.error = 'Phase 1 returned no usable concepts';
         unlockProposal(proposalId);
-        writeJobState(proposalId, state);
+        writeJobState(state.jobId, state);
         return state;
       }
 
@@ -243,14 +243,14 @@ export async function advanceJobState(state: any): Promise<any> {
       state.phase2JobName = phase2Job.name;
       state.alternativeMap = alternativeMap;
       state.concepts = concepts;
-      writeJobState(proposalId, state);
+      writeJobState(state.jobId, state);
 
     } else if (job.state && FAILED_STATES.has(job.state)) {
       state.overallState = 'FAILED';
       state.error = `Phase 1 job ended with state: ${job.state}`;
       unlockProposal(proposalId);
       await sendJobNotification(state);
-      writeJobState(proposalId, state);
+      writeJobState(state.jobId, state);
     }
   }
 
@@ -265,7 +265,7 @@ export async function advanceJobState(state: any): Promise<any> {
         state.error = 'Phase 2 completed but no output file name returned';
         unlockProposal(proposalId);
         await sendJobNotification(state);
-        writeJobState(proposalId, state);
+        writeJobState(state.jobId, state);
         return state;
       }
 
@@ -348,14 +348,14 @@ export async function advanceJobState(state: any): Promise<any> {
       state.completedAt = new Date().toISOString();
       unlockProposal(proposalId);
       await sendJobNotification(state);
-      writeJobState(proposalId, state);
+      writeJobState(state.jobId, state);
 
     } else if (job.state && FAILED_STATES.has(job.state)) {
       state.overallState = 'FAILED';
       state.error = `Phase 2 job ended with state: ${job.state}`;
       unlockProposal(proposalId);
       await sendJobNotification(state);
-      writeJobState(proposalId, state);
+      writeJobState(state.jobId, state);
     }
   }
 
@@ -397,6 +397,7 @@ export function jobStateSummary(state: any) {
     startedAt: state.startedAt,
     updatedAt: state.updatedAt,
     completedAt: state.completedAt ?? null,
+    jobId: state.jobId,
     initiatedBy: state.initiatedBy ?? null,
     emailSentAt: state.emailSentAt ?? null,
     emailError: state.emailError ?? null,
