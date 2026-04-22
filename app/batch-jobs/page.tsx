@@ -16,6 +16,8 @@ interface BatchJobSummary {
   updatedAt: string;
   completedAt: string | null;
   initiatedBy: { email: string; name?: string } | null;
+  emailSentAt: string | null;
+  emailError: string | null;
 }
 
 const STATE_CONFIG: Record<string, { label: string; badge: string; icon: React.ElementType }> = {
@@ -328,6 +330,8 @@ function JobRow({ job, onAbort, aborting, onResubmit, resetting, onDelete, delet
           <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
             <User className="h-3 w-3" />
             {job.initiatedBy.name || job.initiatedBy.email}
+            {job.emailSentAt && <span className="text-green-500 ml-1" title={`Email sent ${fmt(job.emailSentAt)}`}>✉ sent</span>}
+            {job.emailError && <span className="text-red-400 ml-1" title={job.emailError}>✉ failed</span>}
           </p>
         )}
         {job.error && (

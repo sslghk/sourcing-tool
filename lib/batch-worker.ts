@@ -46,8 +46,12 @@ async function sendJobNotification(state: any): Promise<void> {
   try {
     await sendMail({ to: email, subject, text, html });
     console.log(`[batch-worker] Notification sent to ${email} (${state.overallState})`);
+    state.emailSentAt = new Date().toISOString();
+    state.emailError = null;
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
     console.warn(`[batch-worker] Failed to send notification email to ${email}:`, e);
+    state.emailError = `Email failed: ${msg}`;
   }
 }
 
@@ -245,8 +249,8 @@ export async function advanceJobState(state: any): Promise<any> {
       state.overallState = 'FAILED';
       state.error = `Phase 1 job ended with state: ${job.state}`;
       unlockProposal(proposalId);
-      writeJobState(proposalId, state);
       await sendJobNotification(state);
+      writeJobState(proposalId, state);
     }
   }
 
@@ -260,8 +264,8 @@ export async function advanceJobState(state: any): Promise<any> {
         state.overallState = 'FAILED';
         state.error = 'Phase 2 completed but no output file name returned';
         unlockProposal(proposalId);
-        writeJobState(proposalId, state);
         await sendJobNotification(state);
+        writeJobState(proposalId, state);
         return state;
       }
 
@@ -343,15 +347,15 @@ export async function advanceJobState(state: any): Promise<any> {
       state.overallState = 'COMPLETED';
       state.completedAt = new Date().toISOString();
       unlockProposal(proposalId);
-      writeJobState(proposalId, state);
       await sendJobNotification(state);
+      writeJobState(proposalId, state);
 
     } else if (job.state && FAILED_STATES.has(job.state)) {
       state.overallState = 'FAILED';
       state.error = `Phase 2 job ended with state: ${job.state}`;
       unlockProposal(proposalId);
-      writeJobState(proposalId, state);
       await sendJobNotification(state);
+      writeJobState(proposalId, state);
     }
   }
 
@@ -394,5 +398,7 @@ export function jobStateSummary(state: any) {
     updatedAt: state.updatedAt,
     completedAt: state.completedAt ?? null,
     initiatedBy: state.initiatedBy ?? null,
+    emailSentAt: state.emailSentAt ?? null,
+    emailError: state.emailError ?? null,
   };
 }
