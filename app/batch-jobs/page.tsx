@@ -6,12 +6,14 @@ import { useSession } from 'next-auth/react';
 import { RefreshCw, Play, CheckCircle, XCircle, Clock, Loader2, ArrowLeft, ExternalLink, RotateCcw, Ban, Trash2, User } from 'lucide-react';
 
 interface BatchJobSummary {
+  jobType: 'ai-enrich' | 'proposal-save';
   proposalId: string;
   proposalTitle: string;
   overallState: string;
-  phase: number;
+  phase: number | null;
   error: string | null;
   productCount: number;
+  progress: { done: number; total: number } | null;
   startedAt: string;
   updatedAt: string;
   completedAt: string | null;
@@ -22,11 +24,12 @@ interface BatchJobSummary {
 }
 
 const STATE_CONFIG: Record<string, { label: string; badge: string; icon: React.ElementType }> = {
-  PHASE1_RUNNING: { label: 'Phase 1 – Concepts', badge: 'bg-blue-100 text-blue-700 border-blue-200',   icon: Loader2 },
-  PHASE2_RUNNING: { label: 'Phase 2 – Images',   badge: 'bg-purple-100 text-purple-700 border-purple-200', icon: Loader2 },
-  COMPLETED:      { label: 'Completed',           badge: 'bg-green-100 text-green-700 border-green-200',   icon: CheckCircle },
-  FAILED:         { label: 'Failed',              badge: 'bg-red-100 text-red-700 border-red-200',         icon: XCircle },
-  ABORTED:        { label: 'Aborted',             badge: 'bg-orange-100 text-orange-700 border-orange-200', icon: Ban },
+  PHASE1_RUNNING: { label: 'Phase 1 – Concepts',   badge: 'bg-blue-100 text-blue-700 border-blue-200',     icon: Loader2 },
+  PHASE2_RUNNING: { label: 'Phase 2 – Images',     badge: 'bg-purple-100 text-purple-700 border-purple-200', icon: Loader2 },
+  FETCHING:       { label: 'Fetching Details',     badge: 'bg-sky-100 text-sky-700 border-sky-200',         icon: Loader2 },
+  COMPLETED:      { label: 'Completed',            badge: 'bg-green-100 text-green-700 border-green-200',   icon: CheckCircle },
+  FAILED:         { label: 'Failed',               badge: 'bg-red-100 text-red-700 border-red-200',         icon: XCircle },
+  ABORTED:        { label: 'Aborted',              badge: 'bg-orange-100 text-orange-700 border-orange-200', icon: Ban },
 };
 
 function elapsed(from: string, to?: string | null): string {
@@ -94,17 +97,18 @@ export default function BatchJobsPage() {
   // Auto-poll: refresh job statuses every 30s while there are pending jobs
   useEffect(() => {
     if (!autoRefresh) return;
-    const hasPending = jobs.some(j => j.overallState === 'PHASE1_RUNNING' || j.overallState === 'PHASE2_RUNNING');
+    const hasPending = jobs.some(j => j.overallState === 'PHASE1_RUNNING' || j.overallState === 'PHASE2_RUNNING' || j.overallState === 'FETCHING');
     if (!hasPending) return;
     const id = setInterval(fetchJobs, 30000);
     return () => clearInterval(id);
   }, [autoRefresh, jobs, fetchJobs]);
 
-  const handleAbort = async (jobId: string) => {
+  const handleAbort = async (jobId: string, jobType: string) => {
     if (!confirm('Abort this batch job? The proposal will be unlocked for editing. This cannot be undone.')) return;
     setAborting(jobId);
     try {
-      const res = await fetch('/api/ai-enrich-batch/abort', {
+      const endpoint = jobType === 'proposal-save' ? '/api/proposal-save-batch/abort' : '/api/ai-enrich-batch/abort';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId }),
@@ -157,7 +161,7 @@ export default function BatchJobsPage() {
     ? jobs.filter(j => j.initiatedBy?.email === myEmail)
     : jobs;
 
-  const pending = filteredJobs.filter(j => j.overallState === 'PHASE1_RUNNING' || j.overallState === 'PHASE2_RUNNING');
+  const pending = filteredJobs.filter(j => j.overallState === 'PHASE1_RUNNING' || j.overallState === 'PHASE2_RUNNING' || j.overallState === 'FETCHING');
   const done    = filteredJobs.filter(j => j.overallState === 'COMPLETED' || j.overallState === 'FAILED' || j.overallState === 'ABORTED');
 
   return (
@@ -169,7 +173,7 @@ export default function BatchJobsPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">AI Batch Jobs</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Batch Job Queue</h1>
             <p className="text-sm text-gray-500 mt-0.5">
               {lastRefreshed ? `Last refreshed ${lastRefreshed.toLocaleTimeString()}` : 'Loading…'}
             </p>
@@ -236,7 +240,7 @@ export default function BatchJobsPage() {
         <div className="text-center py-20 text-gray-400">
           <Clock className="h-12 w-12 mx-auto mb-3 opacity-30" />
           <p className="text-lg font-medium">No batch jobs yet</p>
-          <p className="text-sm mt-1">Submit a batch AI enrichment from a proposal to get started.</p>
+          <p className="text-sm mt-1">Submit a batch job from a proposal to get started.</p>
         </div>
       ) : (
         <>
@@ -251,7 +255,7 @@ export default function BatchJobsPage() {
                   <JobRow
                     key={job.jobId}
                     job={job}
-                    onAbort={isAdmin || job.initiatedBy?.email === myEmail ? () => handleAbort(job.jobId) : undefined}
+                    onAbort={isAdmin || job.initiatedBy?.email === myEmail ? () => handleAbort(job.jobId, job.jobType) : undefined}
                     aborting={aborting === job.jobId}
                   />
                 ))}
@@ -298,11 +302,21 @@ interface JobRowProps {
 function JobRow({ job, onAbort, aborting, onResubmit, resetting, onDelete, deleting }: JobRowProps) {
   const cfg = STATE_CONFIG[job.overallState] ?? { label: job.overallState, badge: 'bg-gray-100 text-gray-600 border-gray-200', icon: Clock };
   const Icon = cfg.icon;
-  const isRunning = job.overallState === 'PHASE1_RUNNING' || job.overallState === 'PHASE2_RUNNING';
+  const isRunning = job.overallState === 'PHASE1_RUNNING' || job.overallState === 'PHASE2_RUNNING' || job.overallState === 'FETCHING';
   const duration = elapsed(job.startedAt, job.completedAt);
+  const isProposalSave = job.jobType === 'proposal-save';
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl px-5 py-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+      {/* Job type badge */}
+      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border whitespace-nowrap ${
+        isProposalSave
+          ? 'bg-blue-50 text-blue-700 border-blue-200'
+          : 'bg-purple-50 text-purple-700 border-purple-200'
+      }`}>
+        {isProposalSave ? 'Proposal Save' : 'AI Enrich'}
+      </span>
+
       {/* Status badge */}
       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${cfg.badge}`}>
         <Icon className={`h-3.5 w-3.5 ${isRunning ? 'animate-spin' : ''}`} />
@@ -313,9 +327,20 @@ function JobRow({ job, onAbort, aborting, onResubmit, resetting, onDelete, delet
       <div className="flex-1 min-w-0">
         <p className="font-medium text-gray-900 truncate">{job.proposalTitle}</p>
         <p className="text-xs text-gray-500 mt-0.5">
-          {job.productCount} product{job.productCount !== 1 ? 's' : ''} · Started {fmt(job.startedAt)}
+          {isProposalSave && job.progress
+            ? `${job.progress.done}/${job.progress.total} fetched`
+            : `${job.productCount} product${job.productCount !== 1 ? 's' : ''}`
+          } · Started {fmt(job.startedAt)}
           {job.completedAt ? ` · Finished ${fmt(job.completedAt)}` : ''}
         </p>
+        {isProposalSave && job.progress && isRunning && (
+          <div className="mt-1.5 w-48 bg-gray-200 rounded-full h-1.5">
+            <div
+              className="bg-sky-500 h-1.5 rounded-full transition-all"
+              style={{ width: `${job.progress.total > 0 ? (job.progress.done / job.progress.total) * 100 : 0}%` }}
+            />
+          </div>
+        )}
         {job.initiatedBy && (
           <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
             <User className="h-3 w-3" />

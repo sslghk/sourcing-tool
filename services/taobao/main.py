@@ -399,7 +399,7 @@ async def search(request: SearchRequest):
             all_items = []
             for result in page_results:
                 if isinstance(result, Exception):
-                    print(f"Page fetch error: {result}")
+                    print(f"Page fetch error [{type(result).__name__}]: {result}")
                 else:
                     all_items.extend(result)
 

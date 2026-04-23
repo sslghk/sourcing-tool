@@ -11,7 +11,7 @@ import { UserMenu } from "@/components/auth/user-menu";
 const navItems = [
   { href: "/", label: "Search", icon: Search },
   { href: "/proposals", label: "Proposals", icon: FileText },
-  { href: "/batch-jobs", label: "AI Jobs", icon: Layers },
+  { href: "/batch-jobs", label: "Job Queue", icon: Layers },
 ];
 
 export function Navbar() {
