@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown, Lock, X, Download } from "lucide-react";
+import { Plus, FileText, Calendar, DollarSign, Trash2, Eye, ShoppingCart, ArrowLeft, Package, CheckCircle2, Loader2, Info, User, ArrowUp, ArrowDown, Lock, X, Download, Layers, Save } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +45,7 @@ export default function ProposalsPage() {
   const [clientName, setClientName] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isBatchSaving, setIsBatchSaving] = useState(false);
   const [showSaveResult, setShowSaveResult] = useState(false);
   const [saveResult, setSaveResult] = useState<{ successful: number; failed: number; total: number; error?: string } | null>(null);
   const [filterMode, setFilterMode] = useState<'my' | 'all'>('all');
@@ -175,15 +176,6 @@ export default function ProposalsPage() {
     }
   };
 
-  // Test function to manually fetch details
-  const testFetchDetails = () => {
-    if (proposalProducts.length > 0) {
-      const firstProduct = proposalProducts[0];
-      console.log('Test fetching details for:', firstProduct.id, firstProduct.source);
-      fetchProductDetails(firstProduct.id, firstProduct.source);
-    }
-  };
-
   const handleDeleteProposal = async (proposalId: string) => {
     if (!confirm('Are you sure you want to delete this proposal?')) {
       return;
@@ -221,6 +213,54 @@ export default function ProposalsPage() {
   const [savingProgress, setSavingProgress] = useState('');
   const [detailsProgress, setDetailsProgress] = useState({ current: 0, total: 0 });
   
+  const handleBatchSave = async () => {
+    if (!proposalName.trim()) {
+      alert('Please enter a proposal name');
+      return;
+    }
+    setIsBatchSaving(true);
+    try {
+      const proposalId = `proposal_${Date.now()}`;
+      const structureRes = await fetch('/api/proposal-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId,
+          proposalName: proposalName.trim(),
+          clientName,
+          notes,
+          products: proposalProducts,
+          createdBy: session?.user ? { email: session.user.email || '', name: session.user.name || '' } : null,
+          skipDetailsFetch: true,
+        }),
+      });
+      if (!structureRes.ok) throw new Error('Failed to create proposal');
+
+      const batchRes = await fetch('/api/proposal-save-batch/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId,
+          proposalTitle: proposalName.trim(),
+          products: proposalProducts,
+          initiatedBy: session?.user ? { email: session.user.email || '', name: session.user.name || '' } : null,
+        }),
+      });
+      if (!batchRes.ok) {
+        const err = await batchRes.json();
+        throw new Error(err.error ?? 'Failed to start batch job');
+      }
+
+      localStorage.removeItem('proposalProducts');
+      router.push('/batch-jobs');
+    } catch (error) {
+      console.error('Error starting batch save:', error);
+      alert(`Failed to start batch save: ${String(error)}`);
+    } finally {
+      setIsBatchSaving(false);
+    }
+  };
+
   const handleSaveProposal = async () => {
     console.log('Save proposal clicked');
     console.log('Proposal name:', proposalName);
@@ -526,27 +566,39 @@ export default function ProposalsPage() {
             </div>
 
             <div className="border-t pt-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm text-gray-600">Total Items: {proposalProducts.length}</p>
                   <p className="text-lg font-semibold text-gray-900">
                     Total Value: {formatCurrency(totalValue, 'CNY')}
                   </p>
                 </div>
-                <Button
-                  onClick={handleSaveProposal}
-                  disabled={isSaving}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  {isSaving ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      {detailsProgress.total > 0
-                        ? `Fetching ${detailsProgress.current}/${detailsProgress.total}...`
-                        : 'Saving...'}
-                    </span>
-                  ) : 'Save Proposal'}
-                </Button>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={handleSaveProposal}
+                    disabled={isSaving || isBatchSaving}
+                    className="bg-green-600 hover:bg-green-700 text-white gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {isSaving ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {detailsProgress.total > 0
+                          ? `Fetching ${detailsProgress.current}/${detailsProgress.total}...`
+                          : 'Saving...'}
+                      </span>
+                    ) : 'Save Proposal'}
+                  </Button>
+                  <Button
+                    onClick={handleBatchSave}
+                    disabled={isSaving || isBatchSaving || proposalProducts.length === 0}
+                    className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                    title="Save proposal and fetch all product details in background"
+                  >
+                    {isBatchSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Layers className="h-4 w-4" />}
+                    {isBatchSaving ? 'Queuing...' : 'Save Proposal (Batch)'}
+                  </Button>
+                </div>
               </div>
               {isSaving && detailsProgress.total > 0 && (
                 <div className="mt-3 space-y-2">
@@ -568,23 +620,8 @@ export default function ProposalsPage() {
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <h2 className="font-semibold text-gray-900">Products ({proposalProducts.length})</h2>
-                <div className="text-xs text-gray-500">
-                  Details: {productDetails.size} | Loading: {loadingDetails.size}
-                </div>
-              </div>
-              {proposalProducts.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={testFetchDetails}
-                  className="text-xs"
-                >
-                  Test Fetch Details
-                </Button>
-              )}
+            <div className="p-4 border-b bg-gray-50">
+              <h2 className="font-semibold text-gray-900">Products ({proposalProducts.length})</h2>
             </div>
 
             {proposalProducts.length === 0 ? (
@@ -962,7 +999,7 @@ export default function ProposalsPage() {
                             size="sm"
                             disabled
                             className="w-full border-gray-300 cursor-not-allowed"
-                            title="Locked while batch AI job is in progress"
+                            title="Locked while a batch job is in progress"
                           >
                             <Lock className="h-4 w-4 mr-1" />
                             Locked

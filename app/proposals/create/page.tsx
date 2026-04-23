@@ -1,23 +1,27 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { ProductDTO } from "@/types/product";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Download, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, Layers, Save } from "lucide-react";
 import Link from "next/link";
 
 export default function CreateProposal() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [proposalProducts, setProposalProducts] = useState<ProductDTO[]>([]);
   const [proposalName, setProposalName] = useState("");
   const [clientName, setClientName] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isBatchSaving, setIsBatchSaving] = useState(false);
 
   useEffect(() => {
-    // Load products from localStorage
     const stored = localStorage.getItem('proposalProducts');
     if (stored) {
       setProposalProducts(JSON.parse(stored));
@@ -30,40 +34,89 @@ export default function CreateProposal() {
     localStorage.setItem('proposalProducts', JSON.stringify(updated));
   };
 
+  const createProposalStructure = async (): Promise<string | null> => {
+    const proposalId = crypto.randomUUID();
+    const initiatedBy = session?.user
+      ? { email: session.user.email ?? '', name: session.user.name ?? '' }
+      : null;
+
+    const res = await fetch('/api/proposal-details', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        proposalId,
+        proposalName: proposalName.trim(),
+        clientName,
+        notes,
+        products: proposalProducts,
+        createdBy: initiatedBy,
+        skipDetailsFetch: true,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error ?? 'Failed to save proposal');
+    }
+    return proposalId;
+  };
+
   const handleSaveProposal = async () => {
     if (!proposalName.trim()) {
       alert('Please enter a proposal name');
       return;
     }
-
     setIsSaving(true);
-
-    const proposal = {
-      name: proposalName,
-      clientName,
-      notes,
-      products: proposalProducts,
-      createdAt: new Date().toISOString(),
-      totalItems: proposalProducts.length,
-      totalValue: proposalProducts.reduce((sum, p) => sum + p.price.current, 0),
-    };
-
     try {
-      // Save to localStorage for now (can be replaced with API call)
-      const existingProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
-      existingProposals.push(proposal);
-      localStorage.setItem('proposals', JSON.stringify(existingProposals));
-      
-      // Clear proposal products
+      const proposalId = await createProposalStructure();
+      if (!proposalId) return;
       localStorage.removeItem('proposalProducts');
-      
-      alert('Proposal saved successfully!');
-      window.location.href = '/proposals';
+      router.push(`/proposals/${proposalId}`);
     } catch (error) {
       console.error('Error saving proposal:', error);
-      alert('Failed to save proposal');
+      alert(`Failed to save proposal: ${String(error)}`);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleBatchSave = async () => {
+    if (!proposalName.trim()) {
+      alert('Please enter a proposal name');
+      return;
+    }
+    setIsBatchSaving(true);
+    try {
+      const proposalId = await createProposalStructure();
+      if (!proposalId) return;
+
+      const initiatedBy = session?.user
+        ? { email: session.user.email ?? '', name: session.user.name ?? '' }
+        : null;
+
+      const batchRes = await fetch('/api/proposal-save-batch/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proposalId,
+          proposalTitle: proposalName.trim(),
+          products: proposalProducts,
+          initiatedBy,
+        }),
+      });
+
+      if (!batchRes.ok) {
+        const err = await batchRes.json();
+        throw new Error(err.error ?? 'Failed to start batch job');
+      }
+
+      localStorage.removeItem('proposalProducts');
+      router.push('/batch-jobs');
+    } catch (error) {
+      console.error('Error starting batch save:', error);
+      alert(`Failed to start batch save: ${String(error)}`);
+    } finally {
+      setIsBatchSaving(false);
     }
   };
 
@@ -121,20 +174,30 @@ export default function CreateProposal() {
           </div>
 
           <div className="border-t pt-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm text-gray-600">Total Items: {proposalProducts.length}</p>
                 <p className="text-lg font-semibold text-gray-900">
                   Total Value: {formatCurrency(totalValue, 'CNY')}
                 </p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <Button
                   onClick={handleSaveProposal}
-                  disabled={isSaving || proposalProducts.length === 0}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  disabled={isSaving || isBatchSaving || proposalProducts.length === 0}
+                  className="bg-green-600 hover:bg-green-700 text-white gap-2"
                 >
+                  <Save className="h-4 w-4" />
                   {isSaving ? 'Saving...' : 'Save Proposal'}
+                </Button>
+                <Button
+                  onClick={handleBatchSave}
+                  disabled={isSaving || isBatchSaving || proposalProducts.length === 0}
+                  className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                  title="Save proposal and fetch all product details in background"
+                >
+                  <Layers className="h-4 w-4" />
+                  {isBatchSaving ? 'Queuing...' : 'Save Proposal (Batch)'}
                 </Button>
               </div>
             </div>

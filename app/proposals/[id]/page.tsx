@@ -931,7 +931,7 @@ export default function ProposalDetailPage() {
         const err = await res.json();
         throw new Error(err.error ?? 'Batch start failed');
       }
-      // Lock acknowledged — redirect to AI Jobs dashboard
+      // Lock acknowledged — redirect to Batch Job Queue
       router.push('/batch-jobs');
     } catch (e: any) {
       alert(`Failed to start batch: ${e.message}`);
@@ -1173,9 +1173,9 @@ export default function ProposalDetailPage() {
           <div className="mb-4 flex items-center gap-3 px-5 py-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
             <Loader2 className="h-4 w-4 animate-spin text-amber-600 shrink-0" />
             <span className="flex-1">
-              <strong>Proposal locked</strong> — a batch AI enrichment job is in progress.
+              <strong>Proposal locked</strong> — a batch job is in progress.
               You can view progress on the{' '}
-              <a href="/batch-jobs" className="underline font-medium">AI Jobs dashboard</a>.
+              <a href="/batch-jobs" className="underline font-medium">Batch Job Queue</a>.
               Editing is disabled until the job completes.
             </span>
           </div>

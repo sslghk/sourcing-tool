@@ -3,6 +3,7 @@ import path from 'path';
 import { getBatchJob, uploadBuffer, createBatchJob, downloadFileContent } from './gemini-ai';
 import { JobState } from '@google/genai';
 import { sendMail } from './mailer';
+import { fetchAndSaveItemDetails } from './proposal-helpers';
 
 export const BATCH_JOBS_DIR = path.join(process.cwd(), 'data', 'batch-jobs');
 const DATA_DIR    = path.join(process.cwd(), 'data', 'proposals');
@@ -27,22 +28,39 @@ async function sendJobNotification(state: any): Promise<void> {
   const name: string = state.initiatedBy?.name || email;
   const title: string = state.proposalTitle || state.proposalId;
   const isComplete = state.overallState === 'COMPLETED';
+  const isProposalSave = state.jobType === 'proposal-save';
   const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000').replace(/\/$/, '');
   const proposalUrl = `${baseUrl}/proposals/${state.proposalId}`;
+  const jobLabel = isProposalSave ? 'Proposal Save' : 'AI Enrichment';
+  const productCount = isProposalSave
+    ? (state.progress?.done ?? state.products?.length ?? 0)
+    : (state.productMap?.length ?? 0);
+
   const subject = isComplete
-    ? `✅ AI Batch Job Completed – ${title}`
-    : `❌ AI Batch Job Failed – ${title}`;
+    ? `✅ ${jobLabel} Batch Job Completed – ${title}`
+    : `❌ ${jobLabel} Batch Job Failed – ${title}`;
+
   const statusLine = isComplete
-    ? 'Your batch AI enrichment job has <strong>completed successfully</strong>.'
-    : `Your batch AI enrichment job has <strong>failed</strong>.<br>Reason: ${state.error ?? 'Unknown error'}`;
+    ? isProposalSave
+      ? `Your proposal has been <strong>saved successfully</strong> and all product details have been fetched.`
+      : `Your batch AI enrichment job has <strong>completed successfully</strong>.`
+    : isProposalSave
+      ? `Your proposal save batch job has <strong>failed</strong>.<br>Reason: ${state.error ?? 'Unknown error'}`
+      : `Your batch AI enrichment job has <strong>failed</strong>.<br>Reason: ${state.error ?? 'Unknown error'}`;
+
+  const headingText = isComplete
+    ? `✅ ${jobLabel} Job Completed`
+    : `❌ ${jobLabel} Job Failed`;
+
   const html = `
     <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
-      <h2 style="color:${isComplete ? '#16a34a' : '#dc2626'}">${isComplete ? '✅ Batch AI Job Completed' : '❌ Batch AI Job Failed'}</h2>
+      <h2 style="color:${isComplete ? '#16a34a' : '#dc2626'}">${headingText}</h2>
       <p>Hi ${name},</p>
       <p>${statusLine}</p>
       <table style="border-collapse:collapse;width:100%;margin:16px 0">
         <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Proposal</td><td style="padding:6px 12px;border:1px solid #e5e7eb"><a href="${proposalUrl}" style="color:#0284c7">${title}</a></td></tr>
-        <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Products</td><td style="padding:6px 12px;border:1px solid #e5e7eb">${state.productMap?.length ?? 0}</td></tr>
+        <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Job Type</td><td style="padding:6px 12px;border:1px solid #e5e7eb">${jobLabel}</td></tr>
+        <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Products</td><td style="padding:6px 12px;border:1px solid #e5e7eb">${productCount}</td></tr>
         <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Started</td><td style="padding:6px 12px;border:1px solid #e5e7eb">${new Date(state.startedAt).toLocaleString()}</td></tr>
         <tr><td style="padding:6px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb">Finished</td><td style="padding:6px 12px;border:1px solid #e5e7eb">${new Date().toLocaleString()}</td></tr>
       </table>
@@ -51,9 +69,13 @@ async function sendJobNotification(state: any): Promise<void> {
     </div>`;
   const text = `Hi ${name},\n\n${
     isComplete
-      ? `Your batch AI enrichment job for "${title}" has completed successfully.`
-      : `Your batch AI enrichment job for "${title}" has failed.\nReason: ${state.error ?? 'Unknown error'}`
-  }\n\nProducts: ${state.productMap?.length ?? 0}\nStarted: ${new Date(state.startedAt).toLocaleString()}\nFinished: ${new Date().toLocaleString()}\n\nView proposal: ${proposalUrl}`;
+      ? isProposalSave
+        ? `Your proposal "${title}" has been saved and all product details have been fetched successfully.`
+        : `Your batch AI enrichment job for "${title}" has completed successfully.`
+      : isProposalSave
+        ? `Your proposal save batch job for "${title}" has failed.\nReason: ${state.error ?? 'Unknown error'}`
+        : `Your batch AI enrichment job for "${title}" has failed.\nReason: ${state.error ?? 'Unknown error'}`
+  }\n\nJob Type: ${jobLabel}\nProducts: ${productCount}\nStarted: ${new Date(state.startedAt).toLocaleString()}\nFinished: ${new Date().toLocaleString()}\n\nView proposal: ${proposalUrl}`;
   try {
     await sendMail({ to: email, subject, text, html });
     console.log(`[batch-worker] Notification sent to ${email} (${state.overallState})`);
@@ -373,38 +395,110 @@ export async function advanceJobState(state: any): Promise<any> {
   return state;
 }
 
+// ─── Proposal-save job advancement ────────────────────────────────────────────
+
+export async function advanceProposalSaveJob(state: any): Promise<any> {
+  if (state.overallState !== 'FETCHING') return state;
+
+  const filePath = path.join(DATA_DIR, `${state.proposalId}.json`);
+
+  if (!fs.existsSync(filePath)) {
+    state.overallState = 'FAILED';
+    state.error = 'Proposal file not found';
+    state.completedAt = new Date().toISOString();
+    unlockProposal(state.proposalId);
+    await sendJobNotification(state);
+    writeJobState(state.jobId, state);
+    return state;
+  }
+
+  const proposalData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  if (!proposalData.itemDetails) proposalData.itemDetails = {};
+
+  console.log(`[proposal-save] Processing job ${state.jobId}: ${state.products.length} products`);
+
+  try {
+    await fetchAndSaveItemDetails(
+      proposalData,
+      state.products,
+      filePath,
+      3,
+      (done: number, total: number) => {
+        state.progress = { done, total };
+        writeJobState(state.jobId, state);
+      }
+    );
+
+    state.overallState = 'COMPLETED';
+    state.completedAt = new Date().toISOString();
+    unlockProposal(state.proposalId);
+    await sendJobNotification(state);
+    writeJobState(state.jobId, state);
+    console.log(`[proposal-save] Job ${state.jobId} completed`);
+  } catch (e) {
+    state.overallState = 'FAILED';
+    state.error = e instanceof Error ? e.message : String(e);
+    state.completedAt = new Date().toISOString();
+    unlockProposal(state.proposalId);
+    await sendJobNotification(state);
+    writeJobState(state.jobId, state);
+    console.error(`[proposal-save] Job ${state.jobId} failed:`, e);
+  }
+
+  return state;
+}
+
 // ─── Process all pending jobs (called by worker route) ─────────────────────────
 
 export async function processAllPendingJobs(): Promise<{ processed: number; results: any[] }> {
   const allStates = listAllJobStates();
-  const pending = allStates.filter(s => s.overallState === 'PHASE1_RUNNING' || s.overallState === 'PHASE2_RUNNING');
+  const pending = allStates.filter(s =>
+    s.overallState === 'PHASE1_RUNNING' ||
+    s.overallState === 'PHASE2_RUNNING' ||
+    s.overallState === 'FETCHING'
+  );
 
-  let processed = 0;
-  const results: any[] = [];
+  // Split by job type — Taobao and Gemini APIs are independent, run their
+  // queues concurrently but keep jobs within each queue sequential.
+  const taobaoJobs  = pending.filter(s => s.jobType === 'proposal-save');
+  const geminiJobs  = pending.filter(s => s.jobType !== 'proposal-save');
 
-  for (const state of pending) {
-    try {
-      const before = state.overallState;
-      const after = await advanceJobState(state);
-      processed++;
-      results.push({ proposalId: state.proposalId, proposalTitle: state.proposalTitle, from: before, to: after.overallState });
-    } catch (e) {
-      console.error(`Worker failed for proposal ${state.proposalId}:`, e);
-      results.push({ proposalId: state.proposalId, proposalTitle: state.proposalTitle, error: String(e) });
+  const runQueue = async (jobs: any[]) => {
+    const results: any[] = [];
+    for (const state of jobs) {
+      try {
+        const before = state.overallState;
+        const after = state.jobType === 'proposal-save'
+          ? await advanceProposalSaveJob(state)
+          : await advanceJobState(state);
+        results.push({ jobId: state.jobId, proposalId: state.proposalId, proposalTitle: state.proposalTitle, from: before, to: after.overallState });
+      } catch (e) {
+        console.error(`Worker failed for job ${state.jobId}:`, e);
+        results.push({ jobId: state.jobId, proposalId: state.proposalId, error: String(e) });
+      }
     }
-  }
+    return results;
+  };
 
-  return { processed, results };
+  const [taobaoResults, geminiResults] = await Promise.all([
+    runQueue(taobaoJobs),
+    runQueue(geminiJobs),
+  ]);
+
+  const results = [...taobaoResults, ...geminiResults];
+  return { processed: results.filter(r => !r.error).length, results };
 }
 
 export function jobStateSummary(state: any) {
   return {
+    jobType: state.jobType ?? 'ai-enrich',
     proposalId: state.proposalId,
     proposalTitle: state.proposalTitle ?? state.proposalId,
     overallState: state.overallState,
-    phase: state.phase,
+    phase: state.phase ?? null,
     error: state.error ?? null,
-    productCount: state.productMap?.length ?? 0,
+    productCount: state.productMap?.length ?? state.products?.length ?? 0,
+    progress: state.progress ?? null,
     startedAt: state.startedAt,
     updatedAt: state.updatedAt,
     completedAt: state.completedAt ?? null,

@@ -285,18 +285,7 @@ export function normalizeUrl(url: string): string {
  */
 export function getSecondaryImageUrls(product: any): string[] {
   const selectedImages = product.selectedSecondaryImages || [];
-  if (selectedImages.length > 0) {
-    return selectedImages.slice(0, 4);
-  }
-
-  const cachedImgs = product.cachedDetails?.item_imgs;
-  if (cachedImgs && Array.isArray(cachedImgs) && cachedImgs.length > 0) {
-    return cachedImgs.slice(0, 4).map((img: any) =>
-      typeof img === 'string' ? img : img.url
-    );
-  }
-
-  return [];
+  return selectedImages.slice(0, 4);
 }
 
 /**
