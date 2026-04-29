@@ -51,7 +51,7 @@ export function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => signOut({ callbackUrl: '/' })}
+          onClick={() => signOut({ callbackUrl: `${window.location.origin}/` })}
           className="text-red-600 cursor-pointer"
         >
           <LogOut className="mr-2 h-4 w-4" />
