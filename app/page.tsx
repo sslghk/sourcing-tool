@@ -88,7 +88,6 @@ export default function Home() {
   const [proposalName, setProposalName] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const abortBatchRef = useRef(false);
-  const saveTabsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Batch summary report
   const [showBatchSummary, setShowBatchSummary] = useState(false);
@@ -234,15 +233,17 @@ export default function Home() {
     }
   }, [proposalProducts]);
 
-  // Autosave search tabs: instant to sessionStorage, debounced 1s to localStorage
+  // Autosave search tabs instantly to both sessionStorage and localStorage
   useEffect(() => {
     if (searchTabs.length > 0) {
-      sessionStorage.setItem('searchTabs', JSON.stringify(searchTabs));
-      if (saveTabsTimerRef.current) clearTimeout(saveTabsTimerRef.current);
-      saveTabsTimerRef.current = setTimeout(() => {
-        const serializable = searchTabs.map(t => ({ ...t, timestamp: t.timestamp.toISOString() }));
-        localStorage.setItem('savedSearchTabs', JSON.stringify(serializable));
-      }, 1000);
+      const serializable = searchTabs.map(t => ({ ...t, timestamp: t.timestamp.toISOString() }));
+      const json = JSON.stringify(serializable);
+      try {
+        sessionStorage.setItem('searchTabs', json);
+        localStorage.setItem('savedSearchTabs', json);
+      } catch (e) {
+        console.warn('Failed to save search tabs to storage:', e);
+      }
     }
   }, [searchTabs]);
 
