@@ -21,7 +21,7 @@ export async function GET() {
     const filePath = getFilePath(session.user.email);
 
     if (!fs.existsSync(filePath)) {
-      return NextResponse.json({ tabs: [], activeTabId: null });
+      return NextResponse.json({ tabs: [], activeTabId: null, selectedProducts: [] });
     }
 
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
@@ -40,14 +40,14 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { tabs, activeTabId } = await request.json();
+    const { tabs, activeTabId, selectedProducts } = await request.json();
 
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
 
     const filePath = getFilePath(session.user.email);
-    fs.writeFileSync(filePath, JSON.stringify({ tabs, activeTabId, updatedAt: new Date().toISOString() }, null, 2));
+    fs.writeFileSync(filePath, JSON.stringify({ tabs, activeTabId, selectedProducts: selectedProducts ?? [], updatedAt: new Date().toISOString() }, null, 2));
 
     return NextResponse.json({ success: true });
   } catch (e) {
