@@ -236,7 +236,27 @@ export default function Home() {
   // Autosave search tabs instantly to both sessionStorage and localStorage
   useEffect(() => {
     if (searchTabs.length > 0) {
-      const serializable = searchTabs.map(t => ({ ...t, timestamp: t.timestamp.toISOString() }));
+      const slimProduct = (p: ProductDTO) => ({
+        id: p.id,
+        source: p.source,
+        source_id: p.source_id,
+        title: p.title,
+        description_short: p.description_short,
+        price: p.price,
+        image_urls: p.image_urls?.slice(0, 2),
+        url: p.url,
+        seller: p.seller,
+        moq: p.moq,
+        fob: p.fob,
+        elc: p.elc,
+        fetched_at: p.fetched_at,
+        availability: p.availability,
+      });
+      const serializable = searchTabs.map(t => ({
+        ...t,
+        timestamp: t.timestamp.toISOString(),
+        products: t.products.map(slimProduct),
+      }));
       const json = JSON.stringify(serializable);
       try {
         sessionStorage.setItem('searchTabs', json);
