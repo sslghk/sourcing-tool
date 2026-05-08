@@ -291,13 +291,7 @@ export default function ProposalsPage() {
     console.log('Proposal object:', proposal);
 
     try {
-      // Step 1: Save proposal to localStorage
-      setSavingProgress('Saving proposal to local storage...');
-      const existingProposals = JSON.parse(localStorage.getItem('proposals') || '[]');
-      existingProposals.unshift(proposal);
-      localStorage.setItem('proposals', JSON.stringify(existingProposals));
-      
-      // Step 2: Create proposal structure on server (no detail fetching yet)
+      // Step 1: Create proposal structure on server (no detail fetching yet)
       const structureResponse = await fetch('/api/proposal-details', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

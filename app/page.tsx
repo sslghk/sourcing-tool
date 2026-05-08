@@ -88,6 +88,7 @@ export default function Home() {
   const [proposalName, setProposalName] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const abortBatchRef = useRef(false);
+  const saveTabsToServerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Batch summary report
   const [showBatchSummary, setShowBatchSummary] = useState(false);
@@ -200,30 +201,43 @@ export default function Home() {
     return [...products].sort((a, b) => a.price.current - b.price.current);
   }, [searchResults, priceFilter, isDedupe]);
 
-  // Load proposal products and tabs from localStorage on mount
+  // Load proposal products and tabs on mount
   useEffect(() => {
     const stored = localStorage.getItem('proposalProducts');
     if (stored) {
       setProposalProducts(JSON.parse(stored));
     }
 
-    // Load search tabs: prefer sessionStorage (current session), fall back to localStorage (saved)
+    // Step 1: instant load from localStorage/sessionStorage for immediate display
     const storedTabs = sessionStorage.getItem('searchTabs') || localStorage.getItem('savedSearchTabs');
     const storedActiveTabId = sessionStorage.getItem('activeTabId') || localStorage.getItem('savedActiveTabId');
     const storedSelection = sessionStorage.getItem('selectedProducts') || localStorage.getItem('savedSelectedProducts');
     if (storedTabs) {
       const tabs = JSON.parse(storedTabs);
-      setSearchTabs(tabs.map((tab: any) => ({
-        ...tab,
-        timestamp: new Date(tab.timestamp)
-      })));
+      setSearchTabs(tabs.map((tab: any) => ({ ...tab, timestamp: new Date(tab.timestamp) })));
     }
-    if (storedActiveTabId) {
-      setActiveTabId(storedActiveTabId);
-    }
-    if (storedSelection) {
-      setSelectedProducts(new Set(JSON.parse(storedSelection)));
-    }
+    if (storedActiveTabId) setActiveTabId(storedActiveTabId);
+    if (storedSelection) setSelectedProducts(new Set(JSON.parse(storedSelection)));
+
+    // Step 2: load from server (source of truth), update state if server has data
+    fetch('/api/search-tabs')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        if (data.tabs && data.tabs.length > 0) {
+          setSearchTabs(data.tabs.map((tab: any) => ({ ...tab, timestamp: new Date(tab.timestamp) })));
+          if (data.activeTabId) setActiveTabId(data.activeTabId);
+        } else if (storedTabs) {
+          // Server has no data yet — migrate localStorage data to server
+          const tabs = JSON.parse(storedTabs);
+          fetch('/api/search-tabs', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tabs, activeTabId: storedActiveTabId }),
+          }).catch(() => {});
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Save to localStorage whenever proposalProducts changes
@@ -233,7 +247,7 @@ export default function Home() {
     }
   }, [proposalProducts]);
 
-  // Autosave search tabs instantly to both sessionStorage and localStorage
+  // Autosave search tabs to localStorage (instant) and server (debounced 2s)
   useEffect(() => {
     if (searchTabs.length > 0) {
       const slimProduct = (p: ProductDTO) => ({
@@ -262,10 +276,20 @@ export default function Home() {
         sessionStorage.setItem('searchTabs', json);
         localStorage.setItem('savedSearchTabs', json);
       } catch (e) {
-        console.warn('Failed to save search tabs to storage:', e);
+        console.warn('Failed to save search tabs to localStorage:', e);
       }
+
+      // Debounced save to server (2s after last change)
+      if (saveTabsToServerRef.current) clearTimeout(saveTabsToServerRef.current);
+      saveTabsToServerRef.current = setTimeout(() => {
+        fetch('/api/search-tabs', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tabs: serializable, activeTabId }),
+        }).catch(() => {});
+      }, 2000);
     }
-  }, [searchTabs]);
+  }, [searchTabs, activeTabId]);
 
   // Autosave selected products instantly to both storages
   useEffect(() => {
