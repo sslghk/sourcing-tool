@@ -249,6 +249,11 @@ export default function Home() {
 
   // Autosave search tabs to localStorage (instant) and server (debounced 2s)
   useEffect(() => {
+    if (searchTabs.length === 0) {
+      // Tabs were cleared — cancel any pending save
+      if (saveTabsToServerRef.current) clearTimeout(saveTabsToServerRef.current);
+      return;
+    }
     if (searchTabs.length > 0) {
       const slimProduct = (p: ProductDTO) => ({
         id: p.id,
@@ -1138,6 +1143,13 @@ export default function Home() {
                   sessionStorage.removeItem('searchTabs');
                   sessionStorage.removeItem('activeTabId');
                   sessionStorage.removeItem('selectedProducts');
+                  // Clear server-side saved tabs for this user
+                  if (saveTabsToServerRef.current) clearTimeout(saveTabsToServerRef.current);
+                  fetch('/api/search-tabs', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tabs: [], activeTabId: null }),
+                  }).catch(() => {});
                 }}
                 className="text-xs text-gray-400 hover:text-red-500 transition-colors"
               >
