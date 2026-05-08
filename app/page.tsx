@@ -227,13 +227,17 @@ export default function Home() {
         if (data.tabs && data.tabs.length > 0) {
           setSearchTabs(data.tabs.map((tab: any) => ({ ...tab, timestamp: new Date(tab.timestamp) })));
           if (data.activeTabId) setActiveTabId(data.activeTabId);
+          if (data.selectedProducts && data.selectedProducts.length > 0) {
+            setSelectedProducts(new Set(data.selectedProducts));
+          }
         } else if (storedTabs) {
           // Server has no data yet — migrate localStorage data to server
           const tabs = JSON.parse(storedTabs);
+          const migratedProducts = storedSelection ? JSON.parse(storedSelection) : [];
           fetch('/api/search-tabs', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tabs, activeTabId: storedActiveTabId }),
+            body: JSON.stringify({ tabs, activeTabId: storedActiveTabId, selectedProducts: migratedProducts }),
           }).catch(() => {});
         }
       })
@@ -290,11 +294,11 @@ export default function Home() {
         fetch('/api/search-tabs', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tabs: serializable, activeTabId }),
+          body: JSON.stringify({ tabs: serializable, activeTabId, selectedProducts: [...selectedProducts] }),
         }).catch(() => {});
       }, 2000);
     }
-  }, [searchTabs, activeTabId]);
+  }, [searchTabs, activeTabId, selectedProducts]);
 
   // Autosave selected products instantly to both storages
   useEffect(() => {
@@ -1143,12 +1147,12 @@ export default function Home() {
                   sessionStorage.removeItem('searchTabs');
                   sessionStorage.removeItem('activeTabId');
                   sessionStorage.removeItem('selectedProducts');
-                  // Clear server-side saved tabs for this user
+                  // Clear server-side saved tabs and selections for this user
                   if (saveTabsToServerRef.current) clearTimeout(saveTabsToServerRef.current);
                   fetch('/api/search-tabs', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tabs: [], activeTabId: null }),
+                    body: JSON.stringify({ tabs: [], activeTabId: null, selectedProducts: [] }),
                   }).catch(() => {});
                 }}
                 className="text-xs text-gray-400 hover:text-red-500 transition-colors"
