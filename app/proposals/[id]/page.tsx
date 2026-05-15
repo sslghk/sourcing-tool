@@ -1078,6 +1078,7 @@ export default function ProposalDetailPage() {
 
   const removeProduct = async (productId: string) => {
     if (!proposal) return;
+    if (!confirm('Are you sure you want to remove this item from the proposal?')) return;
 
     const updatedProducts = proposal.products.filter(p => p.id !== productId);
     const updatedProposal = {
