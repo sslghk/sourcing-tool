@@ -710,91 +710,12 @@ async def search_by_image(image: UploadFile = File(...)):
             if not imgbb_data.get("success"):
                 raise HTTPException(status_code=503, detail="ImgBB upload failed")
             
-            image_url = imgbb_data["data"]["url"]
+            image_url = imgbb_data["data"]["image"]["url"]
             print(f"Image uploaded to ImgBB: {image_url}")
             
-            # Step 2: Upload image URL to OneBound to get image_id
-            print("Step 2: Uploading to OneBound...")
-            upload_params = {
-                "key": ONEBOUND_API_KEY,
-                "secret": ONEBOUND_API_SECRET,
-                "imgcode": image_url,
-                "img_type": "1"
-            }
-            
-            print(f"OneBound upload_img URL: {ONEBOUND_BASE_URL}/upload_img")
-            print(f"Upload params (secret hidden): {dict(upload_params, secret='***')}")
-            
-            # Step 2: Upload image URL to OneBound with retry (max 3 attempts)
-            print("Step 2: Uploading to OneBound (with 3 retry attempts)...")
-            upload_data = None
-            upload_success = False
-            
-            for upload_attempt in range(1, 4):  # 3 attempts
-                try:
-                    print(f"  Upload attempt {upload_attempt}/3...")
-                    upload_response = await client.get(
-                        f"{ONEBOUND_BASE_URL}/upload_img",
-                        params=upload_params,
-                        timeout=30.0
-                    )
-                    upload_response.raise_for_status()
-                    upload_data = upload_response.json()
-                    
-                    # Check if successful
-                    error_code = upload_data.get("error_code", "0000")
-                    if error_code == "0000" and upload_data.get("items"):
-                        print(f"  ✓ Upload successful on attempt {upload_attempt}")
-                        upload_success = True
-                        break
-                    else:
-                        error_detail = upload_data.get('error') or error_code
-                        print(f"  ✗ Upload returned error: {error_detail}")
-                        if upload_attempt < 3:
-                            wait_time = 2 * upload_attempt
-                            print(f"  ⏳ Waiting {wait_time}s before retry...")
-                            await asyncio.sleep(wait_time)
-                        
-                except Exception as e:
-                    print(f"  ✗ Upload attempt {upload_attempt} failed: {e}")
-                    if upload_attempt < 3:
-                        wait_time = 2 * upload_attempt
-                        print(f"  ⏳ Waiting {wait_time}s before retry...")
-                        await asyncio.sleep(wait_time)
-            
-            if not upload_success or not upload_data:
-                raise HTTPException(status_code=503, detail="Failed to upload image to OneBound after 3 attempts")
-            
-            print(f"OneBound upload response status: 200")
-            print(f"OneBound upload response body: {json.dumps(upload_data, ensure_ascii=False)[:500]}")
-            
-            # Get image_id from response - try multiple possible paths
-            image_id = None
-            if "items" in upload_data:
-                items = upload_data.get("items", {})
-                if isinstance(items, dict):
-                    item = items.get("item", {})
-                    if isinstance(item, dict):
-                        image_id = item.get("image_id")
-            
-            # Try alternative response structure
-            if not image_id and "item" in upload_data:
-                image_id = upload_data.get("item", {}).get("image_id")
-            
-            # Try direct image_id field
-            if not image_id:
-                image_id = upload_data.get("image_id")
-            
-            print(f"Extracted image_id: {image_id}")
-            
-            if not image_id:
-                print(f"Full upload_data structure: {upload_data}")
-                raise HTTPException(status_code=500, detail=f"No image_id in OneBound response. Response: {upload_data}")
-            
-            print(f"Got image_id: {image_id}")
-            
-            # Step 3: Search with image_id - ONLY proceed if upload was successful (with 3 retry attempts)
-            print("Step 3: Searching with image_id (with 3 retry attempts)...")
+            # Step 2: Search with image URL directly via item_search_img (with 3 retry attempts)
+            print(f"Step 2: Searching OneBound with image URL: {image_url}")
+            print("Searching with image URL (with 3 retry attempts)...")
             search_data = None
             search_success = False
             
@@ -806,8 +727,10 @@ async def search_by_image(image: UploadFile = File(...)):
                         params={
                             "key": ONEBOUND_API_KEY,
                             "secret": ONEBOUND_API_SECRET,
-                            "imgid": image_id,
-                            "lang": "en"
+                            "imgid": image_url,
+                            "cache": "no",
+                            "app_ver": "2",
+                            "lang": "zh-CN"
                         },
                         timeout=30.0
                     )
